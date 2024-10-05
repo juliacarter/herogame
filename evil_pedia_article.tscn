@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=3 uid="uid://txqckgurevco"]
+
+[ext_resource type="Script" path="res://evil_pedia_article.gd" id="1_0j7x4"]
+
+[node name="EvilPediaArticle" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0j7x4")
+
+[node name="FlowContainer" type="FlowContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Title" type="Label" parent="FlowContainer"]
+layout_mode = 2
+text = "TITLE"
+
+[node name="Body" type="Label" parent="FlowContainer"]
+layout_mode = 2
+text = "Article"

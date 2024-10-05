@@ -1,0 +1,2 @@
+extends SellOrder
+class_name TheftOrder

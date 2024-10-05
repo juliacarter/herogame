@@ -1,0 +1,48 @@
+extends Node2D
+class_name Block
+
+@onready var sprite = get_node("Sprite2D")
+
+@onready var obstacle = get_node("Obstacle")
+var obstacle_rid: RID
+
+var solid: bool = false
+var blocktype = ""
+var movemod = 0.0
+var spritename = ""
+var spritetex
+var datakey
+
+func load_data(newdata):
+	blocktype = newdata.type
+	datakey = newdata.datakey
+	if blocktype == "wall" || blocktype == "edge":
+		solid = true
+		
+	spritename = newdata.sprite
+	spritetex = load("res://art/" + spritename + ".png")
+
+func save():
+	var save_dict = {
+		"type": "floor",
+		"datakey": datakey,
+	}
+	return save_dict
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	if solid:
+		obstacle.avoidance_enabled = true
+	else:
+		obstacle.avoidance_enabled = false
+	sprite.texture = spritetex
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	pass
+	
+func type():
+	return blocktype
+	
+func action():
+	pass

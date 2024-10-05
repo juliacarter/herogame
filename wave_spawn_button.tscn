@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://46clmuqsosj6"]
+
+[ext_resource type="Script" path="res://WaveSpawnButton.gd" id="1_w1lap"]
+
+[node name="WaveSpawnButton" type="Button"]
+offset_right = 8.0
+offset_bottom = 8.0
+script = ExtResource("1_w1lap")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]

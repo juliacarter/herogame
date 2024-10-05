@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://7iphato4uguh"]
+
+[ext_resource type="Script" path="res://script/world/grid.gd" id="1_fs5oc"]
+
+[node name="Grid" type="Node2D" groups=["Persist", "PersistMap"]]
+process_mode = 3
+z_index = -1
+y_sort_enabled = true
+script = ExtResource("1_fs5oc")

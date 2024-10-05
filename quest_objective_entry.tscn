@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=3 uid="uid://43m63c6my7ng"]
+
+[ext_resource type="Script" path="res://QuestObjectiveEntry.gd" id="1_345d2"]
+
+[node name="QuestObjectiveEntry" type="Control"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 100.0
+offset_bottom = 50.0
+script = ExtResource("1_345d2")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="FireButton" type="Button" parent="."]
+layout_mode = 0
+offset_top = 48.0
+offset_right = 41.0
+offset_bottom = 79.0
+text = "FIRE"
+
+[connection signal="pressed" from="FireButton" to="." method="_on_fire_button_pressed"]

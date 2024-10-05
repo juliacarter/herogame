@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://btpuvphux5hkp"]
+
+[node name="WorldVars" type="Node2D" groups=["Persist"]]

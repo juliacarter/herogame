@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=3 uid="uid://cw75tp0pvkxxd"]
+
+[ext_resource type="Script" path="res://StorageWhitelist.gd" id="1_nn5n3"]
+
+[node name="StorageWhitelist" type="Panel"]
+custom_minimum_size = Vector2(400, 300)
+offset_right = 400.0
+offset_bottom = 300.0
+script = ExtResource("1_nn5n3")
+
+[node name="CategoryBox" type="GridContainer" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 376.0
+offset_bottom = 238.0
+columns = 4
+
+[node name="CloseButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 254.0
+offset_right = 69.0
+offset_bottom = 285.0
+text = "Close"
+
+[connection signal="pressed" from="CloseButton" to="." method="_on_close_button_pressed"]

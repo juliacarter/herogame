@@ -1,0 +1,63 @@
+[gd_scene load_steps=3 format=3 uid="uid://cmrpmje3kp3f3"]
+
+[ext_resource type="Script" path="res://furniture_inventory.gd" id="1_5x0pc"]
+[ext_resource type="PackedScene" uid="uid://cw75tp0pvkxxd" path="res://storage_whitelist.tscn" id="2_7b6r5"]
+
+[node name="FurnitureInventory" type="Panel"]
+custom_minimum_size = Vector2(400, 500)
+offset_right = 400.0
+offset_bottom = 500.0
+size_flags_horizontal = 4
+script = ExtResource("1_5x0pc")
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 18.0
+offset_right = 380.0
+offset_bottom = 396.0
+columns = 2
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 336.0
+offset_top = 460.0
+offset_right = 386.0
+offset_bottom = 491.0
+text = "Close"
+
+[node name="Request" type="Button" parent="."]
+layout_mode = 0
+offset_left = 167.0
+offset_top = 455.0
+offset_right = 238.0
+offset_bottom = 486.0
+text = "Request"
+
+[node name="DepotActivator" type="Button" parent="."]
+layout_mode = 0
+offset_left = 25.0
+offset_top = 455.0
+offset_right = 147.0
+offset_bottom = 486.0
+text = "Activate Depot"
+
+[node name="WhitelistButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 27.0
+offset_top = 412.0
+offset_right = 176.0
+offset_bottom = 443.0
+text = "Whitelist (storage)"
+
+[node name="StorageWhitelist" parent="." instance=ExtResource("2_7b6r5")]
+visible = false
+layout_mode = 1
+offset_left = -5.0
+offset_top = 88.0
+offset_right = 395.0
+offset_bottom = 388.0
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Request" to="." method="_on_request_pressed"]
+[connection signal="pressed" from="WhitelistButton" to="." method="_on_whitelist_button_pressed"]

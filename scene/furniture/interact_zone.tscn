@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://d4ejjs8cp0hbm"]
+
+[ext_resource type="Script" path="res://scene/furniture/interact_zone.gd" id="1_l3efx"]
+[ext_resource type="Texture2D" uid="uid://dfbw0eu8l63hi" path="res://art/interactspot.png" id="1_txq8p"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_cea1y"]
+radius = 32.0156
+
+[node name="InteractZone" type="Area2D"]
+z_index = 4096
+collision_layer = 0
+collision_mask = 512
+priority = 14195
+script = ExtResource("1_l3efx")
+
+[node name="InteractSpot" type="Marker2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="InteractSpot"]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_txq8p")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_cea1y")
+debug_color = Color(0.568627, 0.556863, 0.0313726, 0.419608)

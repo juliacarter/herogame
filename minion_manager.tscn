@@ -1,0 +1,63 @@
+[gd_scene load_steps=2 format=3 uid="uid://dll4hnrv6kpct"]
+
+[ext_resource type="Script" path="res://minion_manager.gd" id="1_xr62j"]
+
+[node name="MinionManager" type="Panel"]
+top_level = true
+custom_minimum_size = Vector2(900, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -658.0
+offset_top = -410.0
+offset_right = 242.0
+offset_bottom = 90.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_xr62j")
+
+[node name="Classes" type="Button" parent="."]
+layout_mode = 0
+offset_left = 23.0
+offset_top = 53.0
+offset_right = 88.0
+offset_bottom = 84.0
+text = "Classes"
+
+[node name="Units" type="Button" parent="."]
+layout_mode = 0
+offset_left = 23.0
+offset_top = 13.0
+offset_right = 88.0
+offset_bottom = 44.0
+text = "Units"
+
+[node name="Squads" type="Button" parent="."]
+layout_mode = 0
+offset_left = 23.0
+offset_top = 93.0
+offset_right = 88.0
+offset_bottom = 124.0
+text = "Squads"
+
+[node name="Close" type="Button" parent="."]
+layout_mode = 0
+offset_left = 23.0
+offset_top = 445.0
+offset_right = 88.0
+offset_bottom = 476.0
+text = "Close"
+
+[node name="Panel" type="Control" parent="."]
+anchors_preset = 0
+offset_left = 122.0
+offset_top = 17.0
+offset_right = 162.0
+offset_bottom = 57.0
+
+[connection signal="pressed" from="Classes" to="." method="_on_classes_pressed"]
+[connection signal="pressed" from="Units" to="." method="_on_units_pressed"]
+[connection signal="pressed" from="Squads" to="." method="_on_squads_pressed"]
+[connection signal="pressed" from="Close" to="." method="_on_close_pressed"]

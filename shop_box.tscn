@@ -1,0 +1,33 @@
+[gd_scene load_steps=2 format=3 uid="uid://cf5bdj6k60kja"]
+
+[ext_resource type="Script" path="res://shop_box.gd" id="1_qcvtq"]
+
+[node name="ShopBox" type="Control"]
+custom_minimum_size = Vector2(260, 70)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 260.0
+offset_bottom = 70.0
+script = ExtResource("1_qcvtq")
+
+[node name="SpinBox" type="SpinBox" parent="."]
+layout_mode = 0
+offset_right = 83.0625
+offset_bottom = 31.0
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 88.0
+offset_top = 4.0
+offset_right = 255.0
+offset_bottom = 27.0
+
+[node name="BuyButton" type="Button" parent="."]
+layout_mode = 0
+offset_top = 35.0
+offset_right = 38.0
+offset_bottom = 66.0
+text = "Buy"
+
+[connection signal="value_changed" from="SpinBox" to="." method="_on_spin_box_value_changed"]
+[connection signal="pressed" from="BuyButton" to="." method="_on_buy_button_pressed"]

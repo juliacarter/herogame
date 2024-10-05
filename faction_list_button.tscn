@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://bwkr7pd4e2chq"]
+
+[ext_resource type="Script" path="res://faction_list_button.gd" id="1_yaxj0"]
+
+[node name="FactionListButton" type="Button"]
+offset_right = 8.0
+offset_bottom = 8.0
+text = "fac"
+script = ExtResource("1_yaxj0")

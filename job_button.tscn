@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://ikbvxir2nywv"]
+
+[ext_resource type="Script" path="res://job_button.gd" id="1_ya6h7"]
+
+[node name="JobButton" type="Button"]
+offset_right = 8.0
+offset_bottom = 50.0
+script = ExtResource("1_ya6h7")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]

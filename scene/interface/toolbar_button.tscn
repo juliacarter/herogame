@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://5k0ei25mhblk"]
+
+[ext_resource type="Script" path="res://script/interface/toolbar_button.gd" id="1_bj3hv"]
+
+[node name="Button" type="Button"]
+offset_right = 8.0
+offset_bottom = 8.0
+mouse_filter = 1
+script = ExtResource("1_bj3hv")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]

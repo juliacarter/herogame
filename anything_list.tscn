@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://bbvij8ic2388a"]
+
+[ext_resource type="Script" path="res://anything_list.gd" id="1_rpyp5"]
+
+[node name="AnythingList" type="GridContainer"]
+custom_minimum_size = Vector2(150, 100)
+offset_right = 150.0
+offset_bottom = 100.0
+columns = 2
+script = ExtResource("1_rpyp5")
+
+[connection signal="sort_children" from="." to="." method="_on_sort_children"]

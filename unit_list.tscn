@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3 uid="uid://cv37p5c85cfrb"]
+
+[ext_resource type="Script" path="res://unit_list.gd" id="1_03rt3"]
+
+[node name="UnitList" type="Panel"]
+custom_minimum_size = Vector2(700, 400)
+offset_right = 700.0
+offset_bottom = 500.0
+script = ExtResource("1_03rt3")
+
+[node name="Commit" type="Button" parent="."]
+layout_mode = 0
+offset_left = 29.0
+offset_top = 446.5
+offset_right = 99.0
+offset_bottom = 477.5
+text = "Commit"
+
+[node name="Container" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 11.0
+offset_right = 53.0
+offset_bottom = 51.0

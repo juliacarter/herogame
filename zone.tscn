@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://cd8nvw706rgq2"]
+
+[ext_resource type="Script" path="res://zone.gd" id="1_m82ev"]
+
+[node name="Zone" type="Node2D"]
+z_index = 2
+script = ExtResource("1_m82ev")
+
+[node name="Area2D" type="Area2D" parent="."]

@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=3 uid="uid://buky2qja8gmnk"]
+
+[ext_resource type="Script" path="res://prospect_item.gd" id="1_6f0u5"]
+
+[node name="prospect_item" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_6f0u5")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = "Unitname"
+
+[node name="Button" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "HIRE"
+
+[connection signal="pressed" from="HBoxContainer/Button" to="." method="_on_button_pressed"]

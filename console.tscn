@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://cjfv0kt53e1lq"]
+
+[ext_resource type="Script" path="res://Console.gd" id="1_j2ndx"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_45aab"]
+bg_color = Color(0.6, 0.6, 0.6, 0.215686)
+
+[node name="Console" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_j2ndx")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/normal = SubResource("StyleBoxFlat_45aab")
+
+[node name="TextEdit" type="TextEdit" parent="."]
+custom_minimum_size = Vector2(0, 25)
+layout_mode = 2
+placeholder_text = ">"

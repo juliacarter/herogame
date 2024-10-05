@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3 uid="uid://dpew81sfemqra"]
+
+[ext_resource type="Script" path="res://free_agent_block_item.gd" id="1_jg1nc"]
+
+[node name="FreeAgentBlockItem" type="Control"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_jg1nc")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = "Unitname"
+
+[node name="Button" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "HIRE"
+
+[connection signal="pressed" from="HBoxContainer/Button" to="." method="_on_button_pressed"]

@@ -1,0 +1,44 @@
+[gd_scene load_steps=2 format=3 uid="uid://c03blm5deeifd"]
+
+[ext_resource type="Script" path="res://saver.gd" id="1_3r4ju"]
+
+[node name="Saver" type="Panel"]
+custom_minimum_size = Vector2(400, 200)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_3r4ju")
+
+[node name="TextEdit" type="TextEdit" parent="."]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 30.0
+offset_right = 361.0
+offset_bottom = 77.0
+placeholder_text = "savename"
+
+[node name="Save" type="Button" parent="."]
+layout_mode = 0
+offset_left = 272.0
+offset_top = 140.0
+offset_right = 316.0
+offset_bottom = 171.0
+text = "Save"
+
+[node name="Cancel" type="Button" parent="."]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 140.0
+offset_right = 108.0
+offset_bottom = 171.0
+text = "Cancel"
+
+[connection signal="pressed" from="Save" to="." method="_on_save_pressed"]

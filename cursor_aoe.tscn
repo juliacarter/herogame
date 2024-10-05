@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b40dgiwjywwoh"]
+
+[ext_resource type="Script" path="res://CursorAoe.gd" id="1_1wsgl"]
+
+[node name="CursorAoe" type="Node2D"]
+script = ExtResource("1_1wsgl")

@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://dmlb3xje2gjho"]
+
+[ext_resource type="Script" path="res://InputHandler.gd" id="1_uwkhe"]
+
+[node name="InputHandler" type="Node2D"]
+process_mode = 3
+script = ExtResource("1_uwkhe")

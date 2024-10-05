@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3 uid="uid://cknrdl262vd4"]
+
+[ext_resource type="Script" path="res://day_timer.gd" id="1_yuply"]
+
+[node name="DayTimer" type="HBoxContainer"]
+custom_minimum_size = Vector2(75, 25)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -37.5
+offset_top = -13.5
+offset_right = 37.5
+offset_bottom = 13.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_yuply")
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 2
+text = "P"
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 10.0

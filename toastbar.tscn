@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://eextoy0jrsx0"]
+
+[ext_resource type="Script" path="res://Toastbar.gd" id="1_yy3ng"]
+
+[node name="Toastbar" type="HBoxContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+alignment = 2
+script = ExtResource("1_yy3ng")

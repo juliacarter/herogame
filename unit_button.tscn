@@ -1,0 +1,25 @@
+[gd_scene load_steps=6 format=3 uid="uid://d048xe7r1edsc"]
+
+[ext_resource type="Script" path="res://unit_button.gd" id="1_tm3y0"]
+[ext_resource type="Texture2D" uid="uid://dv1jetytsmdw6" path="res://art/sampleicon.png" id="1_xvaq3"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jo2og"]
+texture = ExtResource("1_xvaq3")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_au5je"]
+texture = ExtResource("1_xvaq3")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_m0e3l"]
+texture = ExtResource("1_xvaq3")
+
+[node name="UnitButton" type="Button"]
+custom_minimum_size = Vector2(64, 64)
+offset_right = 64.0
+offset_bottom = 64.0
+theme_override_colors/font_color = Color(0.878431, 0.0941176, 0.0941176, 1)
+theme_override_styles/normal = SubResource("StyleBoxTexture_jo2og")
+theme_override_styles/hover = SubResource("StyleBoxTexture_au5je")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_m0e3l")
+script = ExtResource("1_tm3y0")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]

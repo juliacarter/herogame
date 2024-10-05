@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://c7a3nccmv21yg"]
+
+[ext_resource type="Script" path="res://AttackRadius.gd" id="1_lwfv8"]
+
+[node name="AttackRadius" type="Area2D"]
+collision_layer = 0
+collision_mask = 134250496
+priority = 945
+script = ExtResource("1_lwfv8")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]

@@ -1,0 +1,76 @@
+[gd_scene load_steps=9 format=3 uid="uid://de07npv37cbs7"]
+
+[ext_resource type="Script" path="res://script/world/square.gd" id="1_q488f"]
+[ext_resource type="Texture2D" uid="uid://xeyfb2svsqix" path="res://art/grid.png" id="2_apqj8"]
+[ext_resource type="PackedScene" uid="uid://b5a184nsarnbt" path="res://cell.tscn" id="3_jhucw"]
+[ext_resource type="Script" path="res://scene/world/square_inside.gd" id="4_mwl55"]
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_nk2fe"]
+vertices = PackedVector2Array(32, 32, -32, 32, -32, -32, 32, -32)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-32, -32, 32, -32, 32, 32, -32, 32)])
+source_geometry_group_name = &"navigation_polygon_source_group"
+cell_size = 64.0
+agent_radius = 0.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tgp43"]
+size = Vector2(80, 80)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qgf2e"]
+size = Vector2(78, 78)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_riit2"]
+size = Vector2(64, 64)
+
+[node name="Square" type="NavigationRegion2D"]
+navigation_polygon = SubResource("NavigationPolygon_nk2fe")
+navigation_layers = 3
+script = ExtResource("1_q488f")
+
+[node name="Selector" type="Area2D" parent="."]
+process_mode = 3
+collision_mask = 259
+monitorable = false
+
+[node name="Selection" type="CollisionShape2D" parent="Selector"]
+shape = SubResource("RectangleShape2D_tgp43")
+debug_color = Color(0.301961, 0.580392, 0.662745, 0.415686)
+
+[node name="Diggable" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="Shape" type="CollisionShape2D" parent="Diggable"]
+shape = SubResource("RectangleShape2D_qgf2e")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_apqj8")
+
+[node name="Cells" type="Node2D" parent="."]
+
+[node name="Center" parent="Cells" instance=ExtResource("3_jhucw")]
+
+[node name="West" parent="Cells" instance=ExtResource("3_jhucw")]
+position = Vector2(-32, 0)
+
+[node name="North" parent="Cells" instance=ExtResource("3_jhucw")]
+position = Vector2(0, -32)
+
+[node name="NorthWest" parent="Cells" instance=ExtResource("3_jhucw")]
+position = Vector2(-32, -32)
+
+[node name="Inside" type="Area2D" parent="."]
+collision_layer = 256
+collision_mask = 2
+script = ExtResource("4_mwl55")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Inside"]
+shape = SubResource("RectangleShape2D_riit2")
+
+[connection signal="area_entered" from="Diggable" to="." method="_on_diggable_area_entered"]
+[connection signal="area_exited" from="Diggable" to="." method="_on_diggable_area_exited"]
+[connection signal="area_entered" from="Inside" to="." method="_on_inside_area_entered"]
+[connection signal="body_entered" from="Inside" to="." method="_on_inside_body_entered"]
+[connection signal="mouse_entered" from="Inside" to="." method="_on_inside_mouse_entered"]
+[connection signal="mouse_exited" from="Inside" to="." method="_on_inside_mouse_exited"]

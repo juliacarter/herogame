@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://cp4ugc11owm4n"]
+
+[ext_resource type="Script" path="res://debugvarbutton.gd" id="1_gsjfi"]
+
+[node name="debugvarbutton" type="CheckBox"]
+offset_right = 24.0
+offset_bottom = 24.0
+script = ExtResource("1_gsjfi")
+
+[connection signal="toggled" from="." to="." method="_on_toggled"]

@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://bfgmovtqfqtyv"]
+
+[ext_resource type="Script" path="res://Aura.gd" id="1_52iv2"]
+[ext_resource type="PackedScene" uid="uid://kf8tqdlm8c5t" path="res://addons/vision_cone_2d/vision_cone_2d_template.tscn" id="2_0yvtb"]
+
+[node name="Aura" type="Node2D"]
+script = ExtResource("1_52iv2")
+
+[node name="VisionCone2D" parent="." instance=ExtResource("2_0yvtb")]
+debug_shape = true
+
+[node name="VisionConeRenderer" parent="VisionCone2D" index="0"]
+color = Color(0.921569, 0.329412, 0.6, 0.286275)
+
+[node name="VisionConeArea" parent="VisionCone2D" index="1"]
+collision_mask = 2
+
+[connection signal="area_entered" from="VisionCone2D/VisionConeArea" to="." method="_on_vision_cone_area_entered"]
+[connection signal="area_exited" from="VisionCone2D/VisionConeArea" to="." method="_on_vision_cone_area_exited"]
+
+[editable path="VisionCone2D"]

@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://bw8u62lql1khl"]
+
+[ext_resource type="Texture2D" uid="uid://cmcdjtv3jjwqb" path="res://art/gridhighlight.png" id="1_mocji"]
+
+[node name="Cursor" type="Node2D"]
+top_level = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_mocji")

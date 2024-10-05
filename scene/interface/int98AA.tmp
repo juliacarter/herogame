@@ -1,0 +1,202 @@
+[gd_scene load_steps=12 format=3 uid="uid://cj2o28yb6c7cw"]
+
+[ext_resource type="Script" path="res://script/interface/interface.gd" id="1_7mop2"]
+[ext_resource type="PackedScene" uid="uid://cd1r6ksv1xucc" path="res://scene/interface/infopanel.tscn" id="2_fn2ul"]
+[ext_resource type="PackedScene" uid="uid://dt1s6aprwkytg" path="res://squad_tabs.tscn" id="4_d7g5e"]
+[ext_resource type="PackedScene" uid="uid://bly28iu4klsvj" path="res://squad_panel.tscn" id="5_kmb43"]
+[ext_resource type="PackedScene" uid="uid://x1043cyrsasj" path="res://map_tabs.tscn" id="6_a8132"]
+[ext_resource type="PackedScene" uid="uid://cspjk0uycaxee" path="res://loader.tscn" id="7_6ikjk"]
+[ext_resource type="PackedScene" uid="uid://gfp5kw53bmsu" path="res://power_palette.tscn" id="7_kkevi"]
+[ext_resource type="PackedScene" uid="uid://c03blm5deeifd" path="res://saver.tscn" id="8_sn082"]
+[ext_resource type="PackedScene" uid="uid://ct0c5o2g03baj" path="res://view_list.tscn" id="9_4h3g8"]
+[ext_resource type="PackedScene" uid="uid://cjfv0kt53e1lq" path="res://console.tscn" id="10_xrtef"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_h1m3c"]
+size = Vector2(1400, 271)
+
+[node name="Interface" type="Control"]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -261.0
+offset_right = 1401.0
+grow_vertical = 0
+mouse_filter = 1
+script = ExtResource("1_7mop2")
+
+[node name="infopanel" parent="." instance=ExtResource("2_fn2ul")]
+layout_mode = 2
+offset_left = -6.0
+offset_top = -638.0
+offset_right = 1409.0
+offset_bottom = -561.0
+mouse_filter = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+offset_left = 1.0
+offset_top = -150.0
+offset_right = 108.0
+offset_bottom = 21.0
+
+[node name="Debug" type="Button" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Debug Menu"
+
+[node name="Production" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Production"
+
+[node name="Operations" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Operations"
+
+[node name="Research" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Research"
+
+[node name="Units" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Army"
+
+[node name="Panel2" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -699.5
+offset_top = -173.0
+offset_right = 699.5
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 1
+
+[node name="Panel3" type="Panel" parent="Panel2"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+offset_top = -54.0
+offset_right = 319.0
+offset_bottom = 173.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel2"]
+layout_mode = 2
+offset_left = 321.0
+offset_top = 2.0
+offset_right = 1009.0
+offset_bottom = 173.0
+
+[node name="Selection" type="Control" parent="Panel2/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Panel" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 0
+offset_top = 67.0
+offset_right = 1401.0
+offset_bottom = 263.0
+
+[node name="WindowContainer" type="CenterContainer" parent="."]
+layout_mode = 0
+offset_top = -598.0
+offset_right = 1399.0
+offset_bottom = 7.0
+mouse_filter = 2
+
+[node name="SquadTabs" parent="." instance=ExtResource("4_d7g5e")]
+layout_mode = 1
+offset_left = 367.0
+offset_top = -204.0
+offset_right = 367.0
+offset_bottom = -204.0
+
+[node name="SquadPanel" parent="." instance=ExtResource("5_kmb43")]
+visible = false
+layout_mode = 1
+offset_left = -263.0
+offset_top = -680.0
+offset_right = -13.0
+offset_bottom = 20.0
+
+[node name="MapTabs" parent="." instance=ExtResource("6_a8132")]
+layout_mode = 1
+anchors_preset = 5
+anchor_top = 0.0
+anchor_bottom = 0.0
+offset_top = -552.0
+offset_bottom = -552.0
+grow_vertical = 1
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(700, 125.5)
+shape = SubResource("RectangleShape2D_h1m3c")
+
+[node name="PowerPalette" parent="." instance=ExtResource("7_kkevi")]
+layout_mode = 0
+offset_left = 1023.0
+offset_top = 33.0
+offset_right = 1404.0
+offset_bottom = 265.0
+
+[node name="QuitButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 1335.0
+offset_top = -541.0
+offset_right = 1382.0
+offset_bottom = -510.0
+text = "QUIT"
+
+[node name="SaveMap" type="Button" parent="."]
+layout_mode = 0
+offset_left = 1304.0
+offset_top = -501.0
+offset_right = 1386.0
+offset_bottom = -470.0
+text = "SAVEMAP"
+
+[node name="Loader" parent="." instance=ExtResource("7_6ikjk")]
+visible = false
+top_level = true
+z_index = 10
+layout_mode = 1
+offset_left = -300.0
+offset_top = -400.0
+offset_right = 300.0
+offset_bottom = 400.0
+
+[node name="Saver" parent="." instance=ExtResource("8_sn082")]
+visible = false
+top_level = true
+z_index = 296
+layout_mode = 1
+
+[node name="ViewList" parent="." instance=ExtResource("9_4h3g8")]
+layout_mode = 1
+offset_top = -496.0
+offset_right = -1140.0
+offset_bottom = -496.0
+
+[node name="Console" parent="." instance=ExtResource("10_xrtef")]
+top_level = true
+z_index = 10
+layout_mode = 1
+offset_bottom = -109.0
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="pressed" from="VBoxContainer/Debug" to="." method="_on_debug_pressed"]
+[connection signal="pressed" from="VBoxContainer/Production" to="." method="_on_production_pressed"]
+[connection signal="pressed" from="VBoxContainer/Operations" to="." method="_on_missions_pressed"]
+[connection signal="pressed" from="VBoxContainer/Research" to="." method="_on_research_pressed"]
+[connection signal="pressed" from="VBoxContainer/Units" to="." method="_on_units_pressed"]
+[connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
+[connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]
+[connection signal="pressed" from="QuitButton" to="." method="_on_quit_button_pressed"]
+[connection signal="pressed" from="SaveMap" to="." method="_on_save_map_pressed"]

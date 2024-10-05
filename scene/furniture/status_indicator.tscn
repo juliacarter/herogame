@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://8l2mrv0cptkx"]
+
+[ext_resource type="Script" path="res://scene/furniture/status_indicator.gd" id="1_saitv"]
+[ext_resource type="Texture2D" uid="uid://c5w30qmv36wqa" path="res://art/unbuilt.png" id="1_xwtop"]
+
+[node name="StatusIndicator" type="Node2D"]
+script = ExtResource("1_saitv")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_xwtop")

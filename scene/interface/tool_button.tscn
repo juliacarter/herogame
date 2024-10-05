@@ -1,0 +1,58 @@
+[gd_scene load_steps=2 format=3 uid="uid://bnhww1ufjtu20"]
+
+[ext_resource type="Script" path="res://script/interface/tool_button.gd" id="1_p366m"]
+
+[node name="ToolButton" type="Control"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 1
+script = ExtResource("1_p366m")
+
+[node name="Sprite2D" type="TextureRect" parent="."]
+z_index = 1
+clip_contents = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 0
+offset_right = 64.0
+offset_bottom = 64.0
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+offset_right = 64.0
+offset_bottom = 64.0
+mouse_filter = 1
+
+[node name="OnRect" type="ColorRect" parent="."]
+visible = false
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+offset_top = 68.0
+offset_right = 64.0
+offset_bottom = 78.0
+color = Color(0, 0.698039, 0, 1)
+
+[node name="Label" type="Label" parent="."]
+z_index = 2
+layout_mode = 0
+offset_right = 64.0
+offset_bottom = 64.0
+autowrap_mode = 1
+
+[node name="SelectedRect" type="ReferenceRect" parent="."]
+visible = false
+layout_mode = 2
+offset_right = 64.0
+offset_bottom = 64.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+border_width = 3.0
+editor_only = false
+
+[connection signal="gui_input" from="Button" to="." method="_on_button_gui_input"]

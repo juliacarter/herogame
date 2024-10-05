@@ -1,0 +1,75 @@
+[gd_scene load_steps=3 format=3 uid="uid://cpwf5jy6vt5lw"]
+
+[ext_resource type="Script" path="res://item_panel.gd" id="1_eb1ne"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3rlh4"]
+bg_color = Color(0.905882, 0.498039, 0.396078, 1)
+
+[node name="ItemPanel" type="Panel"]
+process_priority = 1
+offset_right = 495.0
+offset_bottom = 138.0
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_3rlh4")
+script = ExtResource("1_eb1ne")
+
+[node name="NameBox" type="Label" parent="."]
+layout_mode = 0
+offset_left = 98.0
+offset_top = 21.0
+offset_right = 145.0
+offset_bottom = 47.0
+text = "Name"
+
+[node name="JobButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 65.0
+offset_right = 91.0
+offset_bottom = 96.0
+mouse_filter = 1
+text = "Jobs
+"
+
+[node name="IdBox" type="Label" parent="."]
+layout_mode = 0
+offset_left = 172.0
+offset_top = 8.0
+offset_right = 212.0
+offset_bottom = 34.0
+text = "ID"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 82.0
+offset_right = 140.0
+offset_bottom = 105.0
+
+[node name="DeleteButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 375.0
+offset_top = 6.0
+offset_right = 434.0
+offset_bottom = 37.0
+mouse_filter = 1
+text = "Delete"
+
+[node name="Count" type="Label" parent="."]
+layout_mode = 0
+offset_left = 106.0
+offset_top = 54.0
+offset_right = 146.0
+offset_bottom = 77.0
+text = "COUNT: 999"
+
+[node name="Reserved" type="Label" parent="."]
+layout_mode = 0
+offset_left = 106.0
+offset_top = 78.0
+offset_right = 199.0
+offset_bottom = 101.0
+text = "RSRVD: 999"
+
+[connection signal="pressed" from="JobButton" to="." method="_on_job_button_pressed"]
+[connection signal="pressed" from="DeleteButton" to="." method="_on_delete_button_pressed"]

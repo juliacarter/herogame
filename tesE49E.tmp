@@ -1,0 +1,42 @@
+[gd_scene load_steps=8 format=3 uid="uid://ciullrok02ou5"]
+
+[ext_resource type="Script" path="res://test_world.gd" id="1_ccgnu"]
+[ext_resource type="PackedScene" uid="uid://cj2o28yb6c7cw" path="res://scene/interface/interface.tscn" id="2_twdny"]
+[ext_resource type="PackedScene" uid="uid://cd1r6ksv1xucc" path="res://scene/interface/infopanel.tscn" id="3_domna"]
+[ext_resource type="Script" path="res://script/world/camera.gd" id="3_fnpnq"]
+[ext_resource type="PackedScene" uid="uid://7sfrsqefjccc" path="res://main_menu.tscn" id="4_bms20"]
+[ext_resource type="PackedScene" uid="uid://dmlb3xje2gjho" path="res://input_handler.tscn" id="6_arpvo"]
+
+[sub_resource type="Environment" id="Environment_eorew"]
+
+[node name="TestWorld" type="Node2D"]
+y_sort_enabled = true
+script = ExtResource("1_ccgnu")
+
+[node name="Interface" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="InterfacePanel" parent="Interface" instance=ExtResource("2_twdny")]
+
+[node name="infopanel" parent="Interface" instance=ExtResource("3_domna")]
+visible = false
+
+[node name="MainMenu" parent="Interface" instance=ExtResource("4_bms20")]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(29.0912, 15.5217)
+rotation = 3.14159
+scale = Vector2(1e-05, 1)
+skew = -1.5708
+script = ExtResource("3_fnpnq")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_eorew")
+
+[node name="InputHandler" parent="." instance=ExtResource("6_arpvo")]

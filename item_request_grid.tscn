@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://csa2bme82nl2l"]
+
+[ext_resource type="Script" path="res://item_request_grid.gd" id="1_i8e12"]
+
+[node name="ItemRequestGrid" type="GridContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_i8e12")

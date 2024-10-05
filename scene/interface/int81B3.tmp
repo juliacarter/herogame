@@ -1,0 +1,98 @@
+[gd_scene load_steps=6 format=3 uid="uid://cj2o28yb6c7cw"]
+
+[ext_resource type="Script" path="res://script/interface/interface.gd" id="1_7mop2"]
+[ext_resource type="PackedScene" uid="uid://c14urbf82bkba" path="res://scene/interface/toolbar_bar.tscn" id="2_65fk7"]
+[ext_resource type="PackedScene" uid="uid://cd1r6ksv1xucc" path="res://scene/interface/infopanel.tscn" id="2_fn2ul"]
+[ext_resource type="PackedScene" uid="uid://dt1s6aprwkytg" path="res://squad_tabs.tscn" id="4_d7g5e"]
+[ext_resource type="PackedScene" uid="uid://bly28iu4klsvj" path="res://squad_panel.tscn" id="5_kmb43"]
+
+[node name="Interface" type="Control"]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -264.0
+offset_right = 165.0
+grow_vertical = 0
+mouse_filter = 1
+script = ExtResource("1_7mop2")
+
+[node name="Panel2" type="Panel" parent="."]
+layout_mode = 2
+offset_top = 90.0
+offset_right = 1399.0
+offset_bottom = 263.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel2"]
+layout_mode = 2
+offset_right = 1401.0
+offset_bottom = 173.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel2/HBoxContainer"]
+layout_mode = 2
+
+[node name="Debug" type="Button" parent="Panel2/HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Debug Menu"
+
+[node name="Squad" type="Button" parent="Panel2/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "New Squad"
+
+[node name="Research" type="Button" parent="Panel2/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Research"
+
+[node name="Units" type="Button" parent="Panel2/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Units"
+
+[node name="infopanel" parent="Panel2/HBoxContainer" instance=ExtResource("2_fn2ul")]
+layout_mode = 2
+
+[node name="Selection" type="Control" parent="Panel2/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Panel" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 0
+offset_top = 67.0
+offset_right = 1401.0
+offset_bottom = 263.0
+
+[node name="ToolbarBar" parent="." instance=ExtResource("2_65fk7")]
+layout_mode = 1
+offset_right = 1232.0
+offset_bottom = -199.0
+mouse_filter = 1
+
+[node name="WindowContainer" type="CenterContainer" parent="."]
+layout_mode = 0
+offset_top = -630.0
+offset_right = 1399.0
+offset_bottom = -25.0
+mouse_filter = 2
+
+[node name="SquadTabs" parent="." instance=ExtResource("4_d7g5e")]
+layout_mode = 1
+offset_left = 16.0
+offset_top = -616.0
+offset_right = -99.0
+offset_bottom = -616.0
+
+[node name="SquadPanel" parent="." instance=ExtResource("5_kmb43")]
+layout_mode = 1
+offset_left = 975.0
+offset_top = -623.0
+offset_right = 1225.0
+offset_bottom = 77.0
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="pressed" from="Panel2/HBoxContainer/VBoxContainer/Debug" to="." method="_on_debug_pressed"]
+[connection signal="pressed" from="Panel2/HBoxContainer/VBoxContainer/Squad" to="." method="_on_squad_pressed"]
+[connection signal="pressed" from="Panel2/HBoxContainer/VBoxContainer/Research" to="." method="_on_research_pressed"]
+[connection signal="pressed" from="Panel2/HBoxContainer/VBoxContainer/Units" to="." method="_on_units_pressed"]

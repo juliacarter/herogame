@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://dvhauqh362vta"]
+
+[ext_resource type="Script" path="res://free_agent_block.gd" id="1_hluvr"]
+
+[node name="FreeAgentBlock" type="Control"]
+custom_minimum_size = Vector2(750, 500)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 750.0
+offset_bottom = 500.0
+script = ExtResource("1_hluvr")
+
+[node name="List" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 435.0
+grow_horizontal = 2

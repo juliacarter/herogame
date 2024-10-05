@@ -1,0 +1,39 @@
+[gd_scene load_steps=2 format=3 uid="uid://6ua0mbedukri"]
+
+[ext_resource type="Script" path="res://tech_screen.gd" id="1_ive32"]
+
+[node name="TechScreen" type="Panel"]
+custom_minimum_size = Vector2(800, 600)
+offset_right = 800.0
+offset_bottom = 600.0
+script = ExtResource("1_ive32")
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+layout_mode = 0
+offset_left = 102.0
+offset_top = 57.0
+offset_right = 682.0
+offset_bottom = 96.0
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 332.0
+offset_top = 17.0
+offset_right = 454.0
+offset_bottom = 40.0
+text = "Research Name"
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 380.0
+offset_top = 547.0
+offset_right = 430.0
+offset_bottom = 578.0
+text = "Close"
+
+[node name="AvailableTechs" type="GridContainer" parent="."]
+layout_mode = 0
+offset_left = 42.0
+offset_top = 132.0
+offset_right = 741.0
+offset_bottom = 510.0

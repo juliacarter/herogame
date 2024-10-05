@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c1e43d7thtois"]
+
+[ext_resource type="Script" path="res://script/furniture/preview.gd" id="1_lmxn2"]
+
+[node name="Ghost" type="Node2D"]
+script = ExtResource("1_lmxn2")

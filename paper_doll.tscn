@@ -1,0 +1,41 @@
+[gd_scene load_steps=3 format=3 uid="uid://cjmlqam3kpsvg"]
+
+[ext_resource type="Script" path="res://paper_doll.gd" id="1_82syb"]
+[ext_resource type="PackedScene" uid="uid://b13op42pqpmk5" path="res://picker.tscn" id="2_8isk5"]
+
+[node name="PaperDoll" type="Control"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_82syb")
+
+[node name="ClotheSlots" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ToolSlots" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 67.0
+offset_top = 1.0
+offset_right = 107.0
+offset_bottom = 41.0
+
+[node name="Picker" parent="." instance=ExtResource("2_8isk5")]
+visible = false
+layout_mode = 0
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 219.0
+offset_bottom = 404.0
+grow_horizontal = 1
+grow_vertical = 1

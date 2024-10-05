@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://dt1s6aprwkytg"]
+
+[ext_resource type="Script" path="res://squad_tabs.gd" id="1_flc4l"]
+
+[node name="SquadTabs" type="HBoxContainer"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+grow_vertical = 0
+script = ExtResource("1_flc4l")

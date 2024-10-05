@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://chwe0qhklej2f"]
+
+[ext_resource type="Script" path="res://multi_select_panel.gd" id="1_w038j"]
+
+[node name="MultiSelectPanel" type="Panel"]
+offset_right = 800.0
+offset_bottom = 180.0
+script = ExtResource("1_w038j")
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 1
+offset_left = 12.0
+offset_top = 9.0
+offset_right = 52.0
+offset_bottom = 49.0
+columns = 6

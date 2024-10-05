@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://d244abetyeiww"]
+
+[ext_resource type="Script" path="res://waypoint.gd" id="1_wiylg"]
+[ext_resource type="Texture2D" uid="uid://cjk6gmwb5e34c" path="res://art/waypoint.png" id="2_eo7sy"]
+[ext_resource type="PackedScene" uid="uid://bl2151gbexen1" path="res://patrol_viewer.tscn" id="3_vexvs"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1ayew"]
+size = Vector2(64, 64)
+
+[node name="Waypoint" type="Area2D"]
+z_index = 2
+script = ExtResource("1_wiylg")
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_1ayew")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_eo7sy")
+
+[node name="Highlight" type="Polygon2D" parent="."]
+visible = false
+z_index = 1
+color = Color(0.803922, 0.764706, 0.0313726, 1)
+polygon = PackedVector2Array(-16, -24, 16, -24, 16, 24, -16, 24)
+
+[node name="PatrolViewer" parent="." instance=ExtResource("3_vexvs")]
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

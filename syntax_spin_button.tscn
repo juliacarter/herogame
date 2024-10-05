@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://dwox6u2verjqd"]
+
+[ext_resource type="Script" path="res://syntax_spin_button.gd" id="1_5ai3x"]
+
+[node name="SyntaxSpinButton" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_5ai3x")
+
+[node name="Button" type="SpinBox" parent="."]
+layout_mode = 0
+offset_right = 83.0625
+offset_bottom = 31.0
+
+[connection signal="value_changed" from="Button" to="." method="_on_button_value_changed"]

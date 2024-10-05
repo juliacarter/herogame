@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://cf5xmbdce7uxg"]
+
+[node name="PatrolView" type="Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -935.0
+offset_bottom = -517.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SpinBox" type="SpinBox" parent="."]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 261.0
+offset_right = 131.063
+offset_bottom = 292.0
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 344.0
+offset_top = 319.0
+offset_right = 415.0
+offset_bottom = 350.0
+text = "Confirm"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 54.0
+offset_top = 224.0
+offset_right = 110.0
+offset_bottom = 247.0
+text = "Guards"
+
+[node name="Label2" type="Label" parent="."]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 40.0
+offset_right = 81.0
+offset_bottom = 63.0
+text = "Patrol"

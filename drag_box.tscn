@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3 uid="uid://cdmd2mpeftilo"]
+
+[ext_resource type="Script" path="res://DragBox.gd" id="1_lqplr"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_l7qc8"]
+
+[node name="DragBox" type="Area2D"]
+collision_layer = 0
+collision_mask = 256
+collision_priority = 82.43
+priority = 27905
+script = ExtResource("1_lqplr")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_l7qc8")
+debug_color = Color(0.976471, 0, 0.415686, 0.419608)
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+
+[connection signal="area_shape_entered" from="." to="." method="_on_area_shape_entered"]
+[connection signal="area_shape_exited" from="." to="." method="_on_area_shape_exited"]
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]

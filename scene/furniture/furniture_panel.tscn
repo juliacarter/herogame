@@ -1,0 +1,129 @@
+[gd_scene load_steps=3 format=3 uid="uid://b0svirf1ho7q4"]
+
+[ext_resource type="Script" path="res://script/furniture/furniture_panel.gd" id="1_8cr7e"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3rlh4"]
+bg_color = Color(0.905882, 0.498039, 0.396078, 1)
+
+[node name="Panel" type="Panel"]
+process_priority = 1
+offset_right = 495.0
+offset_bottom = 138.0
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_3rlh4")
+script = ExtResource("1_8cr7e")
+
+[node name="NameBox" type="Label" parent="."]
+layout_mode = 0
+offset_left = 98.0
+offset_top = 21.0
+offset_right = 145.0
+offset_bottom = 47.0
+text = "Name"
+
+[node name="JobButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 65.0
+offset_right = 91.0
+offset_bottom = 96.0
+mouse_filter = 1
+text = "Jobs
+"
+
+[node name="RightButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 65.0
+offset_top = 27.0
+offset_right = 88.0
+offset_bottom = 58.0
+mouse_filter = 1
+text = "->"
+
+[node name="LeftButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 27.0
+offset_right = 32.0
+offset_bottom = 58.0
+mouse_filter = 1
+text = "<-"
+
+[node name="RepeatBox" type="CheckBox" parent="."]
+layout_mode = 0
+offset_left = 94.0
+offset_top = 97.0
+offset_right = 177.0
+offset_bottom = 128.0
+mouse_filter = 1
+text = "Repeat"
+
+[node name="IdBox" type="Label" parent="."]
+layout_mode = 0
+offset_left = 172.0
+offset_top = 8.0
+offset_right = 212.0
+offset_bottom = 34.0
+text = "ID"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 82.0
+offset_right = 140.0
+offset_bottom = 105.0
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 99.0
+offset_right = 89.0
+offset_bottom = 126.0
+
+[node name="Resources" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 230.0
+offset_top = 2.0
+offset_right = 270.0
+offset_bottom = 42.0
+
+[node name="SizeLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 2.0
+offset_right = 159.0
+offset_bottom = 28.0
+text = "X: 0 Y: 0"
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 97.0
+offset_top = 65.0
+offset_right = 180.0
+offset_bottom = 96.0
+mouse_filter = 1
+text = "Inventory"
+
+[node name="Clearance" type="SpinBox" parent="."]
+layout_mode = 0
+offset_left = 216.0
+offset_top = 4.0
+offset_right = 299.063
+offset_bottom = 35.0
+
+[node name="DeleteButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 375.0
+offset_top = 6.0
+offset_right = 434.0
+offset_bottom = 37.0
+mouse_filter = 1
+text = "Delete"
+
+[connection signal="pressed" from="JobButton" to="." method="_on_job_button_pressed"]
+[connection signal="pressed" from="RightButton" to="." method="_on_right_button_pressed"]
+[connection signal="pressed" from="LeftButton" to="." method="_on_left_button_pressed"]
+[connection signal="toggled" from="RepeatBox" to="." method="_on_repeat_box_toggled"]
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="value_changed" from="Clearance" to="." method="_on_clearance_value_changed"]
+[connection signal="pressed" from="DeleteButton" to="." method="_on_delete_button_pressed"]

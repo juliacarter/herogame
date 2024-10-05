@@ -1,0 +1,37 @@
+[gd_scene load_steps=2 format=3 uid="uid://bge2ltlygrpqx"]
+
+[ext_resource type="Script" path="res://WorkScreen.gd" id="1_ia562"]
+
+[node name="WorkScreen" type="Panel"]
+custom_minimum_size = Vector2(625, 400)
+offset_right = 600.0
+offset_bottom = 400.0
+script = ExtResource("1_ia562")
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 361.0
+offset_top = 364.0
+offset_right = 411.0
+offset_bottom = 395.0
+text = "Close"
+
+[node name="Confirm" type="Button" parent="."]
+layout_mode = 0
+offset_left = 417.0
+offset_top = 364.0
+offset_right = 488.0
+offset_bottom = 395.0
+text = "Confirm"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 0
+offset_right = 623.0
+offset_bottom = 358.0
+
+[node name="GridContainer" type="GridContainer" parent="ScrollContainer"]
+layout_mode = 2
+columns = 3
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Confirm" to="." method="_on_confirm_pressed"]

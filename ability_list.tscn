@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://b0g1jp43yrr56"]
+
+[ext_resource type="Script" path="res://ability_list.gd" id="1_m484x"]
+
+[node name="AbilityList" type="GridContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_m484x")

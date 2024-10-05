@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://e17ikajbo0ju"]
+
+[ext_resource type="Script" path="res://AttackBeam.gd" id="1_qv4c8"]
+
+[node name="AttackBeam" type="Line2D"]
+visible = false
+points = PackedVector2Array(0, 0, 0, 0)
+width = 2.0
+default_color = Color(0.847059, 0.752941, 0.360784, 1)
+script = ExtResource("1_qv4c8")

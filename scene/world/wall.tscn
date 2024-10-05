@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://bv3ofomsls05h"]
+
+[ext_resource type="Script" path="res://script/world/wall.gd" id="1_8eifm"]
+[ext_resource type="Texture2D" uid="uid://85xsyp87uviq" path="res://art/wall.png" id="2_f211y"]
+
+[node name="Wall" type="Node2D"]
+script = ExtResource("1_8eifm")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-2.79397e-07, 1.81049e-06)
+texture = ExtResource("2_f211y")

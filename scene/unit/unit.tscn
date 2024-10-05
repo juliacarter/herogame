@@ -1,0 +1,307 @@
+[gd_scene load_steps=21 format=3 uid="uid://b477yympdcq0s"]
+
+[ext_resource type="Script" path="res://script/unit/unit_script.gd" id="1_hf72p"]
+[ext_resource type="Texture2D" uid="uid://wup0q862rs6d" path="res://art/chesttoner.png" id="2_25b23"]
+[ext_resource type="Texture2D" uid="uid://bcwqynim0qro8" path="res://art/bodybase.png" id="3_30dhi"]
+[ext_resource type="PackedScene" uid="uid://kf8tqdlm8c5t" path="res://addons/vision_cone_2d/vision_cone_2d_template.tscn" id="3_w0uut"]
+[ext_resource type="Texture2D" uid="uid://dncy71enww7br" path="res://art/broken.png" id="4_hwubj"]
+[ext_resource type="Texture2D" uid="uid://bqjq0sadglaon" path="res://art/skintoner.png" id="4_vyery"]
+[ext_resource type="Texture2D" uid="uid://cb8b7orl44n2c" path="res://art/headbase.png" id="5_6c7io"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_qs3vq"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4hxun"]
+radius = 8.0
+
+[sub_resource type="Animation" id="Animation_4gjec"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprites:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprites:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_hfhpt"]
+resource_name = "laydown"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprites:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.5708]
+}
+
+[sub_resource type="Animation" id="Animation_rghej"]
+resource_name = "walk"
+length = 0.05
+loop_mode = 2
+step = 0.01
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprites:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.05, 1),
+"transitions": PackedFloat32Array(1.5, 1.5, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, -4), Vector2(0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_gpc6a"]
+_data = {
+"RESET": SubResource("Animation_4gjec"),
+"laydown": SubResource("Animation_hfhpt"),
+"walk": SubResource("Animation_rghej")
+}
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_askrr"]
+radius = 64.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_tpkor"]
+radius = 36.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_xgigk"]
+radius = 15.0
+height = 50.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ff6e7"]
+bg_color = Color(0, 0.372549, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gyj4s"]
+bg_color = Color(0.976471, 0.0235294, 0, 0.294118)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_odad4"]
+bg_color = Color(0, 0.929412, 0, 0.294118)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_65iek"]
+radius = 300.0
+
+[node name="Unit" type="RigidBody2D" groups=["Persist"]]
+process_mode = 4
+collision_layer = 134218243
+collision_mask = 257
+physics_material_override = SubResource("PhysicsMaterial_qs3vq")
+gravity_scale = 0.0
+can_sleep = false
+lock_rotation = true
+linear_damp = 20.0
+script = ExtResource("1_hf72p")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+path_desired_distance = 8.0
+target_desired_distance = 16.0
+radius = 8.0
+neighbor_distance = 64.0
+max_neighbors = 128
+time_horizon_agents = 5.0
+time_horizon_obstacles = 5.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_4hxun")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_gpc6a")
+}
+
+[node name="Sprites" type="Node2D" parent="."]
+texture_filter = 1
+
+[node name="Body" type="Node2D" parent="Sprites"]
+texture_filter = 1
+
+[node name="ChestToner" type="Sprite2D" parent="Sprites/Body"]
+texture = ExtResource("2_25b23")
+
+[node name="BodySprite" type="Sprite2D" parent="Sprites/Body"]
+texture_filter = 1
+texture = ExtResource("3_30dhi")
+
+[node name="Weapon" type="Node2D" parent="Sprites"]
+position = Vector2(7, 4)
+
+[node name="Head" type="Node2D" parent="Sprites"]
+
+[node name="SkinToner" type="Sprite2D" parent="Sprites/Head"]
+texture = ExtResource("4_vyery")
+
+[node name="HeadSprite" type="Sprite2D" parent="Sprites/Head"]
+texture = ExtResource("5_6c7io")
+
+[node name="MeleeRadius" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MeleeRadius"]
+shape = SubResource("CircleShape2D_askrr")
+debug_color = Color(0.780392, 0.25098, 0.372549, 0.419608)
+
+[node name="InteractionCircle" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 512
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionCircle"]
+shape = SubResource("CircleShape2D_tpkor")
+
+[node name="Selection" type="Area2D" parent="."]
+collision_layer = 2048
+collision_mask = 2048
+priority = 10
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Selection"]
+shape = SubResource("CapsuleShape2D_xgigk")
+
+[node name="Progress" type="ProgressBar" parent="."]
+visible = false
+z_index = 3
+offset_left = -24.0
+offset_top = 18.0
+offset_right = 24.0
+offset_bottom = 24.0
+theme_override_styles/fill = SubResource("StyleBoxFlat_ff6e7")
+show_percentage = false
+
+[node name="Health" type="ProgressBar" parent="."]
+z_index = 3
+offset_left = -24.0
+offset_top = -28.0
+offset_right = 24.0
+offset_bottom = -22.0
+theme_override_colors/font_color = Color(0.843137, 0, 0, 1)
+theme_override_styles/fill = SubResource("StyleBoxFlat_gyj4s")
+show_percentage = false
+
+[node name="Energy" type="ProgressBar" parent="."]
+z_index = 3
+offset_left = -24.0
+offset_top = -36.0
+offset_right = 24.0
+offset_bottom = -30.0
+theme_override_styles/fill = SubResource("StyleBoxFlat_odad4")
+show_percentage = false
+
+[node name="UnitSpotter" type="RayCast2D" parent="."]
+
+[node name="TerrainSpotter" type="RayCast2D" parent="."]
+collision_mask = 32784
+collide_with_areas = true
+
+[node name="UpRay" type="RayCast2D" parent="."]
+target_position = Vector2(0, -10000)
+collision_mask = 16
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="ULRay" type="RayCast2D" parent="."]
+target_position = Vector2(-10000, -10000)
+collision_mask = 16
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="URRay" type="RayCast2D" parent="."]
+target_position = Vector2(10000, -10000)
+collision_mask = 16
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="DLRay" type="RayCast2D" parent="."]
+target_position = Vector2(-10000, 10000)
+collision_mask = 16
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="DRRay" type="RayCast2D" parent="."]
+target_position = Vector2(10000, 10000)
+collision_mask = 16
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="DownRay" type="RayCast2D" parent="."]
+target_position = Vector2(0, 10000)
+collision_mask = 16
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="LeftRay" type="RayCast2D" parent="."]
+target_position = Vector2(-10000, 0)
+collision_mask = 16
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="RightRay" type="RayCast2D" parent="."]
+target_position = Vector2(10000, 0)
+collision_mask = 16
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="VisionCone2D" parent="." instance=ExtResource("3_w0uut")]
+ray_count = 8
+minimum_recalculate_time_msec = 500
+recalculate_if_static = false
+
+[node name="VisionConeRenderer" parent="VisionCone2D" index="0"]
+visible = false
+
+[node name="VisionConeArea" parent="VisionCone2D" index="1"]
+collision_mask = 134250496
+monitorable = true
+priority = 5240
+
+[node name="DebugDraw" parent="VisionCone2D" index="2"]
+visible = false
+
+[node name="Highlight" type="Polygon2D" parent="."]
+visible = false
+z_index = -1
+color = Color(0.803922, 0.764706, 0.0313726, 1)
+polygon = PackedVector2Array(-16, -24, 16, -24, 16, 24, -16, 24)
+
+[node name="StealthIndic" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("4_hwubj")
+
+[node name="HearingRadius" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 512
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HearingRadius"]
+shape = SubResource("CircleShape2D_65iek")
+
+[connection signal="velocity_computed" from="NavigationAgent2D" to="." method="_on_velocity_computed"]
+[connection signal="body_entered" from="MeleeRadius" to="." method="_on_melee_radius_body_entered"]
+[connection signal="body_exited" from="MeleeRadius" to="." method="_on_melee_radius_body_exited"]
+[connection signal="mouse_entered" from="Selection" to="." method="_on_selection_box_mouse_entered"]
+[connection signal="mouse_exited" from="Selection" to="." method="_on_selection_box_mouse_exited"]
+[connection signal="body_entered" from="VisionCone2D/VisionConeArea" to="." method="_on_vision_cone_body_entered"]
+[connection signal="body_exited" from="VisionCone2D/VisionConeArea" to="." method="_on_vision_cone_body_exited"]
+[connection signal="body_entered" from="HearingRadius" to="." method="_on_hearing_radius_body_entered"]
+[connection signal="body_exited" from="HearingRadius" to="." method="_on_hearing_radius_body_exited"]
+
+[editable path="VisionCone2D"]

@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://cw33tsfx4y2wp"]
+
+[ext_resource type="Script" path="res://script/world/floor.gd" id="1_kmwdl"]
+[ext_resource type="Texture2D" uid="uid://dhmlg6d2f3g3b" path="res://art/floor.png" id="2_ws6i0"]
+
+[node name="Floor" type="Node2D"]
+script = ExtResource("1_kmwdl")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = -1
+texture = ExtResource("2_ws6i0")

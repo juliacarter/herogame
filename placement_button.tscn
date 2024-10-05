@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://bpq1gqpoy6d71"]
+
+[ext_resource type="Script" path="res://PlacementButton.gd" id="1_a0wk2"]
+
+[node name="PlacementButton" type="Button"]
+process_mode = 3
+custom_minimum_size = Vector2(100, 25)
+offset_right = 8.0
+offset_bottom = 8.0
+script = ExtResource("1_a0wk2")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]

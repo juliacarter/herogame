@@ -1,0 +1,42 @@
+[gd_scene load_steps=2 format=3 uid="uid://62vkftjccesp"]
+
+[ext_resource type="Script" path="res://work_order_widget.gd" id="1_swda4"]
+
+[node name="WorkOrderWidget" type="Control"]
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 200.0
+offset_bottom = 100.0
+script = ExtResource("1_swda4")
+
+[node name="Name" type="Label" parent="."]
+layout_mode = 0
+offset_right = 128.0
+offset_bottom = 23.0
+
+[node name="More" type="Button" parent="."]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 24.0
+offset_right = 21.0
+offset_bottom = 55.0
+text = "+"
+
+[node name="Less" type="Button" parent="."]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 42.0
+offset_bottom = 55.0
+text = "-"
+
+[node name="Amount" type="SpinBox" parent="."]
+layout_mode = 0
+offset_left = 49.0
+offset_top = 24.0
+offset_right = 132.063
+offset_bottom = 55.0
+
+[connection signal="pressed" from="More" to="." method="_on_more_pressed"]
+[connection signal="value_changed" from="Amount" to="." method="_on_amount_value_changed"]

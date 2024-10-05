@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://bf7s5c6tall6x"]
+
+[ext_resource type="Script" path="res://Tab.gd" id="1_l34wl"]
+
+[node name="Tab" type="Button"]
+custom_minimum_size = Vector2(100, 50)
+offset_right = 8.0
+offset_bottom = 8.0
+text = "Tab"
+script = ExtResource("1_l34wl")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]

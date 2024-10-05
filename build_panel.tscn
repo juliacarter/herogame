@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://du2lmx8jpif2w"]
+
+[ext_resource type="Script" path="res://BuildPanel.gd" id="1_nj8s6"]
+
+[node name="BuildPanel" type="Panel"]
+offset_right = 495.0
+offset_bottom = 138.0
+mouse_filter = 1
+script = ExtResource("1_nj8s6")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 0
+offset_right = 491.0
+offset_bottom = 135.0
+
+[node name="GridContainer" type="GridContainer" parent="ScrollContainer"]
+layout_mode = 2
+columns = 5

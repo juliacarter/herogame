@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://dsspgum547usi"]
+
+[ext_resource type="Script" path="res://quarter.gd" id="1_tovsa"]
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_2cvs1"]
+outlines = Array[PackedVector2Array]([PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)])
+source_geometry_group_name = &"navigation_polygon_source_group"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_08cop"]
+size = Vector2(32, 32)
+
+[node name="Quarter" type="Node2D"]
+script = ExtResource("1_tovsa")
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+navigation_polygon = SubResource("NavigationPolygon_2cvs1")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_08cop")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]

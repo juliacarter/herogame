@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://4lfd0jggmwg7"]
+
+[ext_resource type="Script" path="res://ConeSpotter.gd" id="1_dqhoh"]
+[ext_resource type="PackedScene" uid="uid://kf8tqdlm8c5t" path="res://addons/vision_cone_2d/vision_cone_2d_template.tscn" id="2_vtnnr"]
+
+[node name="ConeSpotter" type="Node2D"]
+script = ExtResource("1_dqhoh")
+
+[node name="VisionCone2D" parent="." instance=ExtResource("2_vtnnr")]
+
+[editable path="VisionCone2D"]

@@ -1,0 +1,38 @@
+[gd_scene load_steps=2 format=3 uid="uid://dsppfisp8kxm6"]
+
+[ext_resource type="Script" path="res://WaveSpawner.gd" id="1_nwnax"]
+
+[node name="WaveSpawner" type="Panel"]
+custom_minimum_size = Vector2(500, 500)
+offset_right = 500.0
+offset_bottom = 500.0
+script = ExtResource("1_nwnax")
+
+[node name="FactionSelector" type="OptionButton" parent="."]
+layout_mode = 0
+offset_left = 25.0
+offset_top = 24.0
+offset_right = 165.0
+offset_bottom = 44.0
+
+[node name="ObjectiveSelector" type="OptionButton" parent="."]
+layout_mode = 0
+offset_left = 310.0
+offset_top = 28.0
+offset_right = 446.0
+offset_bottom = 48.0
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 418.0
+offset_top = 457.0
+offset_right = 476.0
+offset_bottom = 488.0
+text = "CLOSE"
+
+[node name="WaveGrid" type="GridContainer" parent="."]
+layout_mode = 0
+offset_left = 22.0
+offset_top = 67.0
+offset_right = 482.0
+offset_bottom = 448.0

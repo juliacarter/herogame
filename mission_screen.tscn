@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=3 uid="uid://b6j6fugxy0q44"]
+
+[ext_resource type="Script" path="res://mission_screen.gd" id="1_x4ut4"]
+[ext_resource type="PackedScene" uid="uid://0uppyai1jxut" path="res://mission_view.tscn" id="2_sfujt"]
+
+[node name="MissionScreen" type="Panel"]
+custom_minimum_size = Vector2(800, 600)
+offset_right = 800.0
+offset_bottom = 600.0
+script = ExtResource("1_x4ut4")
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 393.0
+offset_top = 546.0
+offset_right = 443.0
+offset_bottom = 577.0
+text = "Close"
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 0
+offset_left = 43.0
+offset_top = 133.0
+offset_right = 757.0
+offset_bottom = 536.0
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+layout_mode = 2
+offset_left = 52.0
+offset_top = 75.0
+offset_right = 763.0
+offset_bottom = 102.0
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+offset_left = 345.0
+offset_top = 34.0
+offset_right = 467.0
+offset_bottom = 57.0
+text = "Scan Progress"
+
+[node name="MissionView" parent="." instance=ExtResource("2_sfujt")]
+visible = false
+layout_mode = 0
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

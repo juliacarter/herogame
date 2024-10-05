@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://bp62ay07h4uu"]
+
+[ext_resource type="Script" path="res://quest_entry.gd" id="1_u3xqx"]
+
+[node name="QuestEntry" type="Control"]
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 200.0
+offset_bottom = 100.0
+script = ExtResource("1_u3xqx")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="Steps" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0

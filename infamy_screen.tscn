@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=3 uid="uid://cycb77iuqlexp"]
+
+[ext_resource type="Script" path="res://infamy_screen.gd" id="1_ntupl"]
+
+[node name="InfamyScreen" type="Panel"]
+custom_minimum_size = Vector2(400, 350)
+offset_right = 400.0
+offset_bottom = 383.0
+script = ExtResource("1_ntupl")
+
+[node name="options" type="GridContainer" parent="."]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 129.0
+offset_right = 384.0
+offset_bottom = 365.0
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 6.0
+offset_right = 113.0
+offset_bottom = 29.0
+text = "infamy level:"
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 40.0
+offset_right = 376.0
+offset_bottom = 67.0
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 144.0
+offset_top = 79.0
+offset_right = 233.0
+offset_bottom = 110.0
+text = "notoriety+"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

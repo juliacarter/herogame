@@ -1,0 +1,43 @@
+[gd_scene load_steps=3 format=3 uid="uid://c14urbf82bkba"]
+
+[ext_resource type="Script" path="res://script/interface/ToolbarBar.gd" id="1_bgwie"]
+[ext_resource type="PackedScene" uid="uid://dr4605knw8sn5" path="res://scene/interface/toolbar.tscn" id="2_p6hoo"]
+
+[node name="ToolbarBar" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_bgwie")
+
+[node name="ButtonContainer" type="BoxContainer" parent="."]
+layout_mode = 0
+offset_top = 45.0
+offset_right = 1399.0
+offset_bottom = 85.0
+alignment = 1
+
+[node name="Debug" type="Button" parent="ButtonContainer"]
+layout_mode = 2
+text = "Spawn"
+
+[node name="MainTools" type="Button" parent="ButtonContainer"]
+layout_mode = 2
+text = "Palette"
+
+[node name="MainBar" parent="." instance=ExtResource("2_p6hoo")]
+visible = false
+layout_mode = 0
+offset_right = 1397.0
+offset_bottom = 43.0
+
+[node name="DebugBar" parent="." instance=ExtResource("2_p6hoo")]
+visible = false
+layout_mode = 0
+offset_right = 1397.0
+offset_bottom = 50.0
+
+[connection signal="pressed" from="ButtonContainer/Debug" to="." method="_on_debug_pressed"]
+[connection signal="pressed" from="ButtonContainer/MainTools" to="." method="_on_tool_button_pressed"]

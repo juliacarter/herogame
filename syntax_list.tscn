@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3 uid="uid://bnrx1fdc3qpu"]
+
+[ext_resource type="Script" path="res://syntax_list.gd" id="1_dgvat"]
+
+[node name="SyntaxList" type="Panel"]
+offset_left = 319.0
+offset_top = 137.0
+offset_right = 748.0
+offset_bottom = 628.0
+script = ExtResource("1_dgvat")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 0
+offset_right = 431.0
+offset_bottom = 450.0
+
+[node name="SyntaxBox" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+
+[node name="AddCrit" type="Button" parent="."]
+layout_mode = 0
+offset_left = 373.0
+offset_top = 454.0
+offset_right = 416.0
+offset_bottom = 485.0
+text = "ADD"
+
+[connection signal="pressed" from="AddCrit" to="." method="_on_add_crit_pressed"]

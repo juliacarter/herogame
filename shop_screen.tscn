@@ -1,0 +1,43 @@
+[gd_scene load_steps=2 format=3 uid="uid://c3bjw558xxy0h"]
+
+[ext_resource type="Script" path="res://shop_screen.gd" id="1_jurcw"]
+
+[node name="ShopScreen" type="Panel"]
+custom_minimum_size = Vector2(900, 500)
+offset_right = 900.0
+offset_bottom = 500.0
+script = ExtResource("1_jurcw")
+
+[node name="Buy" type="Button" parent="."]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+text = "BUY"
+
+[node name="Sell" type="Button" parent="."]
+layout_mode = 0
+offset_left = 42.0
+offset_right = 86.0
+offset_bottom = 31.0
+text = "SELL"
+
+[node name="Commit" type="Button" parent="."]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 463.0
+offset_right = 91.0
+offset_bottom = 494.0
+text = "COMMIT"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 39.0
+offset_right = 887.0
+offset_bottom = 449.0
+
+[node name="Content" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+
+[connection signal="pressed" from="Sell" to="." method="_on_sell_pressed"]
+[connection signal="pressed" from="Commit" to="." method="_on_commit_pressed"]

@@ -1,0 +1,38 @@
+[gd_scene load_steps=5 format=3 uid="uid://celj4xun52a57"]
+
+[ext_resource type="Script" path="res://script/item/floor_item.gd" id="1_1iu5k"]
+[ext_resource type="Texture2D" uid="uid://dnsfdt4j3pp5k" path="res://art/thang.png" id="2_kiwia"]
+[ext_resource type="Texture2D" uid="uid://dmks88nmnlfel" path="res://art/arrowhead.png" id="3_ownhy"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_senen"]
+size = Vector2(40, 40)
+
+[node name="Item" type="Area2D"]
+z_index = 1655
+collision_layer = 4096
+collision_mask = 2
+priority = 3820
+script = ExtResource("1_1iu5k")
+
+[node name="CollisionShape3D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_senen")
+debug_color = Color(0.611765, 0.411765, 0.890196, 0.419608)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_kiwia")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "#"
+
+[node name="Hovered" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("3_ownhy")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

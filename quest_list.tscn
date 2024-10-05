@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://cwspfruoqtt4u"]
+
+[ext_resource type="PackedScene" uid="uid://dkqn4ggkqnmyg" path="res://minimizable_list.tscn" id="1_7v5vw"]
+[ext_resource type="Script" path="res://quest_list.gd" id="1_s4v0c"]
+
+[node name="QuestList" type="Control"]
+z_index = -1
+z_as_relative = false
+layout_mode = 3
+anchor_right = 0.841
+anchor_bottom = 1.0
+offset_right = 3.59998
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_s4v0c")
+
+[node name="MinimizableList" parent="." instance=ExtResource("1_7v5vw")]

@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://ddeu2k0f00lwd"]
+
+[ext_resource type="Script" path="res://TravelMeter.gd" id="1_icvc4"]
+
+[node name="TravelMeter" type="ProgressBar"]
+offset_right = 4.0
+offset_bottom = 27.0
+script = ExtResource("1_icvc4")

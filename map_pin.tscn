@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://iiya5aexemnb"]
+
+[ext_resource type="Script" path="res://MapPin.gd" id="1_agj61"]
+
+[node name="MapPin" type="VBoxContainer"]
+script = ExtResource("1_agj61")
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 2
+text = "Pin"
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+layout_mode = 2

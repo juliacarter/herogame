@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=3 uid="uid://em3vgmwfhij8"]
+
+[ext_resource type="Script" path="res://unit_inventory.gd" id="1_r15od"]
+[ext_resource type="PackedScene" uid="uid://gw4kyutdptv1" path="res://equipment_selector.tscn" id="2_kvxyb"]
+
+[node name="UnitInventory" type="Panel"]
+custom_minimum_size = Vector2(0, 200)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -334.5
+offset_top = -172.5
+offset_right = -334.5
+offset_bottom = 27.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_r15od")
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -289.0
+offset_top = -85.0
+offset_right = 289.0
+offset_bottom = 92.0
+grow_horizontal = 2
+grow_vertical = 2
+columns = 2
+
+[node name="EquipmentSelector" parent="." instance=ExtResource("2_kvxyb")]
+visible = false
+layout_mode = 1
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="Slots" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0

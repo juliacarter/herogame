@@ -1,0 +1,90 @@
+[gd_scene load_steps=3 format=3 uid="uid://7n2or8mtcfaj"]
+
+[ext_resource type="Script" path="res://script/interface/debug_settings.gd" id="1_132vk"]
+[ext_resource type="PackedScene" uid="uid://dsppfisp8kxm6" path="res://wave_spawner.tscn" id="2_kft0y"]
+
+[node name="DebugSettings" type="Panel"]
+custom_minimum_size = Vector2(500, 500)
+offset_right = 500.0
+offset_bottom = 500.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_132vk")
+
+[node name="DebugVars" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 10.0
+offset_right = 489.0
+offset_bottom = 296.0
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 75.0
+offset_top = 454.0
+offset_right = 125.0
+offset_bottom = 485.0
+text = "Close"
+
+[node name="WaveButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 310.0
+offset_right = 122.0
+offset_bottom = 341.0
+text = "Spawn Waves"
+
+[node name="Button3" type="Button" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 417.0
+offset_right = 133.0
+offset_bottom = 448.0
+text = "Add Encounter"
+
+[node name="Button5" type="Button" parent="."]
+layout_mode = 0
+offset_left = 251.0
+offset_top = 420.0
+offset_right = 374.0
+offset_bottom = 451.0
+text = "Add Map Job"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 344.0
+offset_right = 138.0
+offset_bottom = 384.0
+
+[node name="CashButton" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "Cash"
+
+[node name="Button" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "Influence"
+
+[node name="Button4" type="Button" parent="."]
+layout_mode = 0
+offset_left = 143.0
+offset_top = 418.0
+offset_right = 240.0
+offset_bottom = 449.0
+text = "Add Quests"
+
+[node name="WaveSpawner" parent="." instance=ExtResource("2_kft0y")]
+visible = false
+layout_mode = 0
+offset_left = -105.0
+offset_top = -90.0
+offset_right = 395.0
+offset_bottom = 410.0
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="WaveButton" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="Button3" to="." method="_on_button_3_pressed"]
+[connection signal="pressed" from="Button5" to="." method="_on_button_5_pressed"]
+[connection signal="pressed" from="HBoxContainer/CashButton" to="." method="_on_cash_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/Button" to="." method="_on_inf_button_pressed"]
+[connection signal="pressed" from="Button4" to="." method="_on_button_4_pressed"]

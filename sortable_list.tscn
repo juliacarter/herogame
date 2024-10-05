@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://clwihkhkn1031"]
+
+[ext_resource type="Script" path="res://sortable_list.gd" id="1_y8ao2"]
+
+[node name="SortableList" type="BoxContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+vertical = true
+script = ExtResource("1_y8ao2")

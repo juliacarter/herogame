@@ -1,0 +1,42 @@
+[gd_scene load_steps=4 format=3 uid="uid://cw1nxcw00rmil"]
+
+[ext_resource type="PackedScene" uid="uid://dtsathuy4bdh6" path="res://evil_pedia_list.tscn" id="1_iqgbp"]
+[ext_resource type="Script" path="res://evil_pedia.gd" id="1_vpeqq"]
+[ext_resource type="PackedScene" uid="uid://txqckgurevco" path="res://evil_pedia_article.tscn" id="2_x18be"]
+
+[node name="EvilPedia" type="Panel"]
+z_index = 16
+custom_minimum_size = Vector2(800, 700)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_vpeqq")
+
+[node name="EvilPediaList" parent="." instance=ExtResource("1_iqgbp")]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 1
+offset_left = 2.0
+offset_top = 3.0
+offset_right = -698.0
+offset_bottom = -52.0
+
+[node name="EvilPediaArticle" parent="." instance=ExtResource("2_x18be")]
+layout_mode = 1
+offset_left = 197.0
+offset_top = 48.0
+offset_right = -11.0
+offset_bottom = -9.0
+
+[node name="CloseButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 737.0
+offset_top = 11.0
+offset_right = 787.0
+offset_bottom = 42.0
+text = "Close"
+
+[connection signal="pressed" from="CloseButton" to="." method="_on_close_button_pressed"]

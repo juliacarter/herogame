@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://bxqxhpoxadwdg"]
+
+[ext_resource type="Script" path="res://price_tag.gd" id="1_ny7lv"]
+
+[node name="PriceTag" type="HBoxContainer"]
+custom_minimum_size = Vector2(40, 30)
+offset_right = 25.0
+offset_bottom = 25.0
+script = ExtResource("1_ny7lv")
+
+[node name="TypeLabel" type="Label" parent="."]
+layout_mode = 2
+text = "T"
+
+[node name="ValueLabel" type="Label" parent="."]
+layout_mode = 2
+text = "#"

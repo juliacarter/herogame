@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://bah0m38dl6usa"]
+
+[node name="WeaponWidget" type="Control"]
+custom_minimum_size = Vector2(250, 100)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 196.0
+offset_bottom = 75.0
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "weapon name"
+
+[node name="Label2" type="Label" parent="."]
+layout_mode = 0
+offset_top = 26.0
+offset_right = 113.0
+offset_bottom = 49.0
+text = "rank whatever"
+
+[node name="Label3" type="Label" parent="."]
+layout_mode = 0
+offset_top = 48.0
+offset_right = 177.0
+offset_bottom = 71.0
+text = "9-9 damage/99s"

@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://hlko6j4yh45e"]
+
+[ext_resource type="Script" path="res://ResourceList.gd" id="1_tfwcu"]
+
+[node name="ResourceList" type="GridContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+columns = 2
+script = ExtResource("1_tfwcu")

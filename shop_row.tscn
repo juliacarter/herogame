@@ -1,0 +1,44 @@
+[gd_scene load_steps=3 format=3 uid="uid://cotot7j7o36ih"]
+
+[ext_resource type="Script" path="res://shop_row.gd" id="1_q7u0n"]
+[ext_resource type="PackedScene" uid="uid://ccllj7mkrkhi1" path="res://price_box.tscn" id="2_bsdas"]
+
+[node name="ShopRow" type="HBoxContainer"]
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.074
+offset_bottom = 0.400002
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_q7u0n")
+
+[node name="NameLabel" type="Label" parent="."]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Item"
+
+[node name="VSeparator" type="VSeparator" parent="."]
+layout_mode = 2
+
+[node name="SpinBox" type="SpinBox" parent="."]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+
+[node name="VSeparator4" type="VSeparator" parent="."]
+layout_mode = 2
+
+[node name="BuyButton" type="Button" parent="."]
+layout_mode = 2
+text = "Buy"
+
+[node name="VSeparator2" type="VSeparator" parent="."]
+layout_mode = 2
+
+[node name="PriceBox" parent="." instance=ExtResource("2_bsdas")]
+layout_mode = 2
+
+[node name="HeatLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Heat"
+
+[connection signal="pressed" from="BuyButton" to="." method="_on_buy_button_pressed"]
