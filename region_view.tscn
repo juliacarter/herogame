@@ -1,9 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://cikfdgjer5x4"]
+[gd_scene load_steps=3 format=3 uid="uid://cikfdgjer5x4"]
 
 [ext_resource type="Script" path="res://region_view.gd" id="1_g22md"]
+[ext_resource type="PackedScene" uid="uid://dowpunojv5shf" path="res://influence_list.tscn" id="2_coxiq"]
 
 [node name="RegionView" type="Control"]
-custom_minimum_size = Vector2(400, 400)
+custom_minimum_size = Vector2(500, 400)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 400.0
@@ -14,12 +15,56 @@ script = ExtResource("1_g22md")
 layout_mode = 0
 offset_left = 10.0
 offset_top = 10.0
-offset_right = 334.0
-offset_bottom = 349.0
+offset_right = 431.0
+offset_bottom = 193.0
 
 [node name="IDLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 text = "ID"
 
-[node name="Label2" type="Label" parent="VBoxContainer"]
+[node name="InfluenceList" parent="VBoxContainer" instance=ExtResource("2_coxiq")]
 layout_mode = 2
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 340.0
+offset_right = 133.0
+offset_bottom = 371.0
+text = "Generate Base"
+
+[node name="Button2" type="Button" parent="."]
+layout_mode = 0
+offset_left = 144.0
+offset_top = 324.0
+offset_right = 267.0
+offset_bottom = 355.0
+text = "Add Influence"
+
+[node name="OptionButton" type="OptionButton" parent="."]
+layout_mode = 0
+offset_left = 301.0
+offset_top = 341.0
+offset_right = 476.0
+offset_bottom = 361.0
+
+[node name="Button3" type="Button" parent="."]
+layout_mode = 0
+offset_left = 140.0
+offset_top = 359.0
+offset_right = 295.0
+offset_bottom = 390.0
+text = "Remove Influence"
+
+[node name="Button4" type="Button" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 300.0
+offset_right = 131.0
+offset_bottom = 331.0
+text = "Scheme Buyer"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="Button3" to="." method="_on_button_3_pressed"]
+[connection signal="pressed" from="Button4" to="." method="_on_button_4_pressed"]

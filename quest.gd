@@ -13,6 +13,8 @@ var complete_args = []
 
 var rewards = []
 
+var region
+
 func _init(newrules, args):
 	rules = newrules
 	if args.has("rewards"):
@@ -57,4 +59,6 @@ func next_step():
 	
 func complete():
 	completed = true
+	if region != null:
+		region.scheme_active = false
 	rules.complete_quest(self)

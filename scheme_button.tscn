@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://c264lw1765tyx"]
+
+[ext_resource type="Script" path="res://SchemeButton.gd" id="1_eljgj"]
+
+[node name="SchemeButton" type="Button"]
+offset_right = 8.0
+offset_bottom = 8.0
+script = ExtResource("1_eljgj")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]

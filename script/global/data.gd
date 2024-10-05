@@ -985,7 +985,9 @@ var jobs_to_load = {
 #special shop entries that give a quest
 var schemes = {
 	"valuabletheft": {
-		"quest": "domission",
+		"quest": "spendcash",
+		"traits": [],
+		"cost": 1,
 		"prices": {
 			"cash": 100
 		},
@@ -1063,7 +1065,7 @@ var quests_to_load = {
 				]},
 				]
 	},
-	"havecash": {
+	"spendcash": {
 		"name": "Spend Some Cash",
 		"rewards": [
 			{

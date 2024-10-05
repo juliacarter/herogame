@@ -7,7 +7,12 @@ var data
 var cooldown = 10
 var time = 0
 
+#Influence cost to execute the scheme
+var cost = 1
+
 var quest = ""
+
+var name
 
 func _init(gamedata, args):
 	if args.has("quest"):

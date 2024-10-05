@@ -1,6 +1,12 @@
 extends Control
 
+@onready var rules = get_node("/root/WorldVariables")
+
 @onready var idlabel = get_node("VBoxContainer/IDLabel")
+
+@onready var options = get_node("OptionButton")
+
+@onready var influence = get_node("VBoxContainer/InfluenceList")
 
 var region
 
@@ -9,8 +15,11 @@ var units = {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	load_factions()
 
+func load_factions():
+	options.add_item("player")
+	options.add_item("coalition")
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -19,3 +28,23 @@ func _process(delta: float) -> void:
 func load_region(new):
 	region = new
 	idlabel.text = region.id
+	influence.load_region(region)
+
+
+func _on_button_pressed() -> void:
+	rules.make_base_in_region(region)
+
+
+func _on_button_2_pressed() -> void:
+	var faction = options.get_item_text(options.selected)
+	region.add_influence(faction, 0.5)
+
+
+func _on_button_3_pressed() -> void:
+	var faction = options.get_item_text(options.selected)
+	region.remove_influence(faction, 0.5)
+
+
+func _on_button_4_pressed() -> void:
+	var window = rules.interface.open_window("schemes")
+	window.current_tab.load_region(region)

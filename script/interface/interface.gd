@@ -83,6 +83,7 @@ var tabscenes = {
 	"freeagent": preload("res://free_agent_block.tscn"),
 	"prospects": preload("res://prospect_block.tscn"),
 	"infamy": preload("res://infamy_screen.tscn"),
+	"schemes": preload("res://scheme_buyer.tscn")
 }
 var windowscene = preload("res://draggable_window.tscn")
 

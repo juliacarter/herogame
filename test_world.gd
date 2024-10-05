@@ -29,8 +29,8 @@ func _ready():
 	pass
 	
 func new_world():
-	rules.home = rules.make_map(30, 30)
-	rules.open_map(rules.home.id)
+	#rules.home = rules.make_map(30, 30)
+	#rules.open_map(rules.home.id)
 	#rules.make_map(10, 10)
 #	global_queue = Multiqueue.new()
 #	get_node("Unit").set_queue(global_queue)
@@ -38,6 +38,7 @@ func new_world():
 	#camera.set_custom_viewport(viewport)
 	#camera.make_current()
 	#print(camera.is_current())
+	rules.open_world_map()
 	call_deferred("camera_setup")
 	#minibase()
 	#scaryrunning()

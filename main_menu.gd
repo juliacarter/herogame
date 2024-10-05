@@ -18,7 +18,8 @@ func _process(delta: float) -> void:
 
 
 func _on_new_game_pressed() -> void:
-	mapgen.visible = true
+	#mapgen.visible = true
+	rules.new_game()
 
 
 func _on_continue_pressed() -> void:

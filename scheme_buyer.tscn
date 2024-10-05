@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3 uid="uid://be1lcfd0ro83g"]
+
+[ext_resource type="Script" path="res://SchemeBuyer.gd" id="1_qr1h5"]
+
+[node name="SchemeBuyer" type="Control"]
+custom_minimum_size = Vector2(400, 300)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 400.0
+offset_bottom = 300.0
+script = ExtResource("1_qr1h5")
+
+[node name="SchemeList" type="GridContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+columns = 2
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 266.0
+offset_right = 365.0
+offset_bottom = 293.0

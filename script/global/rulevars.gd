@@ -205,6 +205,8 @@ func start_quest(questname):
 	var quest = Quest.new(self, questdata)
 	quests.append(quest)
 	quest.start_quest()
+	interface.questlist.load_quests()
+	return quest
 	
 func initial_quests():
 	#for key in data.quests_to_load:
@@ -791,6 +793,7 @@ func add_map(map):
 	map.global_position = Vector2(mapdistance * map.spacing, 0)
 	await world.load_map(map)
 	await map.generate_cells()
+	map.load_squares()
 	if interface != null:
 		interface.maptabs.load_maps()
 	#if current_map == null:
@@ -799,14 +802,24 @@ func add_map(map):
 		home = map
 	return map
 		
+func start_scheme(schemename, region):
+	if data.schemes.has(schemename):
+		region.scheme_active = true
+		var scheme = data.schemes[schemename]
+		var quest = start_quest(scheme.quest)
+		quest.region = region
+		
+func make_base_in_region(new):
+	var map = await make_map(10, 10)
+		
 func make_map(x, y):
 	var map = gridscene.instantiate()
 	map.x = x
 	map.y = y
 	
 	map.id = uuid(map)
+	#map.load_squares()
 	return await add_map(map)
-	map.load_squares()
 	
 func open_world_map():
 	close_map()
@@ -826,8 +839,9 @@ func open_map(mapid):
 	camera_to(current_map.blocks[0][0].global_position)
 	
 func close_map():
-	current_map.visible = false
-	current_map.viewed = false
+	if current_map != null:
+		current_map.visible = false
+		current_map.viewed = false
 	
 func remove_map(mapid):
 	if maps.has(mapid):
