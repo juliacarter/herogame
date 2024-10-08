@@ -31,7 +31,18 @@ var assets = []
 #Influence in the region, by faction
 var influence = {}
 
+#units parked in the region
+var units = {}
+
 var scheme_active = false
+
+var tab
+
+func land_units(new):
+	for key in new:
+		var unit = new[key]
+		unit.on_map = false
+	units.merge(new)
 
 func think(delta):
 	if !scheme_active:
@@ -39,6 +50,10 @@ func think(delta):
 			scheme_cooldown -= delta
 		else:
 			scheme_cooldown = 0
+	for key in units:
+		var unit = units[key]
+		var infgain = 0.1 * delta
+		add_influence("player", infgain)
 
 func add_influence(faction, amount):
 	influence.merge({

@@ -21,6 +21,8 @@ extends Panel
 @onready var levelbar = get_node("ProgressBar")
 @onready var levelindic = get_node("Label")
 
+@onready var lessons = get_node("UpgradePicker")
+
 var lessonlist: AnythingList
 var upgradelist: AnythingList
 
@@ -80,11 +82,11 @@ func load_unit(newunit):
 	if unit.unit_class != null:
 		selected_class = unit.unit_class
 		classpicker.selected = classes.find(selected_class)
-	var lessons = unit.upgrades.lesson.duplicate()
+	var lessons = unit.upgrades.duplicate()
 	for key in unit.upgrading.lesson:
 		var lesson = unit.upgrading.lesson[key]
 		lessons.append(lesson)
-	var upgrades = unit.upgrades.augment.duplicate()
+	#var upgrades = unit.upgrades.duplicate()
 	for key in unit.upgrading.augment:
 		var lesson = unit.upgrading.augment[key]
 		lessons.append(lesson)
@@ -93,7 +95,7 @@ func load_unit(newunit):
 		var ability = unit.abilities[key]
 		abilities.append(ability)
 	await lessonlist.load_items(lessons, "lesson")
-	await upgradelist.load_items(upgrades, "augment")
+	#await upgradelist.load_items(upgrades, "augment")
 	abilitylist.load_items(abilities, "abilities", false)
 	namelabel.text = unit.object_name()
 	fuellist.load_bars(unit.stats.fuels)
@@ -141,3 +143,8 @@ func _on_attack_option_item_selected(index: int) -> void:
 func _on_secondary_attack_item_selected(index: int) -> void:
 	var item = attackpicker.get_item_text(index)
 	unit.attack_slots.secondary = item
+
+
+func _on_lesson_pick_pressed() -> void:
+	lessons.visible = true
+	lessons.load_unit(unit)

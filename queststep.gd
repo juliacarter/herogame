@@ -7,11 +7,16 @@ var complete = false
 var active = true
 
 var objectives = []
+#Fail step when these are met
+var fail_objective = []
 
 var rewards = []
 
+var quest
+
 func _init(newrules, newquest, newobj, newrew = []):
 	rules = newrules
+	quest = newquest
 	var objs = []
 	for reward in newrew:
 		rewards.append(reward)

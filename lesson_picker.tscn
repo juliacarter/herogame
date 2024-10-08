@@ -1,0 +1,33 @@
+[gd_scene load_steps=2 format=3 uid="uid://bh22nsw5l5cn7"]
+
+[ext_resource type="Script" path="res://lesson_picker.gd" id="1_nao42"]
+
+[node name="LessonPicker" type="Panel"]
+custom_minimum_size = Vector2(400, 400)
+offset_right = 400.0
+offset_bottom = 400.0
+script = ExtResource("1_nao42")
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 8.0
+offset_right = 385.0
+offset_bottom = 316.0
+columns = 3
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 362.0
+offset_right = 141.0
+offset_bottom = 385.0
+text = "Available Picks: 0"
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 301.0
+offset_top = 354.0
+offset_right = 351.0
+offset_bottom = 385.0
+text = "Close"

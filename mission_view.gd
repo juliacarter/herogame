@@ -94,3 +94,7 @@ func _on_start_mission_pressed():
 
 func _on_close_button_pressed():
 	visible = false
+
+
+func _on_button_pressed() -> void:
+	open_unitpicker()

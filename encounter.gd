@@ -27,6 +27,8 @@ var bravery = 100000
 var objectivetype = ""
 var objective
 
+var units_to_send = []
+
 var units = {}
 
 var units_by_team = {}

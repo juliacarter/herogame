@@ -46,6 +46,12 @@ var unitlists = {
 	
 }
 
+#Threats the faction has available to it when drawing one
+var threats = {}
+
+#Crisis the faction becomes
+var crisis
+
 var alignment = "hero"
 
 var type = "agency"

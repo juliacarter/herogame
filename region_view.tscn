@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://cikfdgjer5x4"]
+[gd_scene load_steps=4 format=3 uid="uid://cikfdgjer5x4"]
 
 [ext_resource type="Script" path="res://region_view.gd" id="1_g22md"]
 [ext_resource type="PackedScene" uid="uid://dowpunojv5shf" path="res://influence_list.tscn" id="2_coxiq"]
+[ext_resource type="PackedScene" uid="uid://b13op42pqpmk5" path="res://picker.tscn" id="3_r3hc2"]
 
 [node name="RegionView" type="Control"]
 custom_minimum_size = Vector2(500, 400)
@@ -28,9 +29,9 @@ layout_mode = 2
 [node name="Button" type="Button" parent="."]
 layout_mode = 0
 offset_left = 12.0
-offset_top = 340.0
+offset_top = 357.0
 offset_right = 133.0
-offset_bottom = 371.0
+offset_bottom = 388.0
 text = "Generate Base"
 
 [node name="Button2" type="Button" parent="."]
@@ -58,13 +59,27 @@ text = "Remove Influence"
 
 [node name="Button4" type="Button" parent="."]
 layout_mode = 0
-offset_left = 12.0
-offset_top = 300.0
-offset_right = 131.0
-offset_bottom = 331.0
+offset_left = 13.0
+offset_top = 317.0
+offset_right = 132.0
+offset_bottom = 348.0
 text = "Scheme Buyer"
+
+[node name="Button5" type="Button" parent="."]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 276.0
+offset_right = 111.0
+offset_bottom = 307.0
+text = "Send Units"
+
+[node name="Picker" parent="." instance=ExtResource("3_r3hc2")]
+visible = false
+layout_mode = 0
+anchors_preset = 0
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]
 [connection signal="pressed" from="Button3" to="." method="_on_button_3_pressed"]
 [connection signal="pressed" from="Button4" to="." method="_on_button_4_pressed"]
+[connection signal="pressed" from="Button5" to="." method="_on_button_5_pressed"]

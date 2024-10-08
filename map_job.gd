@@ -59,11 +59,16 @@ func complete():
 	await rules.callv(complete_func, complete_args)
 	landed_units = {}
 	time = speed
+	transport = Transport.new(rules)
+	transport.id = rules.assign_id(transport)
 	transport.needs_placement = false
 	await transport.set_target(rules.home)
 	for key in units:
 		var unit = units[key]
 		await transport.store_unit(unit)
+	rules.transports.merge({
+		transport.id: transport
+	})
 	transport.moving = true
 	rules.interface.maptabs.close_tab(self)
 
@@ -73,6 +78,7 @@ func land_units(new):
 		landed_units.merge({
 			key: unit
 		})
+	
 
 func add_squad(squad):
 	squads.append(squad)

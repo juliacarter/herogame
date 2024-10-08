@@ -61,6 +61,10 @@ columns = 3
 [node name="Picker" parent="." instance=ExtResource("3_sljbf")]
 visible = false
 layout_mode = 1
+offset_left = -233.0
+offset_top = -331.0
+offset_right = -14.0
+offset_bottom = 73.0
 
 [node name="MinionCount" type="Label" parent="."]
 layout_mode = 0
@@ -70,5 +74,14 @@ offset_right = 143.0
 offset_bottom = 274.0
 text = "0/5 Selected"
 
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 425.0
+offset_top = 544.0
+offset_right = 554.0
+offset_bottom = 575.0
+text = "choose minions"
+
 [connection signal="pressed" from="CloseButton" to="." method="_on_close_button_pressed"]
 [connection signal="pressed" from="StartMission" to="." method="_on_start_mission_pressed"]
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

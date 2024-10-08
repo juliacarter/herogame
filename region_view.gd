@@ -8,6 +8,8 @@ extends Control
 
 @onready var influence = get_node("VBoxContainer/InfluenceList")
 
+@onready var picker = get_node("Picker")
+
 var region
 
 #units "parked" in the region"
@@ -30,6 +32,12 @@ func load_region(new):
 	idlabel.text = region.id
 	influence.load_region(region)
 
+func open_unitpicker():
+	picker.load_options(self, "units", true)
+	picker.visible = true
+
+func pick_item(item, slot):
+	rules.send_units(item, region)
 
 func _on_button_pressed() -> void:
 	rules.make_base_in_region(region)
@@ -48,3 +56,7 @@ func _on_button_3_pressed() -> void:
 func _on_button_4_pressed() -> void:
 	var window = rules.interface.open_window("schemes")
 	window.current_tab.load_region(region)
+
+
+func _on_button_5_pressed() -> void:
+	open_unitpicker()

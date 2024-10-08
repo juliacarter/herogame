@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://chh2se4amv6uw"]
+
+[ext_resource type="Script" path="res://action_animation_projectile.gd" id="1_rupim"]
+[ext_resource type="Texture2D" uid="uid://dmks88nmnlfel" path="res://art/arrowhead.png" id="2_yx0cu"]
+
+[sub_resource type="Curve2D" id="Curve2D_sk0te"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 360, 0)
+}
+point_count = 2
+
+[node name="ActionAnimationProjectile" type="Path2D"]
+curve = SubResource("Curve2D_sk0te")
+script = ExtResource("1_rupim")
+
+[node name="PathFollow2D" type="PathFollow2D" parent="."]
+loop = false
+
+[node name="Sprite2D" type="Sprite2D" parent="PathFollow2D"]
+rotation = 1.5708
+texture = ExtResource("2_yx0cu")

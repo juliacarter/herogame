@@ -49,6 +49,7 @@ func get_log_text():
 func make_encounter():
 	if encounter == null:
 		var enc = Encounter.new(rules, encounterdata)
+		enc.quest = step.quest
 		var reward = QuestProgressReward.new(self)
 		enc.enemy_bases = [
 			rules.data.units.agent,

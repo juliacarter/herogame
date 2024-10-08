@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://b477yympdcq0s"]
+[gd_scene load_steps=23 format=3 uid="uid://b477yympdcq0s"]
 
 [ext_resource type="Script" path="res://script/unit/unit_script.gd" id="1_hf72p"]
 [ext_resource type="Texture2D" uid="uid://wup0q862rs6d" path="res://art/chesttoner.png" id="2_25b23"]
@@ -18,7 +18,7 @@ length = 0.001
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Sprites:position")
+tracks/0/path = NodePath("Appearance/Sprites:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -30,10 +30,34 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("Sprites:rotation")
+tracks/1/path = NodePath("Appearance/Sprites:rotation")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Appearance/Sprites/Weapon:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(7, 4)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Appearance/Sprites/Weapon:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
@@ -46,7 +70,7 @@ loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Sprites:rotation")
+tracks/0/path = NodePath("Appearance/Sprites:rotation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -64,7 +88,7 @@ step = 0.01
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Sprites:position")
+tracks/0/path = NodePath("Appearance/Sprites:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -74,10 +98,56 @@ tracks/0/keys = {
 "values": [Vector2(0, 0), Vector2(0, -4), Vector2(0, 0)]
 }
 
+[sub_resource type="Animation" id="Animation_yhaxt"]
+resource_name = "kickback"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Appearance/Sprites/Weapon:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(7, 4), Vector2(-1, 4), Vector2(7, 4)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Appearance/Sprites/Weapon:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [0.0, -0.785398, 0.0]
+}
+
+[sub_resource type="Animation" id="Animation_ak412"]
+resource_name = "punch"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Appearance/Sprites:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(8, 0), Vector2(0, 0)]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_gpc6a"]
 _data = {
 "RESET": SubResource("Animation_4gjec"),
+"kickback": SubResource("Animation_yhaxt"),
 "laydown": SubResource("Animation_hfhpt"),
+"punch": SubResource("Animation_ak412"),
 "walk": SubResource("Animation_rghej")
 }
 
@@ -105,6 +175,7 @@ radius = 300.0
 
 [node name="Unit" type="RigidBody2D" groups=["Persist"]]
 process_mode = 4
+z_index = 2
 collision_layer = 134218243
 collision_mask = 257
 physics_material_override = SubResource("PhysicsMaterial_qs3vq")
@@ -131,28 +202,30 @@ libraries = {
 "": SubResource("AnimationLibrary_gpc6a")
 }
 
-[node name="Sprites" type="Node2D" parent="."]
+[node name="Appearance" type="Node2D" parent="."]
+
+[node name="Sprites" type="Node2D" parent="Appearance"]
 texture_filter = 1
 
-[node name="Body" type="Node2D" parent="Sprites"]
+[node name="Body" type="Node2D" parent="Appearance/Sprites"]
 texture_filter = 1
 
-[node name="ChestToner" type="Sprite2D" parent="Sprites/Body"]
+[node name="ChestToner" type="Sprite2D" parent="Appearance/Sprites/Body"]
 texture = ExtResource("2_25b23")
 
-[node name="BodySprite" type="Sprite2D" parent="Sprites/Body"]
+[node name="BodySprite" type="Sprite2D" parent="Appearance/Sprites/Body"]
 texture_filter = 1
 texture = ExtResource("3_30dhi")
 
-[node name="Weapon" type="Node2D" parent="Sprites"]
+[node name="Weapon" type="Node2D" parent="Appearance/Sprites"]
 position = Vector2(7, 4)
 
-[node name="Head" type="Node2D" parent="Sprites"]
+[node name="Head" type="Node2D" parent="Appearance/Sprites"]
 
-[node name="SkinToner" type="Sprite2D" parent="Sprites/Head"]
+[node name="SkinToner" type="Sprite2D" parent="Appearance/Sprites/Head"]
 texture = ExtResource("4_vyery")
 
-[node name="HeadSprite" type="Sprite2D" parent="Sprites/Head"]
+[node name="HeadSprite" type="Sprite2D" parent="Appearance/Sprites/Head"]
 texture = ExtResource("5_6c7io")
 
 [node name="MeleeRadius" type="Area2D" parent="."]

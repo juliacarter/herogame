@@ -1,5 +1,10 @@
 extends Line2D
 
+var active = false
+
+#the animation, if any, performed by the beam
+var animation
+
 var caster
 var targetpos
 
@@ -16,10 +21,15 @@ func _process(delta):
 		
 func show_beam():
 	visible = true
+	active = true
 	lifespan = 1.0
+	
+func load_animation(anim):
+	pass
 	
 func hide_beam():
 	visible = false
+	active = false
 	lifespan = 0.0
 	
 func cast(newcast, newtarg):

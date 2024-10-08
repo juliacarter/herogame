@@ -217,6 +217,7 @@ func remove_trigger(oldtrigger):
 			triggers.erase(oldtrigger.time)
 
 func _init(gamedata, attackdata, count = 1):
+	super(gamedata, attackdata)
 	data = gamedata
 	rank = count
 	if attackdata.has("types"):
@@ -228,6 +229,7 @@ func _init(gamedata, attackdata, count = 1):
 		for time in attackdata.triggers:
 			for triggerdata in attackdata.triggers[time]:
 				add_trigger(time, triggerdata)
+	
 	if attackdata.has("range"):
 		range = attackdata.range * 64
 	else:
@@ -250,6 +252,8 @@ func _init(gamedata, attackdata, count = 1):
 	currentcount = attackcount
 	rangepenalty = attackdata.rangepenalty
 	calc_ranks()
+
+
 
 func add_count(count):
 	rank += count

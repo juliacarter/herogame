@@ -8,6 +8,8 @@ var faction
 
 var moving = true
 
+
+
 var movement_speed: float = 200
 
 var speeds = {
@@ -29,6 +31,10 @@ var movement_delta: float
 @onready var animplayer = get_node("AnimationPlayer")
 @onready var nav = get_node("NavigationAgent2D")
 @onready var body = get_node("RigidBody2D")
+
+@onready var sprites = get_node("Appearance/Sprites")
+
+@onready var appearanceholder = get_node("Appearance")
 
 @onready var hearing = get_node("HearingRadius")
 
@@ -88,6 +94,9 @@ var cultivation = {
 var experience = 0.0
 var needed_experience = 1000.0
 
+#Experience gained from defeating this unit
+var experience_reward = 100.0
+
 var master = false
 
 #The unit's opinion of each other unit
@@ -124,9 +133,9 @@ var spied_on = {}
 
 @onready var stealthind = get_node("StealthIndic")
 
-@onready var bodysprites = get_node("Sprites/Body")
-@onready var headsprites = get_node("Sprites/Head")
-@onready var weaponsprites = get_node("Sprites/Weapon")
+@onready var bodysprites = get_node("Appearance/Sprites/Body")
+@onready var headsprites = get_node("Appearance/Sprites/Head")
+@onready var weaponsprites = get_node("Appearance/Sprites/Weapon")
 
 var job_instances = {}
 
@@ -182,9 +191,9 @@ var unitshelf: UnitShelf = UnitShelf.new(self)
 @onready var vision = get_node("Vision")
 @onready var visioncone = get_node("VisionCone2D")
 
-@onready var unitsprite = get_node("Sprites/Body/BodySprite")
-@onready var skintoner = get_node("Sprites/Head/SkinToner")
-@onready var chesttoner = get_node("Sprites/Body/ChestToner")
+@onready var unitsprite = get_node("Appearance/Sprites/Body/BodySprite")
+@onready var skintoner = get_node("Appearance/Sprites/Head/SkinToner")
+@onready var chesttoner = get_node("Appearance/Sprites/Body/ChestToner")
 #@onready var legtoner = get_node("Sprites/Body/LegToner")
 
 var clothingsprites = {}
@@ -224,8 +233,8 @@ var quadtree
 
 var stored_in = null
 
-var evasion = 25
-var baseaccuracy = 100
+var evasion = 0
+var baseaccuracy = 75
 
 var squad: Squad
 var encounter: Encounter
@@ -328,9 +337,18 @@ var prot: Protection
 
 var defense = Defense.new()
 
+var status_resist = {
+	"burn": 25
+}
+
 var tools = []
 
 var map: Grid
+
+#whether the Unit is on a physical map or not
+#units not on a Map behave differently
+#have simplifies logic & transport rules
+var on_map = false
 
 var spawned = false
 var spawnframes = 3
@@ -424,12 +442,13 @@ var upgrading = {
 	"augment": {},
 	"traits": {},
 }
-var upgrades = {
-	"unlimited": [],
-	"lesson": [],
-	"augment": [],
-	"traits": []
+var upgrades = []
+
+var points = {
+	
 }
+
+var lesson_picks = 0
 
 #Lessons that are not associated with the unit's Class
 var extra_lessons = {}
@@ -837,6 +856,7 @@ func set_allegiance (side):
 	allegiance = side
 
 func spawn():
+	on_map = true
 	calc_scaling()
 	movement_path = null
 	if new:
@@ -845,6 +865,7 @@ func spawn():
 		new = false
 	#print("Spawned next to:")
 	#print(vision.get_overlapping_bodies())
+	
 	
 	if faction != null:
 		if faction.color != null:
@@ -865,7 +886,9 @@ func spawn():
 			see(body)
 			body.see(self)
 	map.store_unit(self)
-	
+	rules.world_units.merge({
+		id: self
+	})
 	can_interact.merge({
 		id: self
 	})
@@ -1072,7 +1095,13 @@ func try_actions(delta):
 								can = action.check_conditions(target)
 							if can:
 								change_stat("attention", action.attention_cost * -1)
+								if action.animation != "":
+									animplayer.play(action.animation)
+								for bubble in action.bubbles:
+									rules.make_soundbubble(bubble, position)
 								action.fire_at(target)
+
+
 
 func fight_target(target, delta):
 	var result = null
@@ -1094,7 +1123,7 @@ func fight_target(target, delta):
 		else:
 		#elif radius.contains(target.id):
 			if distance <= preferred_range:# && radius.contains(target.id):
-				if current_task == null:
+				if current_task == null && moving:
 					halt()
 			elif !target.dead && !currweapon.attacking && !holding:
 				if current_task == null:
@@ -1168,72 +1197,78 @@ func fight(delta):
 		if flee_target == null && current_target == null:
 			stop_combat()
 
+func total_evasion():
+	var bonus = mods.ret("evasion")
+	return bonus + evasion
+	
+
 func cast_sequence(time):
 	pass
 
-func attack(currweapon, target, delta, range):
-	if currweapon.attacking:
-		#moving = false
-		pass
-	else:
-		#moving = true
-		pass
-	var try = currweapon.try_attack(delta)
-	if(try == 0):
-		hide_from_everyone()
-		var atk = currweapon.attack(delta)
-		if atk == 2:
-			#gain_experience("combat", currweapon.experience)
-			var accuracy = baseaccuracy + currweapon.accuracy
-			for mod in currweapon.accmods:
-				accuracy += mods.ret(mod)
-			var critchance = 5
-			accuracy -= target.evasion
-			var extra = accuracy - 100
-			var bonus = extra % 10
-			extra -= bonus
-			critchance += extra/10
-			if accuracy < 10:
-				accuracy = 10
-			#elif accuracy > 90:
-				#accuracy = 90
-			pass
-			var hit = randi() % 100
-			if hit < accuracy:
-				map.cast_beam(position, target.position)
-				for damage in currweapon.damage:
-					currweapon.roll_damage(damage)
-				for mod in currweapon.dammods:
-					var percent = mods.ret(mod)
-					currweapon.percent_to_all(percent)
-				currweapon.last_shot_range = range
-				rules.trigger("damage_rolled", target, currweapon)
-				var damages = currweapon.get_all_damages()
-				for type in damages:
-					var damage = damages[type]
-					var total = 0.0
-					for stat in damage:
-						var amount = damage[stat]
-						total += amount
-						if target.defend(currweapon, type, stat):
-							#target.number_popup(total)
-							if verbose:
-								print(nickname + id + "COMBATRESULT: Victory!")
-							seen.erase(target.id)
-							combat = false
-							fighting = false
-							change_target(null)
-							scan_for_hostile()
-						if target != null:
-							pass
-							#target.number_popup(total)
-				rules.trigger("attack_hit", target, currweapon)
-					#if target.defend(damage):
-					#	
-			else:
-				print("Miss")
-		elif atk == 0:
-			currweapon.reset()
+#func attack(currweapon, target, delta, range):
+#	if currweapon.attacking:
+#		#moving = false
+#		pass
+#	else:
+#		#moving = true
+#		pass
+#	var try = currweapon.try_attack(delta)
+#	if(try == 0):
+#		hide_from_everyone()
+#		var atk = currweapon.attack(delta)
+#		if atk == 2:
+#			#gain_experience("combat", currweapon.experience)
+#			var accuracy = baseaccuracy + currweapon.accuracy
+#			for mod in currweapon.accmods:
+#				accuracy += mods.ret(mod)
+#			var critchance = 5
+#			accuracy -= target.total_evasion()
+#			var extra = accuracy - 100
+#			var bonus = extra % 10
+#			extra -= bonus
+#			critchance += extra/10
+#			if accuracy < 10:
+#				accuracy = 10
+#			#elif accuracy > 90:
+#				#accuracy = 90
+#			pass
+#			var hit = randi() % 100
+#			if hit < accuracy:
+#				for anim in currweapon.animations:
+#					map.visual_effect(anim, position, target.position)
+#				for damage in currweapon.damage:
+#					currweapon.roll_damage(damage)
+#				for mod in currweapon.dammods:
+#					var percent = mods.ret(mod)
+#					currweapon.percent_to_all(percent)
+#				currweapon.last_shot_range = range
+#				rules.trigger("damage_rolled", target, currweapon)
+#				var damages = currweapon.get_all_damages()
+#				for type in damages:
+#					var damage = damages[type]
+#					var total = 0.0
+#					for stat in damage:
+#						var amount = damage[stat]
+#						total += amount
+#						if target.defend(currweapon, type, stat):
+#							#target.number_popup(total)
+#							if verbose:
+#								print(nickname + id + "COMBATRESULT: Victory!")
+#							seen.erase(target.id)
+#							combat = false
+#							fighting = false
+#							change_target(null)
+#							scan_for_hostile()
+#						if target != null:
+#							pass
+#							#target.number_popup(total)
+#				rules.trigger("attack_hit", target, currweapon)
+#					#if target.defend(damage):
+#					#	
+#			else:
+#				print("Miss")
+#		elif atk == 0:
+#			currweapon.reset()
 			
 	#prog.value = weapon.countdown
 	
@@ -1244,7 +1279,7 @@ func fire_weapon(weapon, target):
 		for mod in weapon.accmods:
 			accuracy += mods.ret(mod)
 		var critchance = 5
-		accuracy -= target.evasion
+		accuracy -= target.total_evasion()
 		var extra = accuracy - 100
 		var bonus = extra % 10
 		extra -= bonus
@@ -1254,10 +1289,11 @@ func fire_weapon(weapon, target):
 		#elif accuracy > 90:
 			#accuracy = 90
 		pass
-		map.cast_beam(position, target.position)
 		var hit = randi() % 100
 		if hit < accuracy:
-			
+			for anim in weapon.visuals:
+				if anim.on_success:
+					map.visual_effect(anim.visual, position, target.position)
 			for damage in weapon.damage:
 				weapon.roll_damage(damage)
 			for mod in weapon.dammods:
@@ -1285,6 +1321,21 @@ func fire_weapon(weapon, target):
 						pass
 						#target.number_popup(total)
 			rules.trigger("attack_hit", target, weapon)
+		else:
+			var xdir = randi() % 2
+			var ydir = randi() % 2
+			if xdir == 0:
+				xdir -= 1
+			if ydir == 0:
+				ydir -= 1
+			var missx = 32 * ydir + ((randi() % 32) - 16)
+			var missy = 32 * xdir + ((randi() % 32) - 16)
+			var misspos = target.position + Vector2(missx, missy)
+			for anim in weapon.visuals:
+				if anim.on_fail:
+					map.visual_effect(anim.visual, position, misspos)
+			make_popup("Miss!")
+			rules.trigger("attack_miss", target, weapon)
 						#if target.defend(damage):
 	
 func defend(attack, type, stat):
@@ -1309,7 +1360,7 @@ func defend(attack, type, stat):
 		print(nickname + id + "COMBATRESULT: Attacked! Weapon damage: " + String.num(damage))
 	if(damage(stat, damage)):
 		if stat == "health":
-			if die():
+			if die(attack.parent):
 				return true
 	else:
 		return false
@@ -1746,10 +1797,10 @@ func need_satisfaction():
 func check_class():
 	if unit_origin != null:
 		for lesson in unit_origin.desired_lessons:
-			if !upgrading.lesson.has(lesson.title) && upgrades.lesson.find(lesson) == -1:
+			if !upgrading.lesson.has(lesson.title) && upgrades.find(lesson) == -1:
 				learn_base(lesson, false)
 	for lesson in unit_class.desired_lessons:
-		if !upgrading.lesson.has(lesson.title) && upgrades.lesson.find(lesson) == -1:
+		if !upgrading.lesson.has(lesson.title) && upgrades.find(lesson) == -1:
 			if upgrading.lesson.size() + used_auglimits[lesson.limit] < auglimits.lesson:
 				start_lesson(lesson)
 			else:
@@ -1826,7 +1877,7 @@ func go_learn(lesson):
 func start_all_lessons():
 	for lesson in unit_class.desired_lessons:
 		if !upgrading.lesson.has(lesson.name):
-			if upgrades.lesson.size() + upgrading.lesson.size() <= lessonmax:
+			if upgrades.size() + upgrading.lesson.size() <= lessonmax:
 				start_lesson(lesson)
 			else:
 				pass
@@ -1836,7 +1887,7 @@ func add_ability(base, count, initial_state = false):
 		var ability = abilities[base.key]
 		ability.count += count
 		ability.state = initial_state
-		if ability.state:
+		if ability.state || !ability.base.toggling:
 			for newbase in ability.base.effects:
 				var newcount = ability.base.effects[newbase] * count
 				apply_effect(newbase, newcount)
@@ -1853,7 +1904,7 @@ func add_ability(base, count, initial_state = false):
 		abilities.merge({
 			ability.base.key: ability
 		})
-		if ability.state:
+		if ability.state || !ability.base.toggling:
 			for newbase in ability.base.effects:
 				var newcount = ability.base.effects[newbase] * count
 				apply_effect(newbase, newcount)
@@ -2052,7 +2103,7 @@ func remove_effect(effectbase, count):
 			calc_effects()
 
 func start_lesson(base_lesson):
-	if upgrades[base_lesson.limit].find(base_lesson) == -1:
+	if upgrades.find(base_lesson) == -1:
 		var newlesson = Lesson.new(base_lesson, rules)
 		newlesson.calc_scaling(scaling)
 		newlesson.actor = self
@@ -2065,23 +2116,45 @@ func start_lesson(base_lesson):
 		#	newlesson.id: newlesson
 		#})
 	
-func learn_lesson(lesson):
-	make_popup("Lesson Learnt")
-	learn_base(lesson.base)
+func add_points(pointname, amount):
+	points.merge({
+		pointname: 0
+	})
+	points[pointname] += amount
+	
+func remove_points(pointname, amount):
+	if points.has(pointname):
+		points[pointname] -= amount
+	if points[pointname] <= 0:
+		points.erase(pointname)
+	
+func learn_lesson(lesson, ignore_picks = false):
+	var can = ignore_picks
+	if lesson_picks > 0:
+		lesson_picks -= 1
+		can = true
+	if can:
+		learn_base(lesson)
 	
 func learn_base(base, uses_limit = true):
 	if uses_limit:
 		used_auglimits[base.limit] += 1
-	upgrades[base.limit].append(base)
+	upgrades.append(base)
+	for key in base.points:
+		var amount = base.points[key]
+		add_points(key, amount)
 	for key in base.abilities:
 		add_ability(key, base.abilities[key])
 	upgrading[base.limit].erase(base.title)
 	
 func unlearn_lesson(lesson):
-	if upgrades[lesson.limit].find(lesson) != -1:
+	if upgrades.find(lesson) != -1:
 		for key in lesson.base.abilities:
 			remove_ability(key, lesson.base.abilities[key])
-		upgrades[lesson.limit].erase(lesson)
+		for key in lesson.points:
+			var amount = lesson.points[key]
+			remove_points(key, amount)
+		upgrades.erase(lesson)
 	
 func apply_buff(buffbase):
 	if !buffbase.stacking:
@@ -2490,6 +2563,16 @@ func leave_squad(squad):
 		squads.erase(squad.id)
 	squad.remove_unit(self)
 
+func face_target():
+	if current_target != null:
+		var relative_pos = current_target.position - position
+		if relative_pos.x < 0:
+			appearanceholder.scale.x = -1
+			#scale.y = -1
+	else:
+		appearanceholder.scale.x = 1
+		#scale.y = 1
+
 func _physics_process(delta):
 	#thread.start(think.bind(delta))
 	think(delta)
@@ -2506,6 +2589,7 @@ func think(delta):
 						spawnframes = spawnframes - 1
 				elif(!dead):
 					
+					face_target()
 					#if movement_path == null || movement_path.path == []:
 						#navigation_finished = true
 					
@@ -3129,6 +3213,7 @@ func leave():
 
 func die(killer = null):
 	drop_storage()
+	
 	if rules.selected.has(id):
 		rules.selected.erase(id)
 		rules.interface.update_selection()
@@ -3142,17 +3227,33 @@ func die(killer = null):
 		quadtree.remove(self)
 	if current_task != null:
 		drop_task()
+	if killer != null:
+		killer.spread_experience_around(experience_reward, killer.allegiance)
 	set_process(false)
 	if verbose:
 		print(nickname + id + "COMBATRESULT: Unit killed")
 	visible = false
 	#if(decay <= 0):
 	map.remove_unit(self)
+	rules.world_units.erase(id)
 	if(rules.selected != null):
 		if(rules.selected.has(id)):
 			rules.selected.erase(id)
 		#queue_free()
 	return true
+
+func spread_experience_around(amount, allegiance):
+	var learners = []
+	for key in in_sight:
+		var unit = in_sight[key]
+		if unit.allegiance == allegiance:
+			learners.append(unit)
+	var split = learners.size()
+	split += 1
+	var learn_amount = amount / split
+	gain_experience("", learn_amount)
+	for unit in learners:
+		unit.gain_experience("", learn_amount)
 
 func has_los(point):
 	tspotter.target_position = point - position
@@ -3162,10 +3263,13 @@ func has_los(point):
 	return !tspotter.is_colliding()
 
 func queue_transit(newmap, transport):
-	var furn = map.active_port
-	var task = TransportTask.new(furn, transport)
-	drop_queue()
-	update_task(task)
+	if on_map:
+		var furn = map.active_port
+		var task = TransportTask.new(furn, transport)
+		drop_queue()
+		update_task(task)
+	else:
+		transport.store_unit(self)
 	#queue.push_back(task)
 
 func drop_queue():
@@ -3539,6 +3643,7 @@ func stat_level_up(stat):
 	
 func level_up():
 	cultivation.lesson += 1
+	lesson_picks += 1
 	calc_upgradelimits()
 	calc_scaling()
 	var leftover = 0

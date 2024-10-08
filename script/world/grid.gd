@@ -46,6 +46,12 @@ var waypointscene = preload("res://waypoint.tscn")
 
 var tilepreviewscene = preload("res://tile_previewer.tscn")
 
+var visualscenes = {
+	"ActionAnimationBeam": preload("res://attack_beam.tscn"),
+	"ActionAnimationProjectile": preload("res://action_animation_projectile.tscn"),
+	"VisualEffectSprite": preload("res://visual_effect_sprite.tscn")
+}
+
 var unittree: QuadTree
 var furntree: QuadTree
 var itemtree: QuadTree
@@ -333,12 +339,14 @@ func _ready():
 	#rules.open_map(id)
 	
 
-
-func cast_beam(caster, target):
-	var beam = beamscene.instantiate()
-	add_child(beam)
-	await beam.cast(caster, target)
-	remove_child(beam)
+func visual_effect(effect, caster = null, target = null):
+	if effect.type != "SELF" && effect.type != "TARGET":
+		var scene = effect.type
+		var beam = visualscenes[scene].instantiate()
+		add_child(beam)
+		beam.load_animation(effect)
+		beam.cast(caster, target)
+		#remove_child(beam)
 
 func set_queue(queue):
 	global_queue = queue

@@ -10,7 +10,7 @@ var time = 0
 #Influence cost to execute the scheme
 var cost = 1
 
-var quest = ""
+var quest
 
 var name
 

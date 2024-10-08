@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://btam7syalfr2m"]
+[gd_scene load_steps=9 format=3 uid="uid://btam7syalfr2m"]
 
 [ext_resource type="Script" path="res://unit_screen.gd" id="1_wmvqf"]
 [ext_resource type="PackedScene" uid="uid://b13op42pqpmk5" path="res://picker.tscn" id="2_5t644"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://deyqsf45d3wim" path="res://stat_list.tscn" id="6_c7fp0"]
 [ext_resource type="PackedScene" uid="uid://dkqn4ggkqnmyg" path="res://minimizable_list.tscn" id="7_7itys"]
 [ext_resource type="PackedScene" uid="uid://bbvij8ic2388a" path="res://anything_list.tscn" id="7_w3dqq"]
+[ext_resource type="PackedScene" uid="uid://bh22nsw5l5cn7" path="res://lesson_picker.tscn" id="8_8bsr4"]
 
 [node name="UnitScreen" type="Panel"]
 custom_minimum_size = Vector2(1200, 700)
@@ -183,6 +184,30 @@ offset_top = 195.0
 offset_right = 722.0
 offset_bottom = 215.0
 
+[node name="LessonPick" type="Button" parent="."]
+layout_mode = 0
+offset_left = 522.0
+offset_top = 63.0
+offset_right = 658.0
+offset_bottom = 94.0
+text = "Choose Levelup"
+
+[node name="LessonsAvailable" type="Label" parent="."]
+layout_mode = 0
+offset_left = 364.0
+offset_top = 68.0
+offset_right = 495.0
+offset_bottom = 91.0
+text = "Levelup Points: 0"
+
+[node name="UpgradePicker" parent="." instance=ExtResource("8_8bsr4")]
+visible = false
+layout_mode = 0
+offset_left = 407.0
+offset_top = 175.0
+offset_right = 807.0
+offset_bottom = 575.0
+
 [connection signal="pressed" from="Commit" to="." method="_on_commit_pressed"]
 [connection signal="item_selected" from="ClassOptions" to="." method="_on_class_options_item_selected"]
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
@@ -190,3 +215,4 @@ offset_bottom = 215.0
 [connection signal="pressed" from="InnerCircleButton" to="." method="_on_inner_circle_button_pressed"]
 [connection signal="item_selected" from="AttackOption" to="." method="_on_attack_option_item_selected"]
 [connection signal="item_selected" from="SecondaryAttack" to="." method="_on_secondary_attack_item_selected"]
+[connection signal="pressed" from="LessonPick" to="." method="_on_lesson_pick_pressed"]

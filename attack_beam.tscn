@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://AttackBeam.gd" id="1_qv4c8"]
 
-[node name="AttackBeam" type="Line2D"]
+[node name="ActionAnimationBeam" type="Line2D"]
 visible = false
 points = PackedVector2Array(0, 0, 0, 0)
 width = 2.0

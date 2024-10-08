@@ -12,6 +12,8 @@ var aoescene = load("res://cursor_aoe.tscn")
 
 var numscene = load("res://damage_number.tscn")
 
+var popupscene = load("res://float_popup.tscn")
+
 var world
 
 var mainmenu
@@ -93,6 +95,9 @@ var active_missions = {}
 var worksites = {}
 
 var workorders = []
+
+#Every unit in the game
+var world_units = {}
 
 var unit_id = int(0)
 
@@ -194,11 +199,18 @@ func select_power(new):
 	select(null)
 	interface.update_selection()
 
+func make_soundbubble(bubbledata, pos):
+	var popup = popupscene.instantiate()
+	popup.global_position = pos
+	world.add_child(popup)
+	popup.load_soundbubble(bubbledata, pos)
+
 func make_popup(str, pos, color = "damage"):
-	var newpop = numscene.instantiate()
-	newpop.global_position = pos
-	world.add_child(newpop)
-	newpop.activate(str, colors[color])
+	var popup = popupscene.instantiate()
+	popup.global_position = pos
+	var newcolor = colors[color]
+	world.add_child(popup)
+	popup.load_floattext(str, pos, newcolor)
 
 func start_quest(questname):
 	var questdata = data.quests_to_load[questname]
@@ -210,7 +222,7 @@ func start_quest(questname):
 	
 func initial_quests():
 	#for key in data.quests_to_load:
-	start_quest("sendstuff")
+	start_quest("timedquest")
 	interface.questlist.load_quests()
 
 func instantiate_class(name_of_class:String, args) -> Object:
@@ -220,6 +232,23 @@ func instantiate_class(name_of_class:String, args) -> Object:
 			return script.new(args)
 	return null
 
+func roll_threat():
+	var potential = []
+	for key in data.missions:
+		var mission = data.missions[key]
+		potential.append(mission)
+	var i = randi() % potential.size()
+	var mission = potential[i]
+	start_plot(mission)
+	
+func start_plot(new):
+	start_quest(new.quest)
+
+func fail_quest(quest):
+	var i = quests.find(quest)
+	if i != -1:
+		quests.pop_at(i)
+	interface.questlist.load_quests()
 
 func complete_quest(quest):
 	var i = quests.find(quest)
@@ -607,6 +636,16 @@ func get_classes():
 func fire_ability(instance):
 	instance.base.fire(instance)
 
+func send_units(units, destination):
+	for unit in units:
+		var transport = Transport.new(self)
+		transport.queue_transit({unit.id: unit}, destination)
+		transport.id = assign_id(transport)
+		transports.merge({
+			transport.id: transport
+		})
+		#unit.queue_transit(destination)
+
 func _physics_process(delta):
 	if cursor_aoe != null:
 		cursor_aoe.global_position = get_global_mouse_position()
@@ -630,6 +669,7 @@ func _physics_process(delta):
 		if done:
 			sell_orders.pop_at(i)
 	for quest in quests:
+		quest.think(delta)
 		quest.check_quest()
 	for key in waves:
 		var wave = waves[key]
@@ -712,7 +752,8 @@ func scan_units():
 
 func calculate_day():
 	daytimer = 10
-	calculate_wave()
+	roll_threat()
+	#calculate_wave()
 	
 func calculate_wave():
 	var wave = factions.coalition.select_wave()
@@ -1035,6 +1076,8 @@ func send_quest_item(base, count, objective):
 	
 func start_encounter(encounter):
 	encounter.id = assign_id(encounter)
+	#if encounter.quest != null:
+		#encounter.quest.started = true
 	available_missions.append(encounter)
 
 func selected_controllable():
@@ -1071,11 +1114,18 @@ func start_mission(mission):
 	var mission_map = await load_map("user://maps/" + mission.mapname + ".motemap")
 	mission_map.encounter = mission
 	mission.map = mission_map
+	if mission.quest != null:
+		mission.quest.started = true
 	mission.make_zones()
 	mission.spawn_units()
 	#mission.map.spawn_unit_blob(mission.enemy_bases)
+	var units = []
 	for squad in mission.squads:
-		mission.transport = squad.transport_order(mission_map)
+		for key in squad.units:
+			var unit = squad.units[key]
+			units.append(unit)
+	send_units(units, mission_map)
+		#mission.transport = squad.transport_order(mission_map)
 
 func start_map_job(mission):
 	active_missions.merge({
@@ -1086,8 +1136,12 @@ func start_map_job(mission):
 	})
 	if interface != null:
 		interface.maptabs.load_maps()
+	var units = []
 	for squad in mission.squads:
-		mission.transport = squad.transport_order(mission)
+		for key in squad.units:
+			var unit = squad.units[key]
+			units.append(unit)
+	send_units(units, mission)
 
 func start_placement(units, map, mission):
 	formation_units = units.duplicate()
@@ -1278,9 +1332,10 @@ func get_picker_options(slot):
 		return result
 	if slot == "units":
 		var result = []
-		for key in home.units:
-			var unit = home.units[key]
-			result.append(unit)
+		for key in world_units:
+			var unit = world_units[key]
+			if unit.allegiance == "player":
+				result.append(unit)
 		return result
 	if slot == "order":
 		return [

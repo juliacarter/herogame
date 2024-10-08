@@ -2,7 +2,7 @@ extends GridContainer
 class_name AnythingList
 
 
-var lessonscene = load("res://lesson_button.tscn")
+var lessonscene = load("res://upgrade_button.tscn")
 var abilityscene = load("res://ability_button.tscn")
 var unitscene = load("res://unit_selector.tscn")
 
@@ -46,15 +46,15 @@ func load_items(newlessons, newtype, insert = true):
 	elif type == "units":
 		buttonscene = unitscene
 	clear_items()
-	if insert:
-		inserter = true
-		var addbutton = buttonscene.instantiate()
-		addbutton.type = type
-		addbutton.panel = panel
-		await add_child(addbutton)
-		buttons.append(addbutton)
-	else:
-		inserter = false
+	#if insert:
+		#inserter = true
+		#var addbutton = buttonscene.instantiate()
+		#addbutton.type = type
+		#addbutton.panel = panel
+		#await add_child(addbutton)
+		#buttons.append(addbutton)
+	#else:
+		#inserter = false
 	for lesson in newlessons:
 		var button = buttonscene.instantiate()
 		button.type = type
