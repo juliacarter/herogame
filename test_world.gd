@@ -15,6 +15,10 @@ var global_queue: Multiqueue
 
 @onready var map = get_node("WorldMap")
 
+@onready var ghostholder = get_node("GhostHolder")
+
+@onready var mouserig
+
 var grid
 
 var units = {}
@@ -230,7 +234,8 @@ func update_select():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	pass
+	#ghostholder.position_ghost(get_global_mouse_position())
+	ghostholder.follow_mouse()
 
 func _on_navigate(pos):
 	pass # Replace with function body.

@@ -1,0 +1,42 @@
+[gd_scene load_steps=3 format=3 uid="uid://hbndg23w6x8a"]
+
+[ext_resource type="Script" path="res://SheetStat.gd" id="1_p5y4d"]
+[ext_resource type="PackedScene" uid="uid://dx2ec2whaesn" path="res://tooltip_area.tscn" id="2_3m5vu"]
+
+[node name="SheetStat" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_p5y4d")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "STRENGTH: 200"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Button" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+mouse_filter = 1
+text = "?"
+
+[node name="TooltipArea" parent="HBoxContainer/Button" instance=ExtResource("2_3m5vu")]
+layout_mode = 1
+
+[connection signal="mouse_entered" from="HBoxContainer/Button" to="." method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="HBoxContainer/Button" to="." method="_on_button_mouse_exited"]

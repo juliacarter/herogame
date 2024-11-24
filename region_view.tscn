@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://cikfdgjer5x4"]
+[gd_scene load_steps=5 format=3 uid="uid://cikfdgjer5x4"]
 
 [ext_resource type="Script" path="res://region_view.gd" id="1_g22md"]
 [ext_resource type="PackedScene" uid="uid://dowpunojv5shf" path="res://influence_list.tscn" id="2_coxiq"]
+[ext_resource type="PackedScene" uid="uid://cbu2mcsmycgon" path="res://region_unit_display.tscn" id="3_k4ivs"]
 [ext_resource type="PackedScene" uid="uid://b13op42pqpmk5" path="res://picker.tscn" id="3_r3hc2"]
 
 [node name="RegionView" type="Control"]
@@ -23,10 +24,17 @@ offset_bottom = 193.0
 layout_mode = 2
 text = "ID"
 
+[node name="ScanProg" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "ScanProg"
+
 [node name="InfluenceList" parent="VBoxContainer" instance=ExtResource("2_coxiq")]
 layout_mode = 2
 
-[node name="Button" type="Button" parent="."]
+[node name="RegionUnitDisplay" parent="VBoxContainer" instance=ExtResource("3_k4ivs")]
+layout_mode = 2
+
+[node name="GenerateSite" type="Button" parent="."]
 layout_mode = 0
 offset_left = 12.0
 offset_top = 357.0
@@ -34,7 +42,7 @@ offset_right = 133.0
 offset_bottom = 388.0
 text = "Generate Base"
 
-[node name="Button2" type="Button" parent="."]
+[node name="AddInf" type="Button" parent="."]
 layout_mode = 0
 offset_left = 144.0
 offset_top = 324.0
@@ -49,7 +57,7 @@ offset_top = 341.0
 offset_right = 476.0
 offset_bottom = 361.0
 
-[node name="Button3" type="Button" parent="."]
+[node name="RemoveInf" type="Button" parent="."]
 layout_mode = 0
 offset_left = 140.0
 offset_top = 359.0
@@ -57,7 +65,7 @@ offset_right = 295.0
 offset_bottom = 390.0
 text = "Remove Influence"
 
-[node name="Button4" type="Button" parent="."]
+[node name="SchemeBuy" type="Button" parent="."]
 layout_mode = 0
 offset_left = 13.0
 offset_top = 317.0
@@ -65,7 +73,7 @@ offset_right = 132.0
 offset_bottom = 348.0
 text = "Scheme Buyer"
 
-[node name="Button5" type="Button" parent="."]
+[node name="UnitSend" type="Button" parent="."]
 layout_mode = 0
 offset_left = 20.0
 offset_top = 276.0
@@ -75,11 +83,12 @@ text = "Send Units"
 
 [node name="Picker" parent="." instance=ExtResource("3_r3hc2")]
 visible = false
-layout_mode = 0
-anchors_preset = 0
+top_level = false
+z_index = 995
+layout_mode = 1
 
-[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
-[connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]
-[connection signal="pressed" from="Button3" to="." method="_on_button_3_pressed"]
-[connection signal="pressed" from="Button4" to="." method="_on_button_4_pressed"]
-[connection signal="pressed" from="Button5" to="." method="_on_button_5_pressed"]
+[connection signal="pressed" from="GenerateSite" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="AddInf" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="RemoveInf" to="." method="_on_button_3_pressed"]
+[connection signal="pressed" from="SchemeBuy" to="." method="_on_button_4_pressed"]
+[connection signal="pressed" from="UnitSend" to="." method="_on_button_5_pressed"]

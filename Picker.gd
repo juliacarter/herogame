@@ -3,6 +3,8 @@ extends Panel
 @onready var rules = get_node("/root/WorldVariables")
 @onready var grid = get_node("GridContainer")
 
+signal item_picked(item, slot)
+
 var buttonscene = load("res://picker_button.tscn")
 var checkscene = load("res://picker_check_button.tscn")
 
@@ -18,6 +20,7 @@ func _ready() -> void:
 	pass # Replace with function body.
 
 func pick_item(item):
+	item_picked.emit(item, picking_slot)
 	picking_for.pick_item(item, picking_slot)
 	visible = false
 	

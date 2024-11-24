@@ -23,6 +23,8 @@ var certs = {}
 var waiting = false
 
 
+
+
 func _init(newjob, loc):
 	jobdata = newjob
 	slots = jobdata.slots.duplicate()
@@ -63,7 +65,10 @@ func is_certified(unit, slot):
 	return result
 
 func make_job():
-	var job = Job.new(jobdata, location.map)
+	var job
+	if jobdata.jobclass != "":
+		var jobclass = rules.script_map[jobdata.jobclass]
+		job = jobclass.new(jobdata, location.map)
 	job.jobbase = self
 	#location.in_use = true
 	job.taskmaster = taskmaster

@@ -27,7 +27,7 @@ func load_items(newitems):
 	items = []
 	for item in newitems:
 		items.append(item)
-		item.modified.connect(calc_size)
+		#item.modified.connect(calc_size)
 		if parent != null:
 			item.parent = parent
 	open()
@@ -38,7 +38,7 @@ func open():
 	for item in items:
 		content.add_child(item)
 	calc_size()
-	content.queue_sort()
+	#content.queue_sort()
 	
 func close():
 	opened = false
@@ -46,7 +46,7 @@ func close():
 	for item in items:
 		content.remove_child(item)
 	calc_size()
-	content.queue_sort()
+	#content.queue_sort()
 
 func load_text(newtext):
 	label.text = newtext
@@ -56,7 +56,7 @@ func calc_size():
 	if opened:
 		for item in items:
 			newsize += Vector2(0, item.size.y)
-	set_custom_minimum_size(newsize)
+	#set_custom_minimum_size(newsize)
 	modified.emit()
 	
 func _on_open_close_pressed() -> void:

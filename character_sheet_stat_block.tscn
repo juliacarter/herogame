@@ -1,0 +1,84 @@
+[gd_scene load_steps=5 format=3 uid="uid://c3mjlofaarp7l"]
+
+[ext_resource type="Script" path="res://CharacterSheetStatBlock.gd" id="1_os7hm"]
+[ext_resource type="PackedScene" uid="uid://hbndg23w6x8a" path="res://sheet_stat.tscn" id="2_ewm10"]
+[ext_resource type="PackedScene" uid="uid://bhp206jav1nqd" path="res://inner_window.tscn" id="2_q4mdb"]
+[ext_resource type="PackedScene" uid="uid://ch8832wi2x1m5" path="res://scene/unit/stat_bar.tscn" id="2_w6ldy"]
+
+[node name="CharacterSheetStatBlock" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_os7hm")
+
+[node name="InnerWindow" parent="." instance=ExtResource("2_q4mdb")]
+layout_mode = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = -3.0
+offset_bottom = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FocusBar" parent="ScrollContainer/HBoxContainer/VBoxContainer" instance=ExtResource("2_w6ldy")]
+layout_mode = 2
+
+[node name="MoraleBar" parent="ScrollContainer/HBoxContainer/VBoxContainer" instance=ExtResource("2_w6ldy")]
+layout_mode = 2
+
+[node name="HealthBar" parent="ScrollContainer/HBoxContainer/VBoxContainer" instance=ExtResource("2_w6ldy")]
+layout_mode = 2
+
+[node name="VBoxContainer2" type="GridContainer" parent="ScrollContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+columns = 2
+
+[node name="SheetStat" parent="ScrollContainer/HBoxContainer/VBoxContainer2" instance=ExtResource("2_ewm10")]
+layout_mode = 2
+
+[node name="SheetStat2" parent="ScrollContainer/HBoxContainer/VBoxContainer2" instance=ExtResource("2_ewm10")]
+layout_mode = 2
+
+[node name="SheetStat3" parent="ScrollContainer/HBoxContainer/VBoxContainer2" instance=ExtResource("2_ewm10")]
+layout_mode = 2
+
+[node name="SheetStat4" parent="ScrollContainer/HBoxContainer/VBoxContainer2" instance=ExtResource("2_ewm10")]
+layout_mode = 2
+
+[node name="SheetStat5" parent="ScrollContainer/HBoxContainer/VBoxContainer2" instance=ExtResource("2_ewm10")]
+layout_mode = 2
+
+[node name="SheetStat6" parent="ScrollContainer/HBoxContainer/VBoxContainer2" instance=ExtResource("2_ewm10")]
+layout_mode = 2
+
+[node name="ReferenceRect" type="ReferenceRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+border_color = Color(0.133333, 0.611765, 0.572549, 1)

@@ -96,7 +96,7 @@ func generate_unit(value = -1, wants_equipment = true, wants_upgrades = true):
 			done = true
 	if total > value && value != -1:
 		return null
-	unit.id = rules.uuid(unit)
+	unit.id = rules.assign_id(unit)
 	return {
 		"unit": unit,
 		"cost": total

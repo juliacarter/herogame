@@ -3,11 +3,11 @@ extends Action
 #Action that deals a randomly rolled amount of damage to the unit's target
 class_name Attack
 
+
+
 var data
 
 var id
-
-var range = 0.1
 var variance
 var mindamage
 var accuracy
@@ -25,8 +25,6 @@ var rangepenalty
 
 var melee
 
-var attention_cost = 1
-
 var experience = 10
 
 var damage = {}
@@ -39,8 +37,14 @@ var accuracy_per_rank = 5
 var damage_rank_bonuses = {}
 var accuracy_rank_bonus = 0
 
-var time = 0.0
 var attackdown = 0.0
+
+var shots = 1
+#the time between each individual shot. if total time is less than cast time, attack will clip
+var time_per_shot = 0
+
+#attacks already shot
+var shots_in_sequence = 0
 
 var slot = ""
 
@@ -71,20 +75,126 @@ var triggers = {
 
 var bonus_ap = 0
 
-var parent
+var bonus_accuracy = 0
+
 var rules
 
 var last_shot_range
 
-func cooldown(delta):
-	if time > 0:
-		time -= delta
-	if time < 0:
-		time = 0
+func cast(delta, target, pos = null):
+	var finished = shots_in_sequence >= shots
+	if attackdown <= 0 && !finished:
+		fire_at(target, pos)
+		shots_in_sequence += 1
+		return true
+	return false
 
-func fire_at(target):
-	parent.fire_weapon(self, target)
-	time = readytime
+func cool_down(delta):
+	super(delta)
+	attackdown -= delta
+
+func fire_at(target, pos = null):
+	fire_weapon(target, pos)
+	time = cooldown
+	attackdown = time_per_shot
+
+func damage_bonuses():
+	var percents = get_damage_mods()
+	for percent in percents:
+		percent_to_all(percent)
+
+func get_damage_mods():
+	var percents = []
+	if unit != null:
+		for mod in dammods:
+			var percent = unit.mods.ret(mod)
+			percents.append(percent)
+			#percent_to_all(percent)
+	return percents
+	
+func get_acc_mods():
+	pass
+	
+func get_accuracy():
+	var acc = accuracy
+	if unit != null:
+		acc += unit.baseaccuracy
+		for mod in accmods:
+			accuracy += unit.mods.ret(mod)
+	acc += bonus_accuracy
+	bonus_accuracy = 0
+	return acc
+	
+func success_visuals(pos):
+	if unit != null:
+		for anim in visuals:
+			if anim.on_success:
+				unit.map.visual_effect(anim.visual, unit.position, pos)
+				
+func failure_visuals(pos):
+	if unit != null:
+		for anim in visuals:
+			if anim.on_fail:
+				unit.map.visual_effect(anim.visual, unit.position, pos)
+
+func fire_weapon(target, location = null):
+	if target != null:
+		last_shot_range = unit.global_position.distance_to(target.global_position)
+		
+		last_fire_position = location
+		#gain_experience("combat", weapon.experience)
+		target.trigger("attack_tried_against", self)
+		var chance = get_accuracy()
+		var critchance = 5
+		chance -= target.total_evasion()
+		var extra = chance - 100
+		var bonus = int(extra) % 10
+		extra -= bonus
+		critchance += extra/10
+		if chance < 10:
+			chance = 10
+		#elif accuracy > 90:
+			#accuracy = 90
+		pass
+		var hit = randi() % 100
+		if hit < chance:
+			success_visuals(target.position)
+			for damtype in damage:
+				roll_damage(damtype)
+			damage_bonuses()
+			
+			rules.trigger("damage_rolled", target, self)
+			var damages =get_all_damages()
+			for type in damages:
+				var damage = damages[type]
+				var total = 0.0
+				for stat in damage:
+					var amount = damage[stat]
+					total += amount
+					if target.defend(self, type, stat):
+						#target.number_popup(total)
+						if unit != null:
+							unit.untarget(target)
+						
+					if target != null:
+						pass
+						#target.number_popup(total)
+			rules.trigger("attack_hit", target, self)
+		else:
+			var xdir = randi() % 2
+			var ydir = randi() % 2
+			if xdir == 0:
+				xdir -= 1
+			if ydir == 0:
+				ydir -= 1
+			var missx = 32 * ydir + ((randi() % 32) - 16)
+			var missy = 32 * xdir + ((randi() % 32) - 16)
+			var misspos = target.position + Vector2(missx, missy)
+			failure_visuals(misspos)
+			if unit != null:
+				unit.make_popup("Miss!")
+			rules.trigger("attack_miss", target, self)
+						#if target.defend(damage):
 
 func damage_roll_sum():
 	var result = 0
@@ -93,7 +203,16 @@ func damage_roll_sum():
 			result += damagerolls[key][stat]
 	return result
 
-
+func make_power():
+	var power = ActionPower.new({
+		"name": key,
+		"on_cast": "fire_attack_at_target",
+		"cast_args": [],
+		"category": "unit",
+		"action": self
+	})
+	power.make_tool()
+	return power
 
 func roll_damage(type):
 	damagerolls = {}
@@ -183,19 +302,20 @@ func get_all_damages():
 	
 	
 func trigger(trigger_name, triggered_by):
-	if parent.triggers.has(trigger_name):
-		for triggerdata in parent.triggers[trigger_name]:
-			if triggerdata.check_conditions(self, triggered_by):
-				var action = triggerdata.action
-				var args = triggerdata.get_args(self, triggered_by)
-				rules.callv(action, args)
+	if unit != null:
+		if unit.triggers.has(trigger_name):
+			for triggerdata in unit.triggers[trigger_name]:
+				if triggerdata.check_conditions(self, triggered_by):
+					var action = triggerdata.action
+					var args = triggerdata.get_args(self, triggered_by)
+					rules.callv(action, args)
 	if triggers.has(trigger_name):
 		for triggerdata in triggers[trigger_name]:
 			if triggerdata.check_conditions(self, triggered_by):
 				var action = triggerdata.action
 				var triggered_for = self
 				if triggerdata.by_parent:
-					triggered_for = parent
+					triggered_for = unit
 				var args = triggerdata.get_args(triggered_for, triggered_by)
 				rules.callv(action, args)
 
@@ -216,10 +336,19 @@ func remove_trigger(oldtrigger):
 		if triggers[oldtrigger.time] == []:
 			triggers.erase(oldtrigger.time)
 
-func _init(gamedata, attackdata, count = 1):
-	super(gamedata, attackdata)
-	data = gamedata
+func _init(gamerules, attackdata, parent = null, count = 1):
+	rules = gamerules
+	data = rules.data
+	cast_time = 0
+	super(data, attackdata, parent)
+	#data = gamedata
 	rank = count
+	time = cast_time
+	autocast = true
+	if attackdata.has("shots"):
+		shots = attackdata.shots
+	if attackdata.has("time_per_shot"):
+		time_per_shot = attackdata.time_per_shot
 	if attackdata.has("types"):
 		for type in attackdata.types:
 			types.merge({
@@ -244,12 +373,12 @@ func _init(gamedata, attackdata, count = 1):
 		slot = attackdata.slot
 	#mindamage = data.mindamage
 	accuracy = attackdata.accuracy
-	aimtime = attackdata.aimtime
-	readytime = attackdata.readytime
-	time = readytime
-	firetime = attackdata.firetime
-	attackcount = attackdata.attackcount
-	currentcount = attackcount
+	#aimtime = attackdata.aimtime
+	#readytime = attackdata.readytime
+	time = cast_time
+	#firetime = attackdata.firetime
+	#attackcount = attackdata.attackcount
+	#currentcount = attackcount
 	rangepenalty = attackdata.rangepenalty
 	calc_ranks()
 

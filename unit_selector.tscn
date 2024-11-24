@@ -1,12 +1,33 @@
 [gd_scene load_steps=2 format=3 uid="uid://c05mfjdhdxik4"]
 
-[ext_resource type="Script" path="res://unit_list_button.gd" id="1_l0pc3"]
+[ext_resource type="PackedScene" uid="uid://clwihkhkn1031" path="res://sortable_list.tscn" id="1_1h2ok"]
 
-[node name="UnitListButton" type="Button"]
-custom_minimum_size = Vector2(64, 0)
-offset_right = 8.0
-offset_bottom = 8.0
-text = "ADD"
-script = ExtResource("1_l0pc3")
+[node name="UnitSelector" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[connection signal="gui_input" from="." to="." method="_on_gui_input"]
+[node name="SortableList" parent="." instance=ExtResource("1_1h2ok")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -35.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -8.0
+offset_top = -8.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "SELECT"

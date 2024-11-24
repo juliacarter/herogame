@@ -1,7 +1,7 @@
 extends BaseItem
 class_name BaseEquipment
 
-var slot
+var slot = ""
 
 var wearsprite
 

@@ -1,20 +1,28 @@
-[gd_scene load_steps=2 format=3 uid="uid://boa4dljmmsfab"]
+[gd_scene load_steps=3 format=3 uid="uid://clcldhpgqel2q"]
 
 [ext_resource type="Script" path="res://Tooltip.gd" id="1_h01ms"]
+[ext_resource type="PackedScene" uid="uid://hdchh6ar0rwp" path="res://tooltip_head.tscn" id="2_vla6c"]
 
-[node name="Tooltip" type="Panel"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="Tooltip" type="VBoxContainer"]
+top_level = true
+z_index = 3321
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -53.0
+offset_top = -16.0
+offset_right = 53.0
+offset_bottom = 16.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 0
+alignment = 1
 script = ExtResource("1_h01ms")
 
-[node name="Label" type="RichTextLabel" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "Tooltip Text"
+[node name="TooltipHead" parent="." instance=ExtResource("2_vla6c")]
+layout_mode = 2
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

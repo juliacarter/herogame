@@ -53,22 +53,27 @@ func store(stack):
 
 func split(base, count):
 	var result = null
-	if contents.has(base):
-		result = contents[base].split(count)
+	if contents.has(base.id):
+		result = contents[base.id].split(count)
 		result.location = location
 		location.map.place_stack(result)
-		if contents[base].count <= 0:
+		if contents[base.id].count <= 0:
 			if !(location is Unit):
 				pass
-			if contents[base].reserved_count > 0:
+			if contents[base.id].reserved_count > 0:
 				pass
 			if name == "storage":
 				pass
-			location.map.remove_stack(contents[base])
-			contents.erase(base)
+			#location.map.remove_stack(contents[base.id])
+			contents.erase(base.id)
 	else:
 		pass
 	return result
+	
+func peek(base):
+	if contents.has(base.id):
+		return contents[base.id].count
+	return 0
 	
 func has(base, count):
 	var result = 0

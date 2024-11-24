@@ -1,50 +1,41 @@
-[gd_scene load_steps=3 format=3 uid="uid://gfp5kw53bmsu"]
+[gd_scene load_steps=5 format=3 uid="uid://gfp5kw53bmsu"]
 
 [ext_resource type="Script" path="res://PowerPalette.gd" id="1_24no3"]
 [ext_resource type="PackedScene" uid="uid://bnhww1ufjtu20" path="res://scene/interface/tool_button.tscn" id="2_23eus"]
+[ext_resource type="PackedScene" uid="uid://bhp206jav1nqd" path="res://inner_window.tscn" id="4_ewiwk"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_aa6v2"]
 
 [node name="PowerPalette" type="Panel"]
+custom_minimum_size = Vector2(400, 200)
 offset_top = -94.0
-offset_right = 381.0
-offset_bottom = 138.0
+offset_right = 400.0
+offset_bottom = 106.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_aa6v2")
 script = ExtResource("1_24no3")
 
-[node name="GridContainer" type="GridContainer" parent="."]
-layout_mode = 0
-offset_right = 379.0
-offset_bottom = 227.0
-columns = 5
-
-[node name="BuildButton" type="Button" parent="."]
-layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_left = 228.0
-offset_top = -159.0
-offset_right = 284.0
-offset_bottom = -128.0
-grow_vertical = 2
-text = "BUILD"
-
-[node name="PowerButton" type="Button" parent="."]
-layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_left = 297.0
-offset_top = -158.0
-offset_right = 371.0
-offset_bottom = -127.0
-grow_vertical = 2
-text = "POWERS"
-
 [node name="DigFill" parent="." instance=ExtResource("2_23eus")]
-layout_mode = 0
-offset_left = 7.0
-offset_top = -49.0
-offset_right = 47.0
-offset_bottom = -9.0
+layout_mode = 1
+offset_top = -72.0
+offset_right = 64.0
+offset_bottom = -8.0
 
-[connection signal="pressed" from="BuildButton" to="." method="_on_build_button_pressed"]
-[connection signal="pressed" from="PowerButton" to="." method="_on_power_button_pressed"]
+[node name="Control" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="InnerWindow" parent="Control" instance=ExtResource("4_ewiwk")]
+layout_mode = 1
+
+[node name="GridContainer" type="GridContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+columns = 4

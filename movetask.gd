@@ -5,8 +5,8 @@ var square
 
 
 
-func _init(newsquare):
-	target = newsquare.position
+func _init(newsquare, newfinal):
+	target = newfinal
 	square = newsquare
 	type = "move"
 	during_combat = true

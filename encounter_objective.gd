@@ -1,6 +1,7 @@
 extends Objective
 class_name EncounterObjective
 
+var key = ""
 
 var encounter
 
@@ -9,9 +10,10 @@ var encounterdata
 var completions = 0
 var needed = 1
 
-func _init(args):
-	super(args)
+func _init(args, newquest = null):
+	super(args, newquest)
 	var encdata = rules.data.encounters[args.enc]
+	key = args.enc
 	encounterdata = encdata
 	
 	#Called every frame to see if the objective is complete
@@ -38,6 +40,7 @@ func objective_started():
 	
 func start_objective():
 	var enc = make_encounter()
+	rules.quest_complete.connect(encounter.quest_complete)
 	rules.start_encounter(enc)
 	
 func get_log_text():
@@ -49,6 +52,10 @@ func get_log_text():
 func make_encounter():
 	if encounter == null:
 		var enc = Encounter.new(rules, encounterdata)
+		enc.encounter_begin.connect(step.quest.encounter_started)
+		enc.return_map = rules.home
+		enc.key = key
+		enc.faction = step.quest.faction
 		enc.quest = step.quest
 		var reward = QuestProgressReward.new(self)
 		enc.enemy_bases = [
@@ -59,4 +66,5 @@ func make_encounter():
 		enc.rules = rules
 		enc.rewards.append(reward)
 		encounter = enc
+		rules.encounter_created.emit(self)
 	return encounter

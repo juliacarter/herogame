@@ -21,6 +21,9 @@ var key
 #Pooled items don't care about container location. They are added to and taken directly from the player's stockpiles. An example is Cash
 var pooled = false
 
+func object_name(l=""):
+	return key
+
 func name():
 	return itemname
 

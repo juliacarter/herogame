@@ -16,6 +16,9 @@ var count = -1
 
 var state = false
 
+func object_name(length = "full"):
+	return base.key
+
 func fire(target):
 	base.fire_at(self, target)
 

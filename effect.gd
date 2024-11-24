@@ -7,7 +7,9 @@ var base
 var unit
 var stacks
 
-
+#The parent that applies the effect
+#Use only when the affect is applied by another object
+var parent
 
 var trigger_instances = []
 

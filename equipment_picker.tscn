@@ -1,0 +1,62 @@
+[gd_scene load_steps=4 format=3 uid="uid://cyvl8xfvgq7hx"]
+
+[ext_resource type="PackedScene" uid="uid://dhpy1sbut4pkj" path="res://outer_window.tscn" id="1_k88e1"]
+[ext_resource type="Script" path="res://equipment_picker.gd" id="1_nlsom"]
+[ext_resource type="PackedScene" uid="uid://bhp206jav1nqd" path="res://inner_window.tscn" id="2_vwq55"]
+
+[node name="EquipmentPicker" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_nlsom")
+
+[node name="OuterWindow" parent="." instance=ExtResource("1_k88e1")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="InnerWindow" parent="OuterWindow" instance=ExtResource("2_vwq55")]
+layout_mode = 1
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -48.0
+
+[node name="GridContainer" type="GridContainer" parent="OuterWindow/InnerWindow"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Button" type="Button" parent="OuterWindow"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -72.0
+offset_top = -40.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "CLOSE"
+
+[connection signal="pressed" from="OuterWindow/Button" to="." method="_on_button_pressed"]

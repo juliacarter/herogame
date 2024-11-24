@@ -2,15 +2,47 @@
 class_name Unit
 extends RigidBody2D
 
+signal unit_spawned(unit)
+signal unit_died(unit)
+
+signal buff_added(buff)
+signal buff_removed(buff)
+signal buff_update(buff)
+
+signal action_used(action, target)
+
+signal attack_hit(attack, target)
+signal attack_miss(attack, target)
+
+signal hit_by(victim, attacker, attack)
+
+signal task_started(task, unit)
+signal task_complete(task, unit)
+
+var targetable = false
+
+var tooltip
+var tooltip_active = false
+
 var thread: Thread
 
 var faction
 
 var moving = true
 
+@onready var pushcast = get_node("PushCast")
 
+#Heroic units don't die, are instead put into "comatose" state when defeated
+#comatose heroes need to be healed with advanced medical technology, or spend time at a Hospital node
+#or Captured if defeated in an encounter
+var heroic = true
 
 var movement_speed: float = 200
+
+#flip this true after a unit has been pushed
+#being pushed prevents a unit from doing anything besides moving towards a destination
+#basically, prevent anything that would require a halt
+var forced_movement = false
 
 var speeds = {
 	"run": 200,
@@ -59,6 +91,9 @@ var level = 0
 
 var chat_timer = 5.0
 
+#unit's role in its current encounter
+var encounter_role = ""
+
 #The time between the unit's loyalty tests
 #Loyalty tests only happen when loyalty is low
 var loyalty_timer = 5.0
@@ -67,6 +102,8 @@ var slack_timer = 30.0
 
 
 var casting_timer = 0.0
+
+var casting_
 
 var slacking = false
 
@@ -200,12 +237,19 @@ var clothingsprites = {}
 
 @onready var tspotter = get_node("TerrainSpotter")
 
+
 @export var firstname = "Joe"
-@export var lastname = "Sample"
+@export var lastname = ""
 @export var nickname = "Bubba"
+var needs_name = true
+
 var skintone: Color
 var id: String
+
+#roles used for on-map jobs
 var roles = ["minion"]
+#roles used "off-map"
+var meta_roles = ["soldier"]
 
 var can_interact = {}
 
@@ -301,6 +345,20 @@ var wants_equipment = {
 	"weapon": false,
 	"head": false
 }
+var slot_limits = {
+	"armor": 1,
+	"weapon": 2,
+	"head": 1,
+}
+
+#amount of items currently in slots
+var slot_amount = {
+	"armor": 0,
+	"weapon": 0,
+	"head": 0,
+}
+
+var equipped = []
 
 var selectable = true
 
@@ -317,6 +375,19 @@ var weapon: Attack
 var fists: Attack
 
 var actions = {}
+
+var action_priority = ActionPriority.new()
+
+var queued_actions = []
+
+#spells toggled on
+var toggled_spells = {
+	
+}
+
+var cast_time = 0.0
+var casting_action
+var casting_target
 
 var attacks = {
 	
@@ -343,7 +414,7 @@ var status_resist = {
 
 var tools = []
 
-var map: Grid
+var map
 
 #whether the Unit is on a physical map or not
 #units not on a Map behave differently
@@ -390,6 +461,12 @@ var target_furniture
 var current_target
 var next_target
 
+#hints this unit uses while in combat
+var hints = {}
+
+#hints given to units that target this unit
+var target_hints = {}
+
 var preferred_range = 512 * 512
 var attack_range = 512 * 512
 
@@ -415,12 +492,32 @@ var statexp_needed = {
 	
 }
 
+#units will seek rest when the stat's damage is above this level
+#units always seet rest when stat damage is full
+var damage_thresholds = {
+	"attention": 10
+}
+#units go rest when idle and stat damage is above this level. ignore if higher than normal damage threshold
+var soft_damage_thresholds = {
+	"attention": 1
+}
+#go rest when value is below this level
+var value_thresholds = {
+	"health": 100
+}
+#go rest when value is below this level & unit is idle
+var soft_value_thresholds = {
+	"health": 199
+}
+
 var stats = {
 	"fuels": {},
 	"qualities": {},
 	"skills": {},
 }
 var all_stats = {}
+
+var ratings = {}
 
 var needs = {}
 
@@ -467,7 +564,27 @@ var modifiers = {}
 var mods = Modifiers.new()
 
 
+
 var datakey
+
+
+
+func increase_rating(ratingname, amount):
+	if ratings.has(ratingname):
+		ratings[ratingname].increase_rating(amount)
+	else:
+		var rating = Rating.new({})
+		rating.key = ratingname
+		rating.value = amount
+		ratings.merge({
+			ratingname: rating
+		})
+		
+func decrease_rating(ratingname, amount):
+	if ratings.has(ratingname):
+		ratings[ratingname].decrease_rating(amount)
+		if ratings[ratingname].value <= 0:
+			ratings.erase(ratingname)
 
 func get_accessible_furniture(potential = {}):
 	var tiles = get_accessible_tiles()
@@ -527,18 +644,50 @@ func try_talking_to(target):
 	var convo = Conversation.new(global_position)
 	var talktask = TalkTask.new(convo)
 	
+func order_square_cast(ability, target):
+	var task = GroundCastTask.new(ability, target)
+	drop_task()
+	update_task(task)
+
+func order_position_cast(ability, target):
+	pass
 
 func order_cast(ability, target):
 	var task = CastTask.new(ability, target)
 	drop_task()
 	update_task(task)
 
+func toggle_spell(spell, status):
+	if status:
+		toggle_spell_on(spell)
+	else:
+		toggle_spell_off(spell)
+	
+
+func toggle_spell_on(spell):
+	spell.toggle(true)
+	if !toggled_spells.has(spell):
+		toggled_spells.merge({
+				spell: true
+			})
+		for ability in spell.applied_abilities:
+			var count = spell.applied_abilities[ability]
+			add_ability_by_name(ability, count)
+	
+func toggle_spell_off(spell):
+	spell.toggle(false)
+	if toggled_spells.has(spell):
+		toggled_spells.erase(spell)
+		for ability in spell.applied_abilities:
+			var count = spell.applied_abilities[ability]
+			remove_ability_by_name(ability, count)
+
 #TRUE = aggression has just been toggled on
 func target_aggression(unit):
 	neutralized.erase(unit.id)
 	enemies.erase(unit.id)
 	hostiles.erase(unit.id)
-	targeted_by.erase(unit.id)
+	be_untargeted(unit)
 	if current_target != null && current_target.id != unit.id:
 		change_target(null)
 		scan_for_hostile()
@@ -557,9 +706,10 @@ func toggle_self_aggression(newval):
 func trigger(trigger_name, triggered_by):
 	if triggers.has(trigger_name):
 		for triggerdata in triggers[trigger_name]:
-			var action = triggerdata.action
-			var args = triggerdata.get_args(self, triggered_by)
-			rules.callv(action, args)
+			if triggerdata.check_conditions(self, triggered_by):
+				var action = triggerdata.action
+				var args = triggerdata.get_args(self, triggered_by)
+				rules.callv(action, args)
 
 func start_personal_job(jobname, with_resources = false, object = null):
 	var jobdata = data.jobs[jobname]
@@ -586,7 +736,7 @@ func start_personal_job(jobname, with_resources = false, object = null):
 	pass
 	
 func create(base, count, shelf = "storage", needs_store = false):
-	var item = Stack.new(base, count, map)
+	var item = Stack.new(rules, base, count, map)
 	if item.id == null:
 		item.id = rules.assign_id(item)
 	shelves.storage.store(item)
@@ -627,6 +777,10 @@ func _ready():
 	if unit_class == null:
 		change_class(data.defaultclass, true)
 	
+	#Performance.add_custom_monitor("UnitMovement", move)
+	#Performance.add_custom_monitor("UnitThink", think)
+	#Performance.add_custom_monitor("UnitFight", fight)
+	
 	wandertimer = randf_range(0, 5)
 	
 	# These values need to be adjusted for the actor's speed
@@ -634,18 +788,18 @@ func _ready():
 	shelves.storage.location = self
 	shelves.input.location = self
 	
-	var fists = Attack.new(data, data.weapons.fists)
+	var fists = Attack.new(rules, data.weapons.fists, self)
 	fists.key = "fist"
 	fists.id = rules.assign_id(fists)
 	fists.rules = rules
-	fists.parent = self
+	#fists.parent = self
 	attacks.merge({
 		"fist": fists
 	})
 	add_action(fists, 5)
 	make_attack_radius(fists, "fist")
 	if weapondata != {}:
-		var newattack = Attack.new(data, weapondata)
+		var newattack = Attack.new(rules, weapondata, self)
 		newattack.id = rules.assign_id(newattack)
 		newattack.rules = rules
 		newattack.parent = self
@@ -658,7 +812,7 @@ func _ready():
 		weapondata = data.weapons.fists
 	
 	if current_task != null:
-		set_movement_target(current_task.get_square(self))
+		set_movement_target(current_task.get_movement())
 	
 	if allegiance == "player":
 		add_clearance(3)
@@ -682,7 +836,7 @@ func _ready():
 	if(nickname == null):
 		nickname = "placeholder"
 	
-	calc_equipment()
+	#calc_equipment()
 	calc_effects()
 	
 	load_sprite()
@@ -746,7 +900,7 @@ func load_stats():
 func change_origin(neworigin):
 	unit_origin = neworigin
 	for lesson in unit_origin.desired_lessons:
-		learn_base(lesson)
+		learn_base(lesson, "origin")
 	
 func change_class(newclass, instant = false, spawngear = false):
 	unit_class = newclass
@@ -754,7 +908,7 @@ func change_class(newclass, instant = false, spawngear = false):
 	aggressive = newclass.aggro
 	if instant:
 		for lesson in unit_class.desired_lessons:
-			learn_base(lesson)
+			learn_base(lesson, "augment")
 	if spawngear:
 		for slot in newclass.equipment:
 			var options = newclass.equipment[slot]
@@ -788,8 +942,9 @@ func load_data(gamerules, gamedata, unitdata, new = true):
 		for slot in unitdata.equipment:
 			var base = unitdata.equipment[slot]
 			if base != null:
-				var item = Stack.new(base, 1, map)
-				equip(item, slot)
+				var item = Stack.new(rules, base, 1, map)
+				item.id = rules.assign_id(item)
+				equip(item)
 	for ability in unitdata.abilities:
 		var count = unitdata.abilities[ability]
 		add_ability(ability, count)
@@ -802,6 +957,11 @@ func load_data(gamerules, gamedata, unitdata, new = true):
 	if is_node_ready():
 		if allegiance == "player":
 			add_clearance(3)
+			
+	firstname = unitdata.firstname
+	nickname = unitdata.nickname
+	lastname = unitdata.lastname
+	needs_name = unitdata.needs_name
 			
 	load_stats()
 	for key in unitdata.stats:
@@ -851,21 +1011,41 @@ func load_sprite():
 	#unitsprite.texture = sprite_texture
 	pass
 
+func get_concealment():
+	return 0
 
 func set_allegiance (side):
 	allegiance = side
+
+func send_home():
+	leave_map()
+	var transport = Transport.new(rules)
+	transport.id = rules.assign_id(transport)
+	rules.transports.merge({
+		transport.id: transport
+	})
+	transport.needs_placement = false
+	await transport.set_target(rules.home)
+	await transport.store_unit(self)
+	transport.moving = true
+	
+func leave_map():
+	if map != null:
+		drop_task()
+		map.remove_unit(self)
 
 func spawn():
 	on_map = true
 	calc_scaling()
 	movement_path = null
+	targetable = true
 	if new:
-		generate_name()
+		if needs_name:
+			generate_name()
 		generate_skintone()
 		new = false
 	#print("Spawned next to:")
 	#print(vision.get_overlapping_bodies())
-	
 	
 	if faction != null:
 		if faction.color != null:
@@ -949,7 +1129,8 @@ func stop_combat():
 	if combat:
 		if !navigation_finished:
 			if current_task == null:
-				halt()
+				if !forced_movement:
+					halt()
 		idle = false
 		combat = false
 
@@ -1035,12 +1216,13 @@ func alert_friends(target, alerted = {}):
 
 func change_target(target):
 	if current_target != null:
-		current_target.targeted_by.erase(id)
+		current_target.be_untargeted(self)
+		halt()
 	current_target = target
 	if target != null:
-		current_target.targeted_by.merge({
-			id: self
-		})
+		current_target.be_targeted(self)
+	else:
+		halt()
 	alert_friends(target)
 
 #****
@@ -1055,53 +1237,57 @@ func break_order(target):
 func break_target(target):
 	target_furniture = target
 
-func get_weapon_against(target):
-	var punching = true
-	var attackname = "fist"
-	if attacks.has(attack_slots.main):
-		if attackshapes[attack_slots.main].contents.has(target.id):
-			punching = false
-			attackname = attack_slots.main
-	if attacks.has(attack_slots.secondary):
-		if attackshapes[attack_slots.secondary].contents.has(target.id):
-			punching = false
-			attackname = attack_slots.secondary
-	#elif attacks.has("natural"):
-		#attackname = "natural"
-	return attackname
-		
-
-func try_actions(delta):
-	for i in 100:
-		if actions.has(i):
-			for action in actions[i]:
-				action.cooldown(delta)
-				if action.time == 0:
-					if stats.fuels.attention.value >= action.attention_cost:
-						
-						var target
-						if action is Attack:
-							target = current_target
-						elif action is Spell:
-							target = action.find_target(self)
-							pass
-						if target != null:
-							var can = true
-							var distance = global_position.distance_squared_to(target.global_position)
-							var desired = action.range * action.range
-							if distance > desired:
-								can = false
-							if action is Spell:
-								can = action.check_conditions(target)
-							if can:
-								change_stat("attention", action.attention_cost * -1)
-								if action.animation != "":
-									animplayer.play(action.animation)
-								for bubble in action.bubbles:
-									rules.make_soundbubble(bubble, position)
-								action.fire_at(target)
 
 
+func fire_action_ground(action, target):
+	#if action.in_range(target):
+	var can = true
+	#if action is Spell:
+		#can = action.check_conditions(target)
+	if can:
+		spend_stat("attention", action.focus_cost * -1)
+		action_visuals(action, target)
+		action.fire_at(target)
+		if action.cast_time != 0:
+			begin_cast(action)
+		return true
+	#return false
+
+func fire_action(action, target):
+	if action.in_range(target.global_position):
+		var can = true
+		if action is Spell:
+			can = action.check_conditions(target)
+		if can:
+			spend_stat("attention", action.focus_cost * -1)
+			action_visuals(action, target.global_position)
+			action.fire_at(target, global_position)
+			if action.cast_time != 0:
+				begin_cast(action)
+			return true
+	return false
+
+func action_visuals(action, targetpos):
+	if action.animation != "":
+		animplayer.play(action.animation)
+	for bubble in action.bubbles:
+		rules.make_soundbubble(bubble, position)
+
+func begin_cast(action):
+	halt()
+	casting_action = action
+	casting_timer = action.cast_time
+	
+func finish_cast():
+	casting_action = null
+	casting_timer = 0.0
+	animplayer.play("RESET")
+	
+func cast_sequence(action, target, delta):
+	#action.cast(delta)
+	casting_timer -= delta
+	if casting_timer <= 0:
+		finish_cast()
 
 func fight_target(target, delta):
 	var result = null
@@ -1155,10 +1341,15 @@ func combat_round(delta):
 		scan_for_hostile()
 
 func fight(delta):
+	var start = Time.get_ticks_usec()
+	
 	enemies.erase(null)
 	hostiles.erase(null)
+	if current_target != null:
+		if !current_target.targetable:
+			change_target(null)
 	try_actions(delta)
-	if aggressive && aggression_active:
+	if aggressive && aggression_active && !forced_movement:
 		var has_hostiles = !hostiles.is_empty()
 		var has_enemies = !enemies.is_empty()
 		if has_hostiles || (has_enemies && warcriminal):
@@ -1170,8 +1361,8 @@ func fight(delta):
 			#fight_target(target_furniture, delta)
 		elif aggression_active:
 			stop_combat()
-	else:
-		if targeted_by != {} && aggression_active:
+	elif !forced_movement:
+		if targeted_by != {} && aggression_active :
 			combat_round(delta)
 		else:
 			var newcombat = !enemies.is_empty() || !hostiles.is_empty()
@@ -1196,14 +1387,27 @@ func fight(delta):
 				stop_combat()
 		if flee_target == null && current_target == null:
 			stop_combat()
+	var end = Time.get_ticks_usec()
+	var time = (end-start)/1000000.0
+	#print("time " + id + " spent in fight function: %s" % [time])
 
 func total_evasion():
 	var bonus = mods.ret("evasion")
 	return bonus + evasion
 	
+func sustain_actions(delta):
+	var result = 0
+	for spell in toggled_spells:
+		#var spell = toggled_spells[key]
+		var sustainval = spell.focus_cost * delta
+		result -= sustainval
+		
+		if stats.fuels.attention.value <= sustainval:
+			toggle_spell_off(spell)
+		else:
+			stats.fuels.attention.spend(sustainval*-1)
+	return result
 
-func cast_sequence(time):
-	pass
 
 #func attack(currweapon, target, delta, range):
 #	if currweapon.attacking:
@@ -1271,6 +1475,13 @@ func cast_sequence(time):
 #			currweapon.reset()
 			
 	#prog.value = weapon.countdown
+	
+func untarget(target):
+	#unsee(target)
+	combat = false
+	fighting = false
+	change_target(null)
+	scan_for_hostile()
 	
 func fire_weapon(weapon, target):
 	if target != null:
@@ -1360,7 +1571,7 @@ func defend(attack, type, stat):
 		print(nickname + id + "COMBATRESULT: Attacked! Weapon damage: " + String.num(damage))
 	if(damage(stat, damage)):
 		if stat == "health":
-			if die(attack.parent):
+			if die(attack.unit):
 				return true
 	else:
 		return false
@@ -1374,7 +1585,7 @@ func damage(fuel, amount):
 		if encounter != null:
 			encounter.bravery -= amount
 	if !dead:
-		stats.fuels[fuel].modify(amount * -1)
+		stats.fuels[fuel].spend(amount * -1)
 		if(stats.fuels[fuel].value <= 0):
 			return true
 		else:
@@ -1393,7 +1604,8 @@ func make_popup(str, color = "damage"):
 	rules.make_popup(str, pos, color)
 	
 func finish_combat():
-	halt()
+	if !forced_movement:
+		halt()
 	
 func heal_or_hurt(amount):
 	health = health + amount
@@ -1404,6 +1616,12 @@ func heal_or_hurt(amount):
 
 func in_range(enemy):
 	pass
+	
+func has_attack_order(enemy):
+	for task in movement:
+		if task.object == enemy:
+			return true
+	return false
 
 func be_alerted(enemy, alerted = {}):
 	var can = true
@@ -1413,6 +1631,8 @@ func be_alerted(enemy, alerted = {}):
 			var oldistance = global_position.distance_squared_to(current_target.global_position)
 			if newdistance > oldistance:
 				can = false
+	if has_attack_order(enemy):
+		can = false
 	if can:
 		attack_order(enemy, alerted)
 	else:
@@ -1433,8 +1653,8 @@ func attack_order(enemy, alerted = {}):
 	else:
 		change_target(enemy)
 
-func move_order(square, queued = true):
-	var order = MoveTask.new(square)
+func move_order(square, final, queued = true):
+	var order = MoveTask.new(square, final)
 	if queued:
 		queue.push_back(order)
 	else:
@@ -1486,6 +1706,30 @@ func relax(delta):
 	#If current_target != null, relax towards target
 	pass
 
+func push_away_from(pos, amount):
+	if !forced_movement:
+		var direction = pos.direction_to(global_position)
+		direction *= amount
+		#var newpos = direction + global_position
+		pushcast.target_position = direction
+		pushcast.force_raycast_update()
+		var targetpos: Vector2
+		if pushcast.is_colliding():
+			targetpos = pushcast.get_collision_point() - global_position
+		else:
+			targetpos = direction
+		push(targetpos, pos)
+	
+func push(amount, origin):
+	apply_impulse(amount, origin)
+	
+#works similar to set_movement_target, but applied forced movement
+#forced movement follows slightly different rules. unit cannot change move target or do anything until it stops
+func push_to(point):
+	forced_movement = true
+	apply_impulse(point * 5)
+	#set_movement_target(point)
+
 func move(delta):
 	pass
 	if moving && !nav.is_navigation_finished():
@@ -1522,10 +1766,13 @@ func move(delta):
 					#pass
 		else:
 			halt()
-			break_order(square.door.furniture)
+			if !forced_movement:
+				break_order(square.door.furniture)
 		pass
 	else:
 		pass
+	if nav.is_navigation_finished():
+		forced_movement = false
 		#nav.avoidance_priority = 1.0
 	#var current_agent_position: Vector2 = global_position
 	#var next_path_result = get_next_path_square()
@@ -1668,10 +1915,10 @@ func halt():
 		target_cell.final_pos.merge({
 			id: self
 		})
-	
+	forced_movement = false
 	animplayer.play("RESET")
 	#movement_path = null
-	set_movement_target(position)
+	set_movement_target(global_position)
 	moving = false
 	
 #****
@@ -1679,18 +1926,13 @@ func halt():
 #****
 	
 func change_stat(statname, amount):
-	if stats.fuels.has(statname):
-		var stat = stats.fuels[statname]
-		stat.modify(amount)
+		var stat = all_stats[statname]
+		stat.spend(amount)
 		#apply_stat(stat)
-	if stats.qualities.has(statname):
-		var stat = stats.qualities[statname]
-		stat.modify(amount)
-		#apply_stat(stat)
-	if stats.skills.has(statname):
-		var stat = stats.skills[statname]
-		stat.modify(amount)
-		#apply_stat(stat)
+		
+func spend_stat(statname, amount):
+	var stat = all_stats[statname]
+	stat.spend(amount)
 		
 func learn_skill(skill, amount):
 	change_stat(skill, amount)
@@ -1715,7 +1957,10 @@ func apply_drain(drains, delta, mods_used = {}):
 		var bonusamount = amount * totalmod
 		var total = (amount + bonusamount) * -1
 		change_stat(stat, total)
-		
+
+func apply_healing(stat, amount):
+	all_stats[stat].heal_damage(amount)
+
 func train_skill(delta, skillname, amount):
 	var total = delta * amount
 	if stats.skills.has(skillname):
@@ -1726,15 +1971,18 @@ func rest_and_recuperation(need):
 	var found = false
 	var furniture = await suitable_rest(need)
 	if furniture != null:
-		furniture.make_task_for_unit(self)
-		filling.merge({
-			need: stats.fuels[need]
-		})
-		#found = await furniture.primary_job.assign_actor(self, "interact")
-		if(current_task != null && !(current_task is GrabTask) && current_task.type != "restore"):
-			drop_task()
-		rnr = true
-		return true
+		var task = furniture.make_task_for_unit(self)
+		if task != null:
+			rnr = true
+			task.rnr = true
+			filling.merge({
+				need: stats.fuels[need]
+			})
+			#found = await furniture.primary_job.assign_actor(self, "interact")
+			if(current_task != null && !(current_task is GrabTask) && current_task.type != "restore"):
+				drop_task()
+			
+			return true
 			
 func think_about_fulfilment():
 	filling = []
@@ -1753,6 +2001,28 @@ func get_needs():
 			if(value < ref.target):
 				lowstats.merge({stat: need})
 	return lowstats
+	
+func check_damage():
+	for key in damage_thresholds:
+		var value = damage_thresholds[key]
+		if value <= stats.fuels[key].damage:
+			return key
+	for key in value_thresholds:
+		var value = value_thresholds[key]
+		if value >= stats.fuels[key].value:
+			return key
+	return ""
+			
+func check_soft_damage():
+	for key in soft_damage_thresholds:
+		var value = soft_damage_thresholds[key]
+		if value <= stats.fuels[key].damage:
+			return key
+	for key in soft_value_thresholds:
+		var value = soft_value_thresholds[key]
+		if value >= stats.fuels[key].value:
+			return key
+	return ""
 	
 func suitable_rest(need):
 	var weights = {}
@@ -1794,11 +2064,24 @@ func need_satisfaction():
 #Upgrade Functions
 #****
 
+func find_upgrade(base):
+	for i in upgrades.size():
+		var upgrade = upgrades[i]
+		if upgrade.base == base:
+			return i
+	return -1
+
+func check_origin():
+	if unit_origin != null:
+		for lesson in unit_origin.desired_lessons:
+			if !upgrading.lesson.has(lesson.title) && find_upgrade(lesson) == -1:
+				learn_base(lesson, "lesson")
+
 func check_class():
 	if unit_origin != null:
 		for lesson in unit_origin.desired_lessons:
-			if !upgrading.lesson.has(lesson.title) && upgrades.find(lesson) == -1:
-				learn_base(lesson, false)
+			if !upgrading.lesson.has(lesson.title) && find_upgrade(lesson) == -1:
+				learn_base(lesson, "lesson")
 	for lesson in unit_class.desired_lessons:
 		if !upgrading.lesson.has(lesson.title) && upgrades.find(lesson) == -1:
 			if upgrading.lesson.size() + used_auglimits[lesson.limit] < auglimits.lesson:
@@ -1831,9 +2114,11 @@ func check_class():
 							if options != {}:
 								var found = false
 								for base in options:
+									if has_base_equipped(base):
+										found = true
 									var weight = options[base]
 									if !found:
-										var item = find_and_equip(base, slot)
+										var item = find_and_equip(base)
 										if item != null:
 											#item.reserved_count += 1
 											found = true
@@ -1844,7 +2129,7 @@ func check_class():
 			if equipment.has(slot):
 				if !wants_equipment[slot]:
 					if equipment[slot] == null || equipment[slot].base != equip_overrides[slot]:
-						find_and_equip(base, slot)
+						find_and_equip(base)
 	
 #Lessons learned & known not in the class or overrides, capable of being replaced. Returns bases.
 func replaceable_lessons():
@@ -1881,6 +2166,17 @@ func start_all_lessons():
 				start_lesson(lesson)
 			else:
 				pass
+
+#region Abilities
+func add_ability_by_name(abname, count):
+	if data.abilities.has(abname):
+		var base = data.abilities[abname]
+		add_ability(base, count)
+		
+func remove_ability_by_name(abname, count):
+	if data.abilities.has(abname):
+		var base = data.abilities[abname]
+		remove_ability(base, count)
 
 func add_ability(base, count, initial_state = false):
 	if abilities.has(base.key):
@@ -1952,10 +2248,9 @@ func disable_ability(ability):
 	actions.pop_at(i)
 	for effect in ability.base.effects:
 		remove_effect(effect, ability.base.effects[effect])
-	
-	#for weapon in ability.base.attacks:
-		#remove_weapon(weapon)
+#endregion
 		
+#region Triggers
 func remove_trigger(oldtrigger):
 	if triggers.has(oldtrigger.time):
 		triggers[oldtrigger.time].pop_at(triggers[oldtrigger.time].find(oldtrigger))
@@ -1973,16 +2268,113 @@ func add_trigger(time, triggerdata):
 	})
 	triggers[time].append(newtrigger)
 	return newtrigger
+#endregion
 		
+#region Actions
 func add_action(action, priority):
 	actions.merge({
 		priority: []
 	})
+	action.unit = self
 	actions[priority].append(action)
+	action_priority.insert_action(action, priority)
 	calc_range()
 	
 func remove_action(action):
 	var i = actions.find(action)
+
+func add_weapon(weapon = "", slot = "", count = 1):
+	for num in count:
+		var attack = Attack.new(rules, data.weapons[weapon], self, count)
+		attack.key = weapon
+		#attack.unit = self
+		attack.rules = rules
+		attacks.merge({
+			weapon: attack
+		})
+		add_action(attack, 1)
+		make_attack_radius(attack, slot)
+		attack_priority.push_front(weapon)
+		if attack_slots.main == "":
+			attack_slots.main = weapon
+
+func add_spell(spellname = "", count = 1):
+	for num in count:
+		var spelldata = data.spells[spellname]
+		var spell
+		if !spelldata.has("type"):
+			spell = Spell.new(data, spelldata, self)
+		else:
+			var spelltype = rules.script_map[spelldata.type]
+			spell = spelltype.new(data, spelldata, self)
+		spell.key = spellname
+		spell.unit = self
+		spell.rules = rules
+		add_action(spell, 1)
+	
+func remove_weapon(weapon = "", count = 1):
+	for num in count:
+		for i in 100:
+			if attacks.has(i):
+				var choices = attacks[i]
+				for action in choices:
+					if action is Attack && action.key == weapon:
+						remove_action(action)
+						return
+func get_weapon_against(target):
+	var punching = true
+	var attackname = "fist"
+	if attacks.has(attack_slots.main):
+		if attackshapes[attack_slots.main].contents.has(target.id):
+			punching = false
+			attackname = attack_slots.main
+	if attacks.has(attack_slots.secondary):
+		if attackshapes[attack_slots.secondary].contents.has(target.id):
+			punching = false
+			attackname = attack_slots.secondary
+	#elif attacks.has("natural"):
+		#attackname = "natural"
+	return attackname
+		
+
+func try_actions(delta):
+	for i in 100:
+		if actions.has(i):
+			for action in actions[i]:
+				action.cool_down(delta)
+				
+	var waiting = false
+	
+	if casting_action == null && !forced_movement:
+		for i in range(queued_actions.size()-1,-1,-1):
+			var action = queued_actions[i]
+			var fired = try_action(action, delta, true)
+			if fired:
+				queued_actions.pop_at(i)
+			else:
+				waiting = true
+		if !waiting:
+			var prioritised_actions = action_priority.actions
+			for action in prioritised_actions:
+				#try_cast(action)
+				try_action(action, delta)
+	else:
+		cast_sequence(casting_action, casting_target, delta)
+
+func try_action(action, delta, queued = false):
+	if action.time == 0 && (action.autocast || queued):
+		if action.has_focus():
+			var target
+			if action is Attack:
+				target = current_target
+			elif action is Spell:
+				target = action.find_target(self)
+				pass
+			if target != null:
+				return fire_action(action, target)
+	return false
+
+#endregion
 	
 func calc_range():
 	var minval = 9999999999999
@@ -2021,38 +2413,7 @@ func remove_overtime(effect, count):
 		if overtime[effect] <= 0:
 			overtime.erase(effect)
 		
-func add_weapon(weapon = "", slot = "", count = 1):
-	for num in count:
-		var attack = Attack.new(data, data.weapons[weapon], count)
-		attack.key = weapon
-		attack.parent = self
-		attack.rules = rules
-		attacks.merge({
-			weapon: attack
-		})
-		add_action(attack, 1)
-		make_attack_radius(attack, slot)
-		attack_priority.push_front(weapon)
-		if attack_slots.main == "":
-			attack_slots.main = weapon
 
-func add_spell(spellname = "", count = 1):
-	for num in count:
-		var spell = Spell.new(data, data.spells[spellname])
-		spell.key = spellname
-		spell.parent = self
-		spell.rules = rules
-		add_action(spell, 1)
-	
-func remove_weapon(weapon = "", count = 1):
-	for num in count:
-		for i in 100:
-			if attacks.has(i):
-				var choices = attacks[i]
-				for action in choices:
-					if action is Attack && action.key == weapon:
-						remove_action(action)
-						return
 	
 func apply_effect(effectbase, count):
 	if !effectbase.type == "oneshot":
@@ -2071,7 +2432,7 @@ func apply_effect(effectbase, count):
 			var newcount = effect.stacks + count
 			effect.stacks = newcount
 		else:
-			effect = Effect.new(effectbase, self, count)
+			effect = Effect.new(self, effectbase, count)
 			effects.merge({
 				effectbase.effname: effect
 			})
@@ -2079,7 +2440,7 @@ func apply_effect(effectbase, count):
 				var newtriggers = effectbase.triggers[time].duplicate()
 				for triggerdata in newtriggers:
 					var newtrigger = add_trigger(time, triggerdata)
-					effect.trigger_instances.append(newtrigger)
+					#effect.trigger_instances.append(newtrigger)
 		calc_effects()
 	else:
 		pass
@@ -2098,8 +2459,9 @@ func remove_effect(effectbase, count):
 			calc_effects()
 		else:
 			effects.erase(effectbase.effname)
-			for instance in effect.trigger_instances:
-				remove_trigger(instance)
+			for key in effectbase.triggers:
+				var trigger = effectbase.triggers[key]
+				remove_trigger(trigger)
 			calc_effects()
 
 func start_lesson(base_lesson):
@@ -2134,15 +2496,14 @@ func learn_lesson(lesson, ignore_picks = false):
 		lesson_picks -= 1
 		can = true
 	if can:
-		learn_base(lesson)
+		learn_base(lesson, "lesson")
 	
-func learn_base(base, uses_limit = true):
-	if uses_limit:
-		used_auglimits[base.limit] += 1
-	upgrades.append(base)
-	for key in base.points:
-		var amount = base.points[key]
-		add_points(key, amount)
+func learn_base(base, source = "nosource"):
+	var upgrade = Upgrade.new(base, source)
+	upgrades.append(upgrade)
+	for key in base.ratings:
+		var value = base.ratings[key]
+		increase_rating(key, value)
 	for key in base.abilities:
 		add_ability(key, base.abilities[key])
 	upgrading[base.limit].erase(base.title)
@@ -2167,6 +2528,8 @@ func apply_buff(buffbase):
 		var count = buff.base.effects[effect]
 		apply_effect(effect, count)
 	buffs.append(buff)
+	buff_update.emit(buff)
+	buff_added.emit(buff)
 	calc_effects()
 	
 func expire_buff(buff):
@@ -2175,6 +2538,8 @@ func expire_buff(buff):
 		var count = buff.base.effects[effect]
 		remove_effect(effect, count)
 	buffs.pop_at(i)
+	buff_update.emit(buff)
+	buff_removed.emit(buff)
 	calc_effects()
 	
 func calc_effects():
@@ -2217,6 +2582,16 @@ func ability_palette():
 		var count = ability.count
 		pal.append(ability.base.make_power(ability))
 	return pal
+	
+func action_palette():
+	var pal = []
+	for i in 100:
+		if actions.has(i):
+			var options = actions[i]
+			for action in options:
+				#var count = action.count
+				pal.append(action.make_power())
+	return pal
 		
 #****
 #Task Functions
@@ -2247,28 +2622,87 @@ func calc_equipment():
 	#			pass
 				#tools.append(item.tool)
 	
-func equip_base(base, slot):
-	var item = Stack.new(base, 1, map)
-	item.rules = rules
-	item.id = rules.uuid(item)
-	equip(item, slot)
 	
-func equip(item, slot):
-	unequip(slot)
-	equipment[slot] = item
-	wants_equipment[slot] = false
-	for ability in item.base.equip_abilities:
-		add_ability(ability, 1)
-	calc_equipment()
-	if is_node_ready():
-		set_appearance(appearance)
+	
+func pickup_and_equip(item):
+	var stack = item.location.take_from(item.base, 1)
+	stack.location = self
+	if stack != null:
+		if equip(stack):
+			return true
+		else:
+			drop_item(stack)
+	return false
+	
+func equip_base(base, slot):
+	var item = Stack.new(rules, base, 1, map)
+	item.rules = rules
+	item.id = rules.assign_id(item)
+	equip(item)
+	
+func has_base_equipped(base):
+	for item in equipped:
+		if item.base == base:
+			return true
+	return false
+	
+func get_slot_limit(slot):
+	if slot_limits.has(slot):
+		return slot_limits[slot]
+	return 100000
+	
+func get_slot_amount(slot):
+	if slot_amount.has(slot):
+		return slot_amount[slot]
+	return 0
+	
+func get_slots_available(slot):
+	var has = get_slot_amount(slot)
+	var limit = get_slot_limit(slot)
+	return limit - has
+	
+func is_slot_full(slot):
+	var available = get_slots_available(slot)
+	if available > 0:
+		return false
+	else:
+		pass
+	return true
+	
+func equip(item):
+	if !is_slot_full(item.base.slot):
+		#unequip(slot)
+		#equipment[slot] = item
+		#wants_equipment[slot] = false
+		equipped.append(item)
+		if map != null:
+			map.remove_stack(item)
+		for ability in item.base.equip_abilities:
+			add_ability(ability, 1)
+		#calc_equipment()
+		if is_node_ready():
+			set_appearance(appearance)
+		return true
+	else:
+		pass
+	return false
 		
-func unequip(slot):
-	if equipment.has(slot):
-		var item = equipment[slot]
-		if item != null:
-			for ability in item.base.equip_abilities:
-				remove_ability(ability, 1)
+func unequip(item):
+	var i = equipped.find(item)	
+	if i != -1:
+		equipped.pop_at(i)
+		for ability in item.base.equip_abilities:
+			remove_ability(ability, 1)
+		return true
+	return false
+				
+func unequip_and_drop(item):
+	unequip(item)
+	drop_item(item)
+	
+func drop_item(item):
+	if item != null:
+		map.drop_object(item, current_square.x, current_square.y)
 	
 func pick_up(itemdata):
 	item.visible = true
@@ -2304,13 +2738,17 @@ func update_task(task):
 				#reserving = false
 			if current_interactzone != null:
 				current_interactzone.in_use = false
-			var square = task.get_square(self, reserving, current_task.jobslot)
+			#var square = task.get_square(self, reserving, current_task.jobslot)
+			var movetarget = task.get_movement()
 			current_task.start_job()
 			#set_movement_target(current_task.target)
-			if square != null:
-				set_movement_target(square.cells.center.global_position)
-			else:
-				pass
+			#if !task is MoveTask:
+				#if square != null:
+					#set_movement_target(square.cells.center.global_position)
+				#else:
+					#pass
+			#else:
+			set_movement_target(movetarget)
 		#if(current_task.job != null):
 			#current_task.job.actorslots[current_task.jobslot].append(self)
 	working = false
@@ -2327,6 +2765,10 @@ func end_task():
 	
 func delete_task(finished = false):
 	if current_task != null:
+		if current_task is GrabTask:
+			pass
+		if current_task.rnr:
+			rnr = false
 		if current_task.stoppable:
 			current_task.remove_actor(self)
 			if current_task.job != null:
@@ -2370,13 +2812,12 @@ func drop_storage():
 	for key in shelves:
 		var shelf = shelves[key]
 		for item in shelf.return_stacks():
-			drop_item(item.base, item.count, key)
+			drop_from_shelf(item.base, item.count, key)
 
 #Returns the dropped stack
-func drop_item(base, count, shelf):
+func drop_from_shelf(base, count, shelf):
 	var item = shelves[shelf].split(base, count)
-	if item != null:
-		map.drop_object(item, current_square.x, current_square.y)
+	drop_item(item)
 	
 func drop_task():
 	if current_task != null:
@@ -2384,7 +2825,7 @@ func drop_task():
 			if !current_task.personal && !current_task.for_request:
 				#if shelves.storage.contents != {}:
 				if current_task is GrabTask:
-					drop_item(current_task.base, current_task.count, "storage")
+					drop_from_shelf(current_task.base, current_task.count, "storage")
 				current_task.remove_actor(self)
 				if current_task.job != null:
 					current_task.job.foundactors -= 1
@@ -2401,7 +2842,7 @@ func drop_task():
 				var task = current_task
 				#if shelves.storage.contents != {}:
 				if current_task is GrabTask:
-					drop_item(current_task.base, current_task.count, "storage")
+					drop_from_shelf(current_task.base, current_task.count, "storage")
 				delete_task()
 				if task.for_request:
 					task.job.repush_request()
@@ -2424,34 +2865,43 @@ func check_for_task():
 #Inventory Functions
 #************
 
-func find_and_equip(base, slot):
+func find_and_equip(base):
 	var item = map.find_item_amount_for(base, 1, self)
 	if item == null:
 		return null
-	item.reserved_count += 1
+	order_equip(item)
+	return item
+	
+func order_equip(item):
+	#item.reserved_count += 1
 	if item.location.entity() == "UNIT":
 		return null
-	var equiptask = EquipTask.new("self", item.location.position, "equip", item.location, item, slot)
+	var equiptask = EquipTask.new("self", item.location.position, "equip", item.location, item)
 	equiptask.resource = {"item": item, "count": 1, "base": item.base}
 	equiptask.fetchtarget = item.location
-	wants_equipment[slot] = true
 	queue.append(equiptask)
-	return item
+	return equiptask
 	
 func find_and_store(base, shelf, count):
 	var item = await map.find_item_amount_for(base, count, self)
 	
 	if item == null:
 		return null
-	item.reserved_count += count
+	
+	order_take(item, shelf, count)
+	
+	return item
+	
+func order_take(item, shelf, count):
 	if item.location.entity() == "UNIT":
 		return null
+	#item.reserved_count += count
 	var taketask = TakeTask.new("self", item.location.position, "take", item.location, item, shelf)
 	taketask.count = count
 	taketask.resource = {"item": item, "count": count, "base": item.base}
 	taketask.fetchtarget = item.location
 	queue.append(taketask)
-	return item
+	return taketask
 
 func take(stack, shelf = "storage"):
 	if stack == null:
@@ -2499,7 +2949,7 @@ func begin_idle():
 			var zone = map.zones.idle.values()[0]
 			var wandertarget = zone.get_random_square()
 			if wandertarget != null:
-				var movetask = MoveTask.new(wandertarget)
+				var movetask = MoveTask.new(wandertarget, wandertarget.global_position)
 				movetask.fragile = true
 				movetask.speed = "walk"
 				movetask.personal = true
@@ -2514,7 +2964,7 @@ func begin_idle():
 			var rand = randi() % possible.size()
 			var key = possible.keys()[rand]
 			var square = possible[key]
-			var movetask = MoveTask.new(square)
+			var movetask = MoveTask.new(square, square.global_position)
 			movetask.fragile = true
 			movetask.speed = "walk"
 			movetask.personal = true
@@ -2569,6 +3019,8 @@ func face_target():
 		if relative_pos.x < 0:
 			appearanceholder.scale.x = -1
 			#scale.y = -1
+		else:
+			appearanceholder.scale.x = 1
 	else:
 		appearanceholder.scale.x = 1
 		#scale.y = 1
@@ -2580,7 +3032,23 @@ func _physics_process(delta):
 	
 func think(delta):
 	if is_node_ready():
+		var start = Time.get_ticks_usec()
 		if map.active:
+			if moving:
+				nav.avoidance_priority = 0.5
+				collision_priority = 0.5
+				sleeping = false
+			else:
+				nav.avoidance_priority = 1
+				collision_priority = 1
+				sleeping = true
+			if current_target != null:
+				if !current_target.targetable:
+					change_target(null)
+			if current_task is KillTask:
+				if !current_task.object.targetable:
+					halt()
+					update_task(null)
 			if !transporting:
 				if(!spawned):
 					if spawnframes == 0:
@@ -2656,59 +3124,22 @@ func think(delta):
 					if stats.fuels.health.value <= 0:
 						die()
 					
-					
-					
-					if(!needs.is_empty() && rnr == false && !combat && !slacking):
-						
-						map.taskmaster.idle_units.erase(id)
-						
-						tired = true
-						var mostneeded
-						for prio in statpriorities:
-							if needs.has(prio):
-								if !filling.has(prio):
-									if await rest_and_recuperation(prio):
-										
-										break
-					
-						
-					elif(filling != {} && !combat):
-						
-						if(current_task != null):
-							var done = true
-							
-							var finished = []
-							for key in filling:
-								var need = filling[key]
-								if need.value < need.filltarget:
-									done = false
-								else:
-									finished.append(key)
-							for key in finished:
-								filling.erase(key)
-							if done:
-								if current_task.job.action == "make_resource":
-									pass
-								if current_task.job.location is Furniture:
-									current_task.job.location.in_use = false
-								current_task.job.complete()
-								#finish_task()
-								rnr = false
-					elif filling == {} && !combat && rnr:
-						current_task.job.complete()
-						rnr = false
-					elif(needs.is_empty()):
-						tired = false
-					
-					
+					var damaged = check_damage()
+					if damaged != "" && !rnr && !combat && !slacking:
+						if await rest_and_recuperation(damaged):
+							pass
+					var soft_damaged = check_soft_damage()
+					if soft_damaged != "" && !rnr && !combat && !slacking && idle:
+						if await rest_and_recuperation(soft_damaged):
+							pass
 						
 					if !stored:
 						
+						
 						pass
 						await check_class()
-						await consider_squads()
+						#await consider_squads()
 						if queue == [] && current_task == null && !idle && !combat && !tired && !rnr:
-							#wander_sequence(delta)
 							start_idle()
 							
 						for key in job_instances:
@@ -2732,7 +3163,8 @@ func think(delta):
 								elif current_task.type == "destroy":
 									break_target(current_task.object)
 								elif current_task.type == "kill":
-									change_target(current_task.object)
+									if current_task.object.targetable:
+										change_target(current_task.object)
 									update_task(null)
 								elif current_task.type == "move" || current_task.type == "wander":
 									if nav.is_navigation_finished():
@@ -2793,10 +3225,9 @@ func think(delta):
 									else:
 										delete_task()
 								elif current_task.type == "equip":
-									var item = current_task.grab_item()
-									if take(item):
+									var item = current_task.item
+									if pickup_and_equip(item):
 										future_weight -= current_task.count
-										equip(item, current_task.slot)
 									current_task = null
 								elif current_task.type == "take":
 									if take(current_task.grab_item(), current_task.shelf):
@@ -2813,7 +3244,21 @@ func think(delta):
 									else:
 										pass
 								elif current_task.type == "cast":
-									current_task.ability.base.fire_at(current_task.ability, current_task.object)
+									var has_focus = current_task.action.has_focus()
+									#var in_range = current_task.action.in_range(current_task.get_movement())
+									if has_focus:
+										if current_task.object != null:
+											fire_action(current_task.action, current_task.object)
+										else:
+											fire_action_ground(current_task.action, current_task.target)
+									elif in_range:
+										if queued_actions == []:
+											queued_actions.append(current_task.action)
+									else:
+										print("Cast failed!")
+										#current_task.action.fire_at(current_task.object)
+									#elif queued_actions == []:
+										#queued_actions.append(current_task.action)
 									update_task(null)
 									halt()
 								elif current_task.type == "delivery":
@@ -2847,9 +3292,10 @@ func think(delta):
 									if current_interactzone != null:
 										current_interactzone.in_use = false
 									if  movement_path == null || movement_path.path == []:
-										var square = current_task.get_square(self, reserving, current_task.jobslot)
-										if square != null:
-											set_movement_target(square.global_position)
+										#var square = current_task.get_square(self, reserving, current_task.jobslot)
+										var movepos = current_task.get_movement()
+										if movepos != null:
+											set_movement_target(movepos)
 										else:
 											pass
 						
@@ -2880,11 +3326,11 @@ func think(delta):
 													start_exfil()
 												elif find_spy_target() == null:
 													start_exfil()
-								elif encounter.team_goals[allegiance] == "killall":# && encounter.finished():
+								elif encounter.team_goals[encounter_role] == "killall":# && encounter.finished():
 									var task = encounter.get_objective_task(self)
 									if task != null:
 										update_task(task)
-								elif encounter.team_goals[allegiance] == "defend":
+								elif encounter.team_goals[encounter_role] == "defend":
 									pass
 								else:
 									if current_task != null && current_task is DestroyTask && current_task.object.dead:
@@ -2957,6 +3403,9 @@ func think(delta):
 								#working = false
 								#prog.visible = false
 						move(delta)
+						var end = Time.get_ticks_usec()
+						var time = (end-start)/1000000.0
+						print("time to calc unit " + id + ": %s" % [time])
 					else:
 						if stored_in != null:
 							global_position = stored_in.global_position
@@ -3210,10 +3659,21 @@ func leave():
 		#queue_free()
 	return true
 
+func be_targeted(by):
+	targeted_by.merge({
+		by.id: by
+	})
+	
+func be_untargeted(by):
+	targeted_by.erase(by.id)
+	#by.untarget(self)
 
 func die(killer = null):
 	drop_storage()
-	
+	targetable = false
+	for key in targeted_by:
+		var unit = targeted_by[key]
+		be_untargeted(unit)
 	if rules.selected.has(id):
 		rules.selected.erase(id)
 		rules.interface.update_selection()
@@ -3561,7 +4021,7 @@ func load_task(taskdata):
 	elif taskdata.type == "move":
 		#Just make a new movetask pointing to the same square
 		var square = map.blocks[taskdata.targetsquare.x][taskdata.targetsquare.y]
-		var task = MoveTask.new(square)
+		var task = MoveTask.new(square, square.global_position)
 		return task
 	elif taskdata.type == "haul" || taskdata.type == "store":
 		#Make new task, then assign Stack and Object. If it's a haul, assign the Store task as well
@@ -3643,6 +4103,7 @@ func stat_level_up(stat):
 	
 func level_up():
 	cultivation.lesson += 1
+	level += 1
 	lesson_picks += 1
 	calc_upgradelimits()
 	calc_scaling()
@@ -3689,8 +4150,24 @@ func remove_order(order):
 	callv(result.effect, result.args)
 
 func object_name(length = "full"):
+	var result = ""
 	if length == "full":
-		return firstname + " \"" + nickname + "\" " + lastname
+		result = firstname + " \"" + nickname + "\" " + lastname
+	if length == "nickname":
+		result = "\"" + nickname + "\""
+	if length == "short":
+		if nickname != "":
+			return nickname
+		else:
+			return lastname
+	return result
+
+func status():
+	if current_task != null:
+		return "performing a task"
+	if current_target != null:
+		return "attacking " + current_target.object_name("short")
+	return "doing nothing in particular"
 
 func name():
 	return object_name()
@@ -3717,7 +4194,16 @@ func get_modifier(mod):
 	return result
 	
 func tick_drain(delta):
-	apply_drain(rules.base_drain, delta)
+	var val = sustain_actions(delta)
+	#stats.fuels.attention.spend(val)
+	for key in stats.fuels:
+		var fuel = stats.fuels[key]
+		if key == "attention":
+			pass
+		var val2 = fuel.regenerate(delta)
+		pass
+	
+	#apply_drain(rules.base_drain, delta)
 	
 
 func calc_shield(delta):

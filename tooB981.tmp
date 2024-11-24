@@ -1,0 +1,83 @@
+[gd_scene load_steps=5 format=3 uid="uid://boa4dljmmsfab"]
+
+[ext_resource type="Script" path="res://Tooltip.gd" id="1_h01ms"]
+[ext_resource type="PackedScene" uid="uid://dhpy1sbut4pkj" path="res://outer_window.tscn" id="2_k37o5"]
+[ext_resource type="PackedScene" uid="uid://bhp206jav1nqd" path="res://inner_window.tscn" id="3_pc2a5"]
+
+[sub_resource type="Theme" id="Theme_37uun"]
+
+[node name="Tooltip" type="Control"]
+top_level = true
+z_index = 3261
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -64.0
+offset_top = -60.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("1_h01ms")
+
+[node name="Label" type="RichTextLabel" parent="."]
+clip_contents = false
+layout_direction = 2
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -21.0
+offset_top = -19.5
+offset_right = 21.0
+offset_bottom = 3.5
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_37uun")
+text = "Label"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="OuterWindow" parent="Label" instance=ExtResource("2_k37o5")]
+z_index = -1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -8.0
+offset_top = -8.0
+offset_right = 8.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="InnerWindow" parent="Label/OuterWindow" instance=ExtResource("3_pc2a5")]
+layout_mode = 1
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+
+[node name="ProgressBar" type="ProgressBar" parent="Label/OuterWindow"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -27.0
+offset_right = -5.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[connection signal="meta_clicked" from="Label" to="." method="_on_label_meta_clicked"]
+[connection signal="meta_hover_ended" from="Label" to="." method="_on_label_meta_hover_ended"]
+[connection signal="meta_hover_started" from="Label" to="." method="_on_label_meta_hover_started"]
+[connection signal="mouse_entered" from="Label/OuterWindow" to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Label/OuterWindow" to="." method="_on_mouse_exited"]

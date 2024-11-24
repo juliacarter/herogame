@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://d0swgeb3gi2fc"]
+
+[ext_resource type="Script" path="res://BuffDisplay.gd" id="1_wauvw"]
+
+[node name="BuffDisplay" type="HBoxContainer"]
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+script = ExtResource("1_wauvw")

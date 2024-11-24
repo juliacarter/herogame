@@ -11,7 +11,7 @@ class_name FloorItem
 
 var selectable = true
 
-var id = -1
+var id = ""
 
 var item
 var shelf = Shelf.new({"name": "storage"})
@@ -34,11 +34,11 @@ func save():
 func load_save(savedata):
 	id = savedata.id
 	position = Vector2(savedata.position.x, savedata.position.y)
-	item = Stack.new(savedata.item.count, savedata.item.base, map)
+	item = Stack.new(rules, savedata.item.count, savedata.item.base, map)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	id = rules.uuid(self)
+	id = rules.assign_id(self)
 	shelf.location = self
 	print(global_position)
 	print(visible)
@@ -65,10 +65,9 @@ func attach_item(newitem):
 func entity():
 	return "FLOORSTACK"
 
-func take_from(base, count):
+func take_from(base, count, newshelf = null):
+	var remaining = shelf.peek(base) - count
 	var newstack = shelf.split(base, count)
-	if newstack.count <= 0:
-		map.remove_floorstack(self)
 	return newstack
 
 func _on_area_entered(body):

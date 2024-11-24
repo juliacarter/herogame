@@ -346,6 +346,16 @@ func _ready():
 	cells.northwest.y = y*2
 	id = rules.assign_id(self)
 	clear_nav()
+	if content != null:
+		content.set_mask()
+		if content.type() == "floor":
+			enabled = true
+			await clear_nav()
+		else:
+			enabled = false
+			await clear_nav()
+	
+func check_nav():
 	if content.type() == "floor":
 		enabled = true
 		await clear_nav()
@@ -425,10 +435,10 @@ func to_wall():
 	add_child(wall)
 	if is_node_ready():
 		enabled = false
-	#selector.set_collision_mask_value(5, true)
-	#selector.set_collision_layer_value(5, true)
-	#selector.set_collision_mask_value(6, true)
-	#selector.set_collision_layer_value(6, true)
+	inside.set_collision_mask_value(5, true)
+	inside.set_collision_layer_value(5, true)
+	inside.set_collision_mask_value(6, true)
+	inside.set_collision_layer_value(6, true)
 	bake_navigation_polygon()
 	
 func to_edge():
@@ -453,10 +463,10 @@ func to_floor():
 	if is_node_ready():
 		enabled = true
 		await clear_nav()
-	#selector.set_collision_mask_value(5, false)
-	#selector.set_collision_layer_value(5, false)
-	#selector.set_collision_mask_value(6, false)
-	#selector.set_collision_layer_value(6, false)
+	inside.set_collision_mask_value(5, false)
+	inside.set_collision_layer_value(5, false)
+	inside.set_collision_mask_value(6, false)
+	inside.set_collision_layer_value(6, false)
 	bake_navigation_polygon()
 	
 func to_furniture(furniture, collision):
@@ -515,9 +525,13 @@ func remove_furniture():
 	
 func set_content(block):
 	remove_child(content)
+	
 	content = blockscene.instantiate()
 	content.load_data(block)
+	
 	add_child(content)
+	if is_inside_tree():
+		content.set_mask()
 
 
 	
@@ -560,6 +574,8 @@ func _on_diggable_area_exited(area):
 
 func _on_inside_body_entered(body):
 	body.current_square = self
+	if content.solid:
+		pass
 	#if(body.entity() == "UNIT"):
 		#units.merge({body.id: body})
 		#body.current_square = self

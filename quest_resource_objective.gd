@@ -5,8 +5,8 @@ class_name ResourceObjective
 var amount
 var resource = ""
 
-func _init(args):
-	super(args)
+func _init(args, newquest = null):
+	super(args, newquest)
 	resource = args.resource
 	amount = args.amount
 	

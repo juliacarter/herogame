@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://dyr7dqo83at4i"]
+
+[ext_resource type="Script" path="res://RegionUnitButton.gd" id="1_emm6x"]
+
+[node name="RegionUnitButton" type="Button"]
+offset_right = 8.0
+offset_bottom = 8.0
+script = ExtResource("1_emm6x")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]

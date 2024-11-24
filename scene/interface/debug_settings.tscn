@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://7n2or8mtcfaj"]
+[gd_scene load_steps=4 format=3 uid="uid://7n2or8mtcfaj"]
 
 [ext_resource type="Script" path="res://script/interface/debug_settings.gd" id="1_132vk"]
 [ext_resource type="PackedScene" uid="uid://dsppfisp8kxm6" path="res://wave_spawner.tscn" id="2_kft0y"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0kijd"]
 
 [node name="DebugSettings" type="Panel"]
 custom_minimum_size = Vector2(500, 500)
@@ -9,6 +11,7 @@ offset_right = 500.0
 offset_bottom = 500.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxEmpty_0kijd")
 script = ExtResource("1_132vk")
 
 [node name="DebugVars" type="VBoxContainer" parent="."]

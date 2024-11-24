@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://dx2ec2whaesn"]
+
+[ext_resource type="Script" path="res://TooltipControl.gd" id="1_im24i"]
+
+[node name="TooltipControl" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_im24i")
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

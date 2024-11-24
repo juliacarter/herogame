@@ -1,9 +1,62 @@
-[gd_scene load_steps=2 format=3 uid="uid://clwihkhkn1031"]
+[gd_scene load_steps=4 format=3 uid="uid://clwihkhkn1031"]
 
 [ext_resource type="Script" path="res://sortable_list.gd" id="1_y8ao2"]
+[ext_resource type="PackedScene" uid="uid://c5tw7mjein1kk" path="res://sort_button_row.tscn" id="2_ctsbk"]
+[ext_resource type="PackedScene" uid="uid://bhp206jav1nqd" path="res://inner_window.tscn" id="3_opmi4"]
 
-[node name="SortableList" type="BoxContainer"]
-offset_right = 40.0
-offset_bottom = 40.0
-vertical = true
+[node name="SortableList" type="Control"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 3
+anchors_preset = 0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
 script = ExtResource("1_y8ao2")
+
+[node name="InnerWindow" parent="." instance=ExtResource("3_opmi4")]
+layout_mode = 1
+
+[node name="ReferenceRect" type="ReferenceRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+border_color = Color(0.4, 0.466667, 1, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1.0
+offset_top = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="SortButtonRow" parent="VBoxContainer" instance=ExtResource("2_ctsbk")]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 9.78
+
+[node name="Rows" type="VBoxContainer" parent="VBoxContainer/Control/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3

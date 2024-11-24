@@ -1,47 +1,137 @@
-[gd_scene load_steps=5 format=3 uid="uid://cd1r6ksv1xucc"]
+[gd_scene load_steps=8 format=3 uid="uid://cd1r6ksv1xucc"]
 
 [ext_resource type="Script" path="res://script/interface/infopanel.gd" id="1_4pdbi"]
-[ext_resource type="PackedScene" uid="uid://uiq6dhs77d2s" path="res://heat_meter.tscn" id="2_8pogb"]
+[ext_resource type="Theme" uid="uid://c2dqbtyc2vdb7" path="res://main_theme.tres" id="1_8gkxs"]
 [ext_resource type="PackedScene" uid="uid://cknrdl262vd4" path="res://day_timer.tscn" id="2_q5lso"]
-[ext_resource type="PackedScene" uid="uid://hlko6j4yh45e" path="res://resource_list.tscn" id="4_sikii"]
+[ext_resource type="PackedScene" uid="uid://dhpy1sbut4pkj" path="res://outer_window.tscn" id="3_5dlka"]
+[ext_resource type="PackedScene" uid="uid://c3gbo8l1q7pvy" path="res://bevel.tscn" id="4_b3jqw"]
+[ext_resource type="PackedScene" uid="uid://dujvqvsfqi7bk" path="res://doom_meter.tscn" id="4_ppvi2"]
+[ext_resource type="PackedScene" uid="uid://cts10tsnff5gk" path="res://resource_widget.tscn" id="5_r8sj4"]
 
-[node name="infopanel" type="PanelContainer"]
-offset_right = 1401.0
-offset_bottom = 86.0
+[node name="infopanel" type="Control"]
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 17.0
+grow_horizontal = 2
+theme = ExtResource("1_8gkxs")
 script = ExtResource("1_4pdbi")
 
-[node name="HFlowContainer" type="HFlowContainer" parent="."]
-layout_mode = 2
+[node name="OuterWindow" parent="." instance=ExtResource("3_5dlka")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HFlowContainer" type="HFlowContainer" parent="OuterWindow"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 alignment = 1
 
-[node name="HeatMeter" parent="HFlowContainer" instance=ExtResource("2_8pogb")]
+[node name="Control2" type="Control" parent="OuterWindow/HFlowContainer"]
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
+size_flags_horizontal = 3
 
-[node name="DayTimer" parent="HFlowContainer" instance=ExtResource("2_q5lso")]
-layout_mode = 2
+[node name="Bevel" parent="OuterWindow/HFlowContainer/Control2" instance=ExtResource("4_b3jqw")]
+layout_mode = 1
 
-[node name="ResourceList" parent="HFlowContainer" instance=ExtResource("4_sikii")]
-layout_mode = 2
+[node name="ResourceWidget" parent="OuterWindow/HFlowContainer/Control2" instance=ExtResource("5_r8sj4")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="HFlowContainer2" type="HFlowContainer" parent="HFlowContainer"]
+[node name="Control3" type="Control" parent="OuterWindow/HFlowContainer"]
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
+size_flags_horizontal = 3
 
-[node name="Minions" type="Label" parent="HFlowContainer"]
-layout_mode = 2
+[node name="Bevel" parent="OuterWindow/HFlowContainer/Control3" instance=ExtResource("4_b3jqw")]
+layout_mode = 1
+
+[node name="Minions" type="Label" parent="OuterWindow/HFlowContainer/Control3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
 text = "MINCOUNT"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HFlowContainer"]
+[node name="Control" type="Control" parent="OuterWindow/HFlowContainer"]
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
+size_flags_horizontal = 3
 
-[node name="Research" type="ProgressBar" parent="HFlowContainer/VBoxContainer"]
-custom_minimum_size = Vector2(400, 0)
+[node name="DoomMeter" parent="OuterWindow/HFlowContainer/Control" instance=ExtResource("4_ppvi2")]
+layout_mode = 1
+
+[node name="Control4" type="Control" parent="OuterWindow/HFlowContainer"]
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
+size_flags_horizontal = 3
 
-[node name="Label" type="Label" parent="HFlowContainer/VBoxContainer"]
+[node name="Bevel" parent="OuterWindow/HFlowContainer/Control4" instance=ExtResource("4_b3jqw")]
+layout_mode = 1
+
+[node name="Research" type="ProgressBar" parent="OuterWindow/HFlowContainer/Control4"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+offset_right = 276.0
+offset_bottom = 20.0
+size_flags_vertical = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="OuterWindow/HFlowContainer/Control4"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="OuterWindow/HFlowContainer/Control4/VBoxContainer"]
 layout_mode = 2
 text = "ResearchName"
 horizontal_alignment = 1
 
-[node name="Cursorpos" type="Label" parent="HFlowContainer"]
+[node name="Control5" type="Control" parent="OuterWindow/HFlowContainer"]
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
-text = "Cursorpos"
+size_flags_horizontal = 3
+
+[node name="Bevel" parent="OuterWindow/HFlowContainer/Control5" instance=ExtResource("4_b3jqw")]
+layout_mode = 1
+
+[node name="DayTimer" parent="OuterWindow/HFlowContainer/Control5" instance=ExtResource("2_q5lso")]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+size_flags_horizontal = 3

@@ -1,14 +1,18 @@
-[gd_scene load_steps=3 format=3 uid="uid://c80x3vawtifd7"]
+[gd_scene load_steps=2 format=3 uid="uid://c80x3vawtifd7"]
 
 [ext_resource type="Script" path="res://quest_step_element.gd" id="1_kru5m"]
-[ext_resource type="PackedScene" uid="uid://dkqn4ggkqnmyg" path="res://minimizable_list.tscn" id="2_cfjyj"]
 
 [node name="QuestStep" type="Control"]
-custom_minimum_size = Vector2(100, 150)
 layout_mode = 3
 anchors_preset = 0
-offset_right = 100.0
-offset_bottom = 150.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 script = ExtResource("1_kru5m")
 
-[node name="MinimizableList" parent="." instance=ExtResource("2_cfjyj")]
+[node name="ObjectiveHolder" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

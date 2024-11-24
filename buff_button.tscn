@@ -1,0 +1,31 @@
+[gd_scene load_steps=4 format=3 uid="uid://ckpf7aeifdg4k"]
+
+[ext_resource type="Texture2D" uid="uid://cetfw6b8av0dq" path="res://art/caution.png" id="1_px0lv"]
+[ext_resource type="Script" path="res://buff_button.gd" id="2_ij6fr"]
+[ext_resource type="PackedScene" uid="uid://dx2ec2whaesn" path="res://tooltip_control.tscn" id="3_6g0e6"]
+
+[node name="BuffButton" type="Button"]
+custom_minimum_size = Vector2(32, 32)
+offset_right = 17.0
+offset_bottom = 16.0
+icon = ExtResource("1_px0lv")
+icon_alignment = 1
+expand_icon = true
+script = ExtResource("2_ij6fr")
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -4.0
+offset_top = -4.0
+offset_right = 4.0
+offset_bottom = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+show_percentage = false
+
+[node name="TooltipArea" parent="." instance=ExtResource("3_6g0e6")]
+layout_mode = 1

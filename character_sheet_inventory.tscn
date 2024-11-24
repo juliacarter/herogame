@@ -1,0 +1,84 @@
+[gd_scene load_steps=4 format=3 uid="uid://g4q4t1ljd8wx"]
+
+[ext_resource type="PackedScene" uid="uid://clwihkhkn1031" path="res://sortable_list.tscn" id="1_u5rt4"]
+[ext_resource type="PackedScene" uid="uid://dolu2yeax6q00" path="res://organizable_list.tscn" id="2_t1pqo"]
+[ext_resource type="PackedScene" uid="uid://bhoq60xvlm755" path="res://equipment_list.tscn" id="3_aa8q7"]
+
+[node name="CharacterSheetInventory" type="Control"]
+custom_minimum_size = Vector2(500, 700)
+layout_mode = 3
+anchors_preset = 0
+
+[node name="ReferenceRect" type="ReferenceRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="AbilityList" parent="." instance=ExtResource("1_u5rt4")]
+offset_left = 247.0
+offset_top = 462.0
+offset_right = 477.0
+offset_bottom = 677.0
+
+[node name="NameLabel" type="RichTextLabel" parent="."]
+layout_mode = 0
+offset_left = 21.0
+offset_top = 9.0
+offset_right = 249.0
+offset_bottom = 58.0
+theme_override_font_sizes/normal_font_size = 30
+text = "UNIT NAME"
+
+[node name="LevelLabel" type="RichTextLabel" parent="."]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 94.0
+offset_right = 81.0
+offset_bottom = 118.0
+text = "level X"
+
+[node name="LessonButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 113.0
+offset_top = 85.0
+offset_right = 233.0
+offset_bottom = 116.0
+text = "X lessons"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 60.0
+offset_right = 155.0
+offset_bottom = 83.0
+text = "Background"
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 121.0
+offset_right = 248.0
+offset_bottom = 148.0
+
+[node name="ActionDraggables" parent="." instance=ExtResource("2_t1pqo")]
+layout_mode = 1
+offset_left = 21.0
+offset_top = 462.0
+offset_right = -274.0
+offset_bottom = -17.0
+
+[node name="CarriedItemList" parent="." instance=ExtResource("1_u5rt4")]
+offset_left = 21.0
+offset_top = 321.0
+offset_right = 474.0
+offset_bottom = 446.0
+
+[node name="EquipmentList" parent="." instance=ExtResource("3_aa8q7")]
+layout_mode = 1
+offset_left = 27.0
+offset_top = 168.0
+offset_right = -25.0
+offset_bottom = -393.0

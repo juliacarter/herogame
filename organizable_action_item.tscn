@@ -1,0 +1,86 @@
+[gd_scene load_steps=2 format=3 uid="uid://pu6tvdbs1in3"]
+
+[ext_resource type="Script" path="res://OrganizableActionItem.gd" id="1_jvx7k"]
+
+[node name="OrganizableActionItem" type="HBoxContainer"]
+custom_minimum_size = Vector2(100, 50)
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 31.0
+grow_horizontal = 2
+script = ExtResource("1_jvx7k")
+
+[node name="Content" type="Control" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Content"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 50.0
+grow_horizontal = 2
+
+[node name="ExpandButton" type="Button" parent="Content/HBoxContainer"]
+visible = false
+layout_mode = 2
+text = "+"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Content/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Content/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Content/HBoxContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Action Name"
+
+[node name="Type" type="Label" parent="Content/HBoxContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Action Type"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Content/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Description" type="Label" parent="Content/HBoxContainer/VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Brief Description
+"
+
+[node name="Cooldown" type="Label" parent="Content/HBoxContainer/VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Xs Cooldown"
+
+[node name="VSeparator" type="VSeparator" parent="Content/HBoxContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+
+[node name="Cost" type="Label" parent="Content/HBoxContainer/VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "X Focus"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Up" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "^"
+
+[node name="Down" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "v"
+
+[node name="Settings" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "*"
+
+[connection signal="pressed" from="HBoxContainer/Up" to="." method="_on_up_pressed"]
+[connection signal="pressed" from="HBoxContainer/Down" to="." method="_on_down_pressed"]

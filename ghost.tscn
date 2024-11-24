@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://bgsbdlip3fgaj"]
+
+[ext_resource type="Script" path="res://ghost.gd" id="1_6ao3l"]
+[ext_resource type="PackedScene" uid="uid://yqyro4ghugg0" path="res://area_indicator.tscn" id="2_p158x"]
+
+[node name="Ghost" type="Node2D"]
+modulate = Color(1, 1, 1, 0.490196)
+script = ExtResource("1_6ao3l")
+
+[node name="AreaIndicator" parent="." instance=ExtResource("2_p158x")]
+modulate = Color(1, 1, 1, 0.490196)

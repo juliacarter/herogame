@@ -1,6 +1,15 @@
 extends Object
 class_name Faction
 
+signal faction_wealth_increased(faction, amount)
+signal faction_boldness_increased(faction, amount)
+signal faction_research_increased(faction, amount)
+
+signal faction_threat_created(faction, threat)
+
+signal faction_buildup(faction, amount)
+signal faction_buildup_full(faction)
+
 var id
 
 var rules
@@ -8,17 +17,17 @@ var rules
 var base
 var color
 
-var heat = 0
+var heat = 0.0
 var interest = 0
 
-#Do in roughly this order
-#Player & Agency Faction
-#Modules
-#Civilian Faction
-#Superteam
-#Faction Relationships
-#Rivals
-#Nemeses
+#grants a bonus to points used for unit generation
+var research = 0
+var boldness = 5
+var wealth = 0
+
+var buildup = 0
+#the amount of Buildup needed for the next Doom Threat
+var buildup_to_doom = 10
 
 #Each Module applies various Bonuses to the faction, similar to Abilities and Effects with units
 var modules = {}
@@ -38,11 +47,24 @@ var bonuses = {}
 #These Traits are applied to all members of the faction
 var traits = {}
 
+
+var operation = {}
+
+#units not currently assigned to an Operation
+var inactive_units = {}
 #Units currently existing in the game world that belong to this faction
 var units = {}
 
+#units organized by role
+var units_by_role = {}
+
 #The unit lists currently in use by the faction. These can be modified
 var unitlists = {
+	
+}
+
+#new unitlist logic. sort this dictionary by role
+var lists = {
 	
 }
 
@@ -65,10 +87,57 @@ var relations = {}
 #Used to store "special" units such as Rogues
 var members = {}
 
+#resources available to the faction
+var resources = {}
+
+func gain_heat(amount):
+	heat += amount
+
+func apply_buildup():
+	pass
+	
+func start_threat(type = "doom"):
+	pass
+
+func object_name(l=""):
+	return alignment
+
+func gain_research(amount):
+	research += amount
+
+func get_threat():
+	var potential = []
+	var result
+	for key in threats:
+		var threat = threats[key]
+		potential.append(threat)
+	if potential != []:
+		var i = randi() % potential.size()
+		result = potential[i]
+	return result
+
 func _init(newbase, newrules):
 	rules = newrules
 	id = rules.assign_id(self)
+	var data = rules.data
 	alignment = newbase.alignment
+	for key in newbase.threats:
+		if data.missions_to_load.has(key):
+			var threat = Threat.new(data, data.missions_to_load[key])
+			threat.faction = self
+			threats.merge({
+				key: threat
+			})
+	for role in newbase.lists:
+		var options = newbase.lists[role]
+		for listname in options:
+			var weight = options[listname]
+			if data.lists.unit.has(listname):
+				var list = data.lists.unit[listname]
+				lists.merge({
+					role: []
+				})
+				lists[role].append(list)
 	type = newbase.type
 	base = newbase
 	color = base.color
@@ -137,6 +206,71 @@ func select_wave():
 		return result
 	else:
 		return null
+		
+func add_unit(unit):
+	units.merge({
+		unit.id: unit
+	})
+	for role in unit.meta_roles:
+		add_unit_by_role(unit, role)
+	
+func add_unit_by_role(unit, role):
+	units_by_role.merge({
+		role: {}
+	})
+	units_by_role[role].merge({
+		unit.id: unit
+	})
+	
+func initialize():
+	var newunits = []
+	for i in 5:
+		var unit = generate_units("basic", 1, 100)
+		newunits.append(unit.values()[0])
+	
+#remove these units from Inactive Units
+func send_on_operation(newunits):
+	pass
+	
+#add these units back to Inactive Units
+func return_from_operation(newunits):
+	pass
+	
+func remove_unit(unit):
+	units.erase(unit.id)
+	for role in unit.meta_roles:
+		remove_unit_by_role(unit, role)
+	
+func remove_unit_by_role(unit, role):
+	if units_by_role.has(role):
+		units_by_role[role].erase(unit.id)
+		
+func generate_units(type, max, starting_points, research_scale = 1.0, use_research = true):
+	var points = starting_points
+	var research_bonus = (rules.chaos * research_scale)
+	points += research_bonus
+	var options = lists[type]
+	var i = randi() % options.size()
+	var selected = options[i]
+	var newunits = selected.generate_units(points, max)
+	for unit in newunits:
+		add_unit(unit)
+	return units
+	
+func generate_one_unit(type = "basic", starting_points = 100):
+	var newunits = generate_units(type, 1, starting_points)
+	pass
+		
+#select a number of random units of the given type
+func select_units(role, count):
+	var selected = []
+	if units_by_role.has(role):
+		var options = units_by_role[role]
+		for i in count:
+			var j = randi() % options.size()
+			var unit = options.values()[j]
+			selected.append(unit)
+	return selected
 		
 func get_units(count):
 	var list = base.unitlists.values()[randi() % base.unitlists.size()]

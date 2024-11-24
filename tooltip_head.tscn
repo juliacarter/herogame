@@ -1,0 +1,52 @@
+[gd_scene load_steps=4 format=3 uid="uid://hdchh6ar0rwp"]
+
+[ext_resource type="PackedScene" uid="uid://c3gbo8l1q7pvy" path="res://bevel.tscn" id="1_2gn6k"]
+[ext_resource type="Script" path="res://tooltip_head.gd" id="1_noy1s"]
+[ext_resource type="Texture2D" uid="uid://dtlt7sf5ylhrv" path="res://art/pow.png" id="3_6cy16"]
+
+[node name="TooltipHead" type="Control"]
+z_index = 4096
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_noy1s")
+
+[node name="Bevel" parent="." instance=ExtResource("1_2gn6k")]
+layout_mode = 1
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer2"]
+custom_minimum_size = Vector2(32, 0)
+layout_mode = 2
+texture = ExtResource("3_6cy16")
+expand_mode = 4
+
+[node name="Label2" type="Label" parent="HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Title"
+
+[node name="ProgressBar" type="ProgressBar" parent="HBoxContainer2"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+mouse_filter = 2
+fill_mode = 1
+show_percentage = false
+
+[node name="Toggle" type="Button" parent="HBoxContainer2/ProgressBar"]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1

@@ -43,7 +43,7 @@ func get_selected_route():
 	if route is String:
 		var patrol = Patrol.new()
 		#patrol.priority = rules.current_map.patrols.size()
-		patrol.id = rules.uuid(patrol)
+		patrol.id = rules.assign_id(patrol)
 		rules.current_map.add_patrol(patrol)
 		add_option(patrol)
 		load_options()

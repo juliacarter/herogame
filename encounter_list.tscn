@@ -1,0 +1,66 @@
+[gd_scene load_steps=6 format=3 uid="uid://b6muy2m0vsy6a"]
+
+[ext_resource type="Theme" uid="uid://c2dqbtyc2vdb7" path="res://main_theme.tres" id="1_kwym2"]
+[ext_resource type="Script" path="res://EncounterList.gd" id="2_q4nod"]
+[ext_resource type="PackedScene" uid="uid://clwihkhkn1031" path="res://sortable_list.tscn" id="3_wyti6"]
+[ext_resource type="PackedScene" uid="uid://c3gbo8l1q7pvy" path="res://bevel.tscn" id="4_36vb5"]
+[ext_resource type="PackedScene" uid="uid://xdf68nvre6nm" path="res://encounter_view.tscn" id="5_q3hqr"]
+
+[node name="EncounterList" type="Control"]
+custom_minimum_size = Vector2(700, 500)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 700.0
+offset_bottom = 500.0
+theme = ExtResource("1_kwym2")
+script = ExtResource("2_q4nod")
+
+[node name="ReferenceRect2" type="ReferenceRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="EncounterList" parent="." instance=ExtResource("3_wyti6")]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 12.0
+offset_right = 196.0
+offset_bottom = -4.0
+grow_vertical = 2
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 211.0
+offset_top = 38.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Bevel" parent="." instance=ExtResource("4_36vb5")]
+layout_mode = 1
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 199.0
+offset_top = 12.0
+offset_right = 695.0
+offset_bottom = 42.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="EncounterView" parent="." instance=ExtResource("5_q3hqr")]
+layout_mode = 1
+offset_left = 196.0
+offset_top = 44.0
+
+[connection signal="select_row" from="EncounterList" to="." method="_on_quest_list_select_row"]

@@ -16,10 +16,13 @@ offset_right = 40.0
 offset_bottom = 23.0
 
 [node name="FireButton" type="Button" parent="."]
-layout_mode = 0
-offset_top = 48.0
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -31.0
 offset_right = 41.0
-offset_bottom = 79.0
+grow_vertical = 0
 text = "FIRE"
 
 [connection signal="pressed" from="FireButton" to="." method="_on_fire_button_pressed"]

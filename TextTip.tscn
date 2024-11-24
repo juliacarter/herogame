@@ -1,0 +1,45 @@
+[gd_scene load_steps=5 format=3 uid="uid://boa4dljmmsfab"]
+
+[ext_resource type="Script" path="res://TextTip.gd" id="1_fmulu"]
+[ext_resource type="PackedScene" uid="uid://5tushfx0oddo" path="res://tippable_rich_text.tscn" id="2_1sytm"]
+[ext_resource type="PackedScene" uid="uid://dhpy1sbut4pkj" path="res://outer_window.tscn" id="3_qi31r"]
+[ext_resource type="PackedScene" uid="uid://bhp206jav1nqd" path="res://inner_window.tscn" id="4_smu15"]
+
+[node name="TextTip" type="VBoxContainer"]
+z_index = 3261
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_fmulu")
+
+[node name="TextTip" parent="." instance=ExtResource("2_1sytm")]
+clip_contents = false
+custom_minimum_size = Vector2(256, 32)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="OuterWindow" parent="TextTip" instance=ExtResource("3_qi31r")]
+show_behind_parent = true
+custom_minimum_size = Vector2(128, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1.00156, 1)
+mouse_filter = 1
+
+[node name="InnerWindow" parent="TextTip/OuterWindow" instance=ExtResource("4_smu15")]
+layout_mode = 1
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0

@@ -1,0 +1,105 @@
+[gd_scene load_steps=7 format=3 uid="uid://cqfux2i1uvlbi"]
+
+[ext_resource type="Script" path="res://character_sheet_overview.gd" id="1_bwihf"]
+[ext_resource type="PackedScene" uid="uid://clwihkhkn1031" path="res://sortable_list.tscn" id="1_wnvvp"]
+[ext_resource type="PackedScene" uid="uid://c3mjlofaarp7l" path="res://character_sheet_stat_block.tscn" id="2_qgsol"]
+[ext_resource type="PackedScene" uid="uid://phbfcgaaqcgm" path="res://rating_display.tscn" id="3_nfswx"]
+[ext_resource type="PackedScene" uid="uid://bh22nsw5l5cn7" path="res://lesson_picker.tscn" id="4_m51io"]
+[ext_resource type="PackedScene" uid="uid://ci75b4qje04i6" path="res://experience_bar.tscn" id="5_ag1o5"]
+
+[node name="CharacterSheetOverview" type="Control"]
+custom_minimum_size = Vector2(500, 800)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_bwihf")
+
+[node name="ReferenceRect" type="ReferenceRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 10.0
+offset_right = 318.0
+offset_bottom = 52.0
+
+[node name="NameLabel" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_constants/line_spacing = 0
+theme_override_font_sizes/font_size = 30
+text = "UNIT NAME"
+vertical_alignment = 2
+
+[node name="LevelLabel" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 1
+text = "lv. X"
+
+[node name="LessonButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 327.0
+offset_top = 20.0
+offset_right = 480.0
+offset_bottom = 91.0
+text = "X lessons available"
+
+[node name="BackgroundLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 60.0
+offset_right = 155.0
+offset_bottom = 83.0
+text = "Background"
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 156.0
+offset_top = 81.0
+offset_right = 299.0
+offset_bottom = 112.0
+text = "DEBUG: LEVEL UP"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 118.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ExperienceBar" parent="VBoxContainer" instance=ExtResource("5_ag1o5")]
+layout_mode = 2
+
+[node name="RatingDisplay" parent="VBoxContainer" instance=ExtResource("3_nfswx")]
+layout_mode = 2
+
+[node name="CharacterSheetStatBlock" parent="VBoxContainer" instance=ExtResource("2_qgsol")]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="UpgradeList" parent="VBoxContainer" instance=ExtResource("1_wnvvp")]
+layout_mode = 2
+
+[node name="LessonPicker" parent="." instance=ExtResource("4_m51io")]
+visible = false
+z_index = 4096
+layout_mode = 2
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -200.0
+offset_right = 200.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[connection signal="pressed" from="LessonButton" to="." method="_on_lesson_button_pressed"]
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

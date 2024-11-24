@@ -8,6 +8,8 @@ var effects = {}
 
 var stacking = true
 
+var tipname = ""
+
 func _init(data):
 	if data.has("name"):
 		name = data.name
@@ -15,3 +17,5 @@ func _init(data):
 		duration = data.duration
 	if data.has("stacking"):
 		stacking = data.stacking
+	if data.has("tooltip"):
+		tipname = data.tooltip

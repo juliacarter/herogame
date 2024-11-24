@@ -1,11 +1,19 @@
 extends Button
 class_name EquipmentButton
 
+signal equipment_pressed(item)
+
 var parent
+
+var unit
 
 var slotname
 
-var base
+var item
+
+func load_item(new):
+	item = new
+	text = item.base.key
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -22,7 +30,9 @@ func _process(delta):
 
 
 func _on_pressed():
-	parent.open_equipmentpicker(slotname)
+	equipment_pressed.emit(item)
+	if unit != null:
+		unit.unequip_and_drop(item)
 #	if !button_pressed:
 #		parent.select(self)
 #	else:

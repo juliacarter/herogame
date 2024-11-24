@@ -1,43 +1,129 @@
-[gd_scene load_steps=2 format=3 uid="uid://bajnnk4xe8we0"]
+[gd_scene load_steps=13 format=3 uid="uid://bajnnk4xe8we0"]
 
 [ext_resource type="Script" path="res://DraggableWindow.gd" id="1_sf7jf"]
+[ext_resource type="PackedScene" uid="uid://dhpy1sbut4pkj" path="res://outer_window.tscn" id="2_xpeic"]
+[ext_resource type="Theme" uid="uid://c2dqbtyc2vdb7" path="res://main_theme.tres" id="3_0j5lm"]
+[ext_resource type="Texture2D" uid="uid://cetfw6b8av0dq" path="res://art/caution.png" id="3_f001k"]
+[ext_resource type="FontFile" uid="uid://y40uctc8iq01" path="res://fonts/W95FA.otf" id="4_0iuvj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_llrsn"]
+
+[sub_resource type="Gradient" id="Gradient_jwvee"]
+colors = PackedColorArray(0.144819, 0.249062, 0.53851, 1, 0.490196, 0.698039, 0.882353, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_4x0ll"]
+gradient = SubResource("Gradient_jwvee")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_lb2c3"]
+texture = SubResource("GradientTexture1D_4x0ll")
+
+[sub_resource type="LabelSettings" id="LabelSettings_b4lna"]
+font = ExtResource("4_0iuvj")
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nl7tc"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ojchy"]
 
 [node name="DraggableWindow" type="Panel"]
-z_index = 1
+z_index = 5
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -50.0
-offset_top = -72.5
-offset_right = 50.0
-offset_bottom = 72.5
+offset_top = -72.0
+offset_right = 69.0
+offset_bottom = 95.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_llrsn")
 script = ExtResource("1_sf7jf")
 
+[node name="OuterWindow" parent="." instance=ExtResource("2_xpeic")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+
 [node name="DragBar" type="Button" parent="."]
-layout_mode = 0
-offset_right = 100.0
-offset_bottom = 40.0
+z_index = 1
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = 34.0
+grow_horizontal = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_lb2c3")
+theme_override_styles/hover = SubResource("StyleBoxTexture_lb2c3")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_lb2c3")
+theme_override_styles/focus = SubResource("StyleBoxTexture_lb2c3")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="DragBar"]
 layout_mode = 1
-anchors_preset = 6
-anchor_left = 1.0
-anchor_top = 0.5
+anchors_preset = 15
 anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = -40.0
-offset_top = -20.0
-offset_bottom = 20.0
-grow_horizontal = 0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
 grow_vertical = 2
+alignment = 2
 
 [node name="CloseButton" type="Button" parent="DragBar/HBoxContainer"]
+custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme = ExtResource("3_0j5lm")
 text = "X"
+text_overrun_behavior = 3
+clip_text = true
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="DragBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 39.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Control" type="Control" parent="DragBar/HBoxContainer2"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="TextureRect" type="TextureRect" parent="DragBar/HBoxContainer2/Control"]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 24.0
+offset_bottom = 6.0
+grow_vertical = 2
+texture = ExtResource("3_f001k")
+expand_mode = 2
+stretch_mode = 5
+
+[node name="WindowTitle" type="Label" parent="DragBar/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("4_0iuvj")
+text = "Window Name"
+label_settings = SubResource("LabelSettings_b4lna")
+clip_text = true
+text_overrun_behavior = 1
 
 [node name="ResizeDragger" type="Button" parent="."]
 visible = false
@@ -53,30 +139,43 @@ grow_horizontal = 0
 grow_vertical = 0
 
 [node name="Tabs" type="Panel" parent="."]
-visible = false
-layout_mode = 0
-offset_top = 41.0
-offset_right = 100.0
-offset_bottom = 92.0
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 3.0
+offset_top = 49.0
+offset_right = -4.0
+offset_bottom = 84.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_nl7tc")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Tabs"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 3.0
 grow_horizontal = 2
 grow_vertical = 2
 vertical_scroll_mode = 0
 
 [node name="TabHolder" type="HBoxContainer" parent="Tabs/ScrollContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="Content" type="Control" parent="."]
+[node name="Content" type="Panel" parent="."]
 layout_mode = 1
-anchors_preset = 0
-offset_top = 100.0
-offset_right = 40.0
-offset_bottom = 137.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 88.0
+offset_right = -6.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_ojchy")
 
 [connection signal="gui_input" from="DragBar" to="." method="_on_drag_bar_gui_input"]
 [connection signal="button_down" from="DragBar/HBoxContainer/CloseButton" to="." method="_on_close_button_button_down"]

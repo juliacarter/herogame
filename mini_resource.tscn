@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://m318wvipf3wa"]
+
+[ext_resource type="Script" path="res://MiniResource.gd" id="1_fwspf"]
+[ext_resource type="Texture2D" uid="uid://cetfw6b8av0dq" path="res://art/caution.png" id="2_i8luu"]
+
+[node name="MiniResource" type="HBoxContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_fwspf")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 2
+texture = ExtResource("2_i8luu")
+expand_mode = 2
+
+[node name="Count" type="Label" parent="."]
+layout_mode = 2
+text = "X"

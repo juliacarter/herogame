@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://kunvkbaa2sb0"]
+
+[ext_resource type="Script" path="res://dropdown_button.gd" id="1_f6il8"]
+
+[node name="DropdownButton" type="Button"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 31.0
+grow_horizontal = 2
+text = "BUTTON"
+alignment = 0
+script = ExtResource("1_f6il8")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]

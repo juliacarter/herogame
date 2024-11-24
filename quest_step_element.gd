@@ -1,8 +1,11 @@
 extends Control
 
-@onready var list = get_node("MinimizableList")
+
+@onready var objholder = get_node("ObjectiveHolder")
 
 var objscene = load("res://quest_objective_entry.tscn")
+
+var objectives = []
 
 signal modified
 
@@ -17,8 +20,9 @@ func load_step(new):
 	for obj in step.objectives:
 		var instance = objscene.instantiate()
 		instance.set_objective(obj)
+		objholder.add_child(instance)
 		objectives.append(instance)
-	list.load_items(objectives)
+	#list.load_items(objectives)
 	modified.emit()
 	
 

@@ -15,7 +15,21 @@ var equipment = {
 	"weapon": null,
 	"head": null,
 }
+
+#equipment desired by class
+#if there isn't enough space for a unit's specific equipment *and* class equipment, prioritise equipment chosen specifically for that unit
+var desired_equipment = []
 var desired_lessons = []
+#if a unit levels up and there is a lesson assigned for that level, pick it automatically
+#units can be set to "confirm level" or "auto-level". if lessons are set to confirm, player must go to the character sheet and hit a button to actually pick the lesson. this leaves the opportunity to pick a different lesson
+var lessons_by_level = {}
+
+#units assigned this class will train until they reach this level, ignoring other duties until trained
+#they will also stop training if they do not have furniture that can train them further
+var training_level = 0
+
+#units will practice the lowest of these skills while idle & practice furniture is available
+var practice_skills = []
 
 #The criteria a unit needs to meet to be considered valid when auto-assigning classes
 #Not used when assigning classes manually

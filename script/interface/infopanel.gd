@@ -1,14 +1,16 @@
-extends PanelContainer
+extends Control
 
 @onready var rules = get_node("/root/WorldVariables")
 
+@onready var doom = get_node("OuterWindow/HFlowContainer/Control/DoomCounter")
+
 #@onready var cashlabel = get_node("HFlowContainer/Cash")
-@onready var minionlabel = get_node("HFlowContainer/Minions")
-@onready var researchnamelabel = get_node("HFlowContainer/VBoxContainer/Label")
+@onready var minionlabel = get_node("OuterWindow/HFlowContainer/Control3/Minions")
+@onready var researchnamelabel = get_node("OuterWindow/HFlowContainer/Control4/VBoxContainer/Label")
 
-@onready var researchbar = get_node("HFlowContainer/VBoxContainer/Research")
+@onready var researchbar = get_node("OuterWindow/HFlowContainer/VBoxContainerControl4/Research")
 
-@onready var poslabel = get_node("HFlowContainer/Cursorpos")
+#@onready var poslabel = get_node("OuterWindow/HFlowContainer/Control5/Cursorpos")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -18,7 +20,5 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	#cashlabel.text = "Cash: " + String.num(rules.player.intangibles.cash)
-	if rules.current_map != null:
-		if(rules.current_map.current != null):
-			poslabel.text = String.num(rules.current_map.highlighted.x) + ", " + String.num(rules.current_map.highlighted.y)
-		minionlabel.text = String.num(rules.current_map.units.size())
+	minionlabel.text = "minions: " + String.num(rules.home.units.size())
+	pass

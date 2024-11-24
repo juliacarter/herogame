@@ -14,13 +14,16 @@ var needs_fire = false
 var completion_effect = ""
 var completion_args = []
 
+var quest
+
 func can_fire():
 	return false
 
 func fire():
 	pass
 
-func _init(args):
+func _init(args, newquest = null):
+	quest = newquest
 	step = args.step
 	rules = args.rules
 

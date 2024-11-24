@@ -22,6 +22,19 @@ var icon = "sampleicon"
 #Name the panel to be used by the power, if any
 var panel = ""
 
+#Cast the spell as soon as its clicked
+var instacast = false
+
+var caster
+
+var include_caster = false
+var prime_include_caster = true
+
+func get_prime_args():
+	var args = prime_args.duplicate()
+	args.append(caster)
+	return args
+
 func altclick():
 	pass
 
@@ -39,6 +52,8 @@ func make_tool():
 func _init(data):
 	if data.has("panel"):
 		panel = data.panel
+	if data.has("instacast"):
+		instacast = data.instacast
 	if data.has("name"):
 		powername = data.name
 	if data.has("category"):
@@ -57,3 +72,5 @@ func _init(data):
 		dragselect = data.dragselect
 	if data.has("targeting"):
 		targeting = data.targeting
+	if data.has("caster"):
+		caster = data.caster

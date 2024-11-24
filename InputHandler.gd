@@ -51,24 +51,31 @@ func normal_input(event):
 					if rules.selected != {}:
 						if rules.selected_controllable():
 							var square = map.blocks[map.highlighted.x][map.highlighted.y]
+							var did_something = false
 							if rules.hovered != null:
 								if rules.hovered is Unit:
 									for key in rules.selected:
 										var object = rules.selected[key]
-										object.attack_order(rules.hovered)
-							elif square.type() == "floor":
-								rules.move_order(map.blocks[map.highlighted.x][map.highlighted.y], Input.is_action_pressed("queue_ghosts"))
-							elif square.type() == "footprint":
-								var furniture = square.footprint.content
-								if furniture.primary_job != null:
+										if !rules.selected.has(rules.hovered.id):
+											object.attack_order(rules.hovered)
+											did_something = true
+								elif rules.hovered is FloorItem:
 									for key in rules.selected:
 										var object = rules.selected[key]
-										if object.entity() == "UNIT":
-											furniture.primary_job.make_task_for_unit(object)
+										object.order_equip(rules.hovered.item)
+							if !did_something:
+								if square.type() == "floor":
+									var pos = rules.current_map.get_local_mouse_position()
+									rules.move_order(map.blocks[map.highlighted.x][map.highlighted.y], pos, Input.is_action_pressed("queue_ghosts"))
+								elif square.type() == "footprint":
+									var furniture = square.footprint.content
+									if furniture.primary_job != null:
+										for key in rules.selected:
+											var object = rules.selected[key]
+											if object.entity() == "UNIT":
+												furniture.primary_job.make_task_for_unit(object)
 				else:
-					map.callv(rules.power.on_cast, rules.power.cast_args)
-					if(!Input.is_action_pressed("queue_ghosts") && rules.power.panel == ""):
-						rules.power = null
+					rules.fire_current_power()
 	
 func formation_input(event):
 	if event.is_released():
@@ -81,3 +88,6 @@ func _unhandled_input(event):
 			formation_input(event)
 		else:
 			normal_input(event)
+	elif event is InputEventKey:
+		if event.key_label == KEY_ESCAPE:
+			rules.interface.open_window("gamemenu")

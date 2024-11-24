@@ -1,18 +1,33 @@
 extends Object
+#generic class that gets targets from the game world and returns them
 class_name Targeter
 
-var targets = []
+var rules
 
-#Fired when the player starts targeting things
-var primefunc = ""
-var primeargs = []
+#visual used to aid in targeting, if anything
+var visual
 
-#Fired when the player tries to select something
-var targetfunc = ""
-var targetargs = []
+#unit targeter is checking for
+var origin
 
-func _init(data):
-	if data.has("primefunc"):
-		primefunc = data.primefunc
-	if data.has("targetfunc"):
-		targetfunc = data.targetfunc
+func _init(gamerules, targetdata, caster = null):
+	rules = gamerules
+	origin = caster
+	
+
+	
+#get targets based on current mouse position
+func manual_target():
+	pass
+
+#get a target based on automated criteria
+func auto_target():
+	pass
+
+#check whether a retrieved target meets targeter criteria
+func is_valid(target):
+	pass
+
+#check whether the mouse cursor is over a valid position
+func has_valid():
+	pass

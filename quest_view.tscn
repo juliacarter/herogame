@@ -1,0 +1,72 @@
+[gd_scene load_steps=7 format=3 uid="uid://dpm2mxlli8uk3"]
+
+[ext_resource type="PackedScene" uid="uid://clwihkhkn1031" path="res://sortable_list.tscn" id="1_fbugt"]
+[ext_resource type="Theme" uid="uid://c2dqbtyc2vdb7" path="res://main_theme.tres" id="1_k1xsy"]
+[ext_resource type="Script" path="res://quest_view.gd" id="2_l0gfo"]
+[ext_resource type="PackedScene" uid="uid://bhp206jav1nqd" path="res://inner_window.tscn" id="3_24qg7"]
+[ext_resource type="PackedScene" uid="uid://nidjnlhgnre6" path="res://quest_info.tscn" id="5_1libw"]
+[ext_resource type="PackedScene" uid="uid://c3gbo8l1q7pvy" path="res://bevel.tscn" id="5_7uplh"]
+
+[node name="QuestView" type="Control"]
+custom_minimum_size = Vector2(700, 500)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 700.0
+offset_bottom = 500.0
+theme = ExtResource("1_k1xsy")
+script = ExtResource("2_l0gfo")
+
+[node name="ReferenceRect2" type="ReferenceRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="QuestList" parent="." instance=ExtResource("1_fbugt")]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 12.0
+offset_right = 196.0
+offset_bottom = -4.0
+grow_vertical = 2
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 211.0
+offset_top = 38.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="InnerWindow" parent="Control" instance=ExtResource("3_24qg7")]
+layout_mode = 1
+offset_left = -12.0
+offset_top = 5.0
+offset_right = 3.0
+offset_bottom = 4.0
+
+[node name="QuestInfo" parent="Control/InnerWindow" instance=ExtResource("5_1libw")]
+layout_mode = 1
+
+[node name="Bevel" parent="." instance=ExtResource("5_7uplh")]
+layout_mode = 1
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 199.0
+offset_top = 12.0
+offset_right = 695.0
+offset_bottom = 42.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[connection signal="select_row" from="QuestList" to="." method="_on_quest_list_select_row"]

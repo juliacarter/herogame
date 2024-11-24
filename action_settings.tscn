@@ -1,0 +1,52 @@
+[gd_scene load_steps=3 format=3 uid="uid://bnxd33o8vtat0"]
+
+[ext_resource type="PackedScene" uid="uid://dhpy1sbut4pkj" path="res://outer_window.tscn" id="1_1wrnn"]
+[ext_resource type="PackedScene" uid="uid://bhp206jav1nqd" path="res://inner_window.tscn" id="2_ownpc"]
+
+[node name="ActionSettings" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="OuterWindow" parent="." instance=ExtResource("1_1wrnn")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="InnerWindow" parent="OuterWindow" instance=ExtResource("2_ownpc")]
+layout_mode = 1
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+
+[node name="CheckBox" type="CheckBox" parent="OuterWindow/InnerWindow"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 6.0
+offset_right = 31.0
+offset_bottom = 30.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Autocast"
+
+[node name="TextEdit" type="TextEdit" parent="OuterWindow/InnerWindow"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 38.0
+offset_right = 61.0
+offset_bottom = 68.0
+
+[node name="SpinBox" type="SpinBox" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 78.0
+offset_right = 95.0625
+offset_bottom = 109.0

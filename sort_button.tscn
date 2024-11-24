@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://dfu0jrard41x2"]
+
+[ext_resource type="Script" path="res://sort_button.gd" id="1_qvxth"]
+
+[node name="SortButton" type="Button"]
+custom_minimum_size = Vector2(100, 30)
+offset_right = 8.0
+offset_bottom = 8.0
+size_flags_horizontal = 3
+text = "Name"
+alignment = 0
+script = ExtResource("1_qvxth")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]

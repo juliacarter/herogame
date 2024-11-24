@@ -4,12 +4,11 @@ class_name Spell
 var data
 var rules
 
-var time_needed = 0
-var time = 0
 
 var automatic = false
 
 var prime_action = ""
+var prime_args = []
 var fire_action = ""
 var fire_args = []
 
@@ -26,11 +25,30 @@ var auto_conditions = []
 var key = ""
 var parent
 
-var range = 128
-
-var attention_cost = 0
-
 var everyframe = false
+
+var include_caster = false
+var prime_include_caster = true
+
+#targeter used by the spell
+var targeter
+
+#whether this spell can target the ground
+#ground targeting spells can be targeted to a specific unit, which will place the AoE on top of them wherever they move
+var ground_targeted = false
+
+func make_power():
+	var power = ActionPower.new({
+		"name": key,
+		"on_cast": "order_spellcast_at_target",
+		"cast_args": [self, unit],
+		"on_prime": prime_action,
+		"prime_args": prime_args,
+		"category": "unit",
+		"action": self
+	})
+	power.make_tool()
+	return power
 
 func find_target(targeter):
 	var args = target_args.duplicate()
@@ -39,9 +57,22 @@ func find_target(targeter):
 	return result
 	
 func fire_at(target, delta = 0.0):
-	time = time_needed
+	time = cooldown
 	var args = fire_args.duplicate()
-	args.push_front(target)
+	
+	if targeted:
+		args.push_front(target)
+	if include_caster:
+		args.push_front(unit)
+	if everyframe:
+		args.push_front(delta)
+	rules.callv(fire_action, args)
+	
+func fire_at_ground(target, delta = 0.0):
+	time = cooldown
+	var args = fire_args.duplicate()
+	if targeted:
+		args.push_front(target)
 	if everyframe:
 		args.push_front(delta)
 	rules.callv(fire_action, args)
@@ -59,13 +90,15 @@ func check_conditions(target):
 			result = false
 	return result
 
-func _init(gamedata, spelldata):
+func _init(gamedata, spelldata, parent = null):
+	super(gamedata, spelldata, parent)
 	data = gamedata
-	if spelldata.has("cooldown"):
-		time_needed = spelldata.cooldown
-		time = time_needed
-	if spelldata.has("attention_cost"):
-		attention_cost = spelldata.attention_cost
+	rules = data.rules
+	if spelldata.has("targeter"):
+		var targetdata = spelldata.targeter
+		targeter = Targeter.new(rules, targetdata, parent)
+	else:
+		targeter = Targeter.new(rules, {}, parent)
 	if spelldata.has("prime_action"):
 		prime_action = spelldata.prime_action
 	if spelldata.has("fire_action"):
@@ -89,8 +122,4 @@ func _init(gamedata, spelldata):
 		target_args = spelldata.target_args
 	pass
 	
-func cooldown(delta):
-	time -= delta
-	if time < 0:
-		time = 0
 	

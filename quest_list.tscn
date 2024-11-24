@@ -7,12 +7,19 @@
 z_index = -1
 z_as_relative = false
 layout_mode = 3
-anchor_right = 0.841
+anchors_preset = 15
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 3.59998
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
 mouse_filter = 1
 script = ExtResource("1_s4v0c")
 
 [node name="MinimizableList" parent="." instance=ExtResource("1_7v5vw")]
+layout_mode = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[editable path="MinimizableList"]

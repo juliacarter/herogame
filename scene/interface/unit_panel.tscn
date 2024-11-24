@@ -1,49 +1,52 @@
-[gd_scene load_steps=2 format=3 uid="uid://buytsq6opwga1"]
+[gd_scene load_steps=9 format=3 uid="uid://buytsq6opwga1"]
 
 [ext_resource type="Script" path="res://script/interface/unit_panel.gd" id="1_won1b"]
+[ext_resource type="Texture2D" uid="uid://cgw3emhd8agcm" path="res://art/minion.png" id="2_pc4n8"]
+[ext_resource type="PackedScene" uid="uid://bhp206jav1nqd" path="res://inner_window.tscn" id="2_xav0o"]
+[ext_resource type="PackedScene" uid="uid://ch8832wi2x1m5" path="res://scene/unit/stat_bar.tscn" id="3_x3sc8"]
+[ext_resource type="Theme" uid="uid://c2dqbtyc2vdb7" path="res://main_theme.tres" id="4_gvjmr"]
+[ext_resource type="PackedScene" uid="uid://ci75b4qje04i6" path="res://experience_bar.tscn" id="4_oytce"]
+[ext_resource type="PackedScene" uid="uid://d0swgeb3gi2fc" path="res://buff_display.tscn" id="7_feweh"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_orpil"]
 
 [node name="UnitPanel" type="Panel"]
-offset_right = 799.0
-offset_bottom = 180.0
+custom_minimum_size = Vector2(0, 200)
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
 mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxEmpty_orpil")
 script = ExtResource("1_won1b")
 
-[node name="Name" type="Label" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
-text = "Unit Name"
+[node name="InnerWindow" parent="." instance=ExtResource("2_xav0o")]
+layout_mode = 1
 
 [node name="ID" type="Label" parent="."]
-layout_mode = 0
-offset_left = 262.0
-offset_right = 316.0
-offset_bottom = 26.0
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -304.0
+offset_top = 140.0
+offset_right = -250.0
+offset_bottom = 166.0
+grow_horizontal = 0
 text = "Unit ID"
 
-[node name="GridContainer" type="GridContainer" parent="."]
-layout_mode = 0
-offset_left = 2.0
-offset_top = 33.0
-offset_right = 492.0
-offset_bottom = 177.0
-theme_override_constants/h_separation = 75
-theme_override_constants/v_separation = 7
-
-[node name="TargetID" type="Label" parent="."]
-layout_mode = 0
-offset_left = 483.0
-offset_top = 1.0
-offset_right = 523.0
-offset_bottom = 24.0
-text = "Target ID"
-
 [node name="CheckBox" type="CheckBox" parent="."]
-layout_mode = 0
-offset_left = 669.0
-offset_top = 2.0
-offset_right = 770.0
-offset_bottom = 33.0
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -247.0
+offset_top = 137.0
+offset_right = -146.0
+offset_bottom = 168.0
+grow_horizontal = 0
 mouse_filter = 1
 text = "Verbosity"
 
@@ -65,45 +68,156 @@ offset_right = 749.0
 offset_bottom = 67.0
 text = "mypos"
 
-[node name="ClassSelect" type="OptionButton" parent="."]
-layout_mode = 0
-offset_left = 640.0
-offset_top = 119.0
-offset_right = 770.0
-offset_bottom = 139.0
-mouse_filter = 1
-action_mode = 1
-keep_pressed_outside = true
+[node name="Button" type="Button" parent="."]
+layout_mode = 1
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 107.0
+offset_bottom = 126.0
 
-[node name="ClassSave" type="Button" parent="."]
-layout_mode = 0
-offset_left = 649.0
-offset_top = 145.0
-offset_right = 760.0
-offset_bottom = 176.0
-mouse_filter = 1
-text = "Assign Class"
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(59, 76)
+scale = Vector2(1.71875, 1.71875)
+texture = ExtResource("2_pc4n8")
 
-[node name="HoldPosition" type="CheckButton" parent="."]
-layout_mode = 0
-offset_left = 593.0
-offset_top = 4.0
-offset_right = 654.0
-offset_bottom = 35.0
-mouse_filter = 1
-text = "H"
+[node name="Button2" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -136.0
+offset_top = -63.0
+offset_right = -4.0
+offset_bottom = -32.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Character Sheet"
 
-[node name="OpenMain" type="Button" parent="."]
+[node name="SurvivabilityInfo" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -219.0
+offset_top = -30.0
+offset_right = -152.0
+offset_bottom = 30.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="ArmorLabel" type="Label" parent="SurvivabilityInfo"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme = ExtResource("4_gvjmr")
+text = "ARMOR: X|Y"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="FocusInfo" type="HBoxContainer" parent="."]
 layout_mode = 0
-offset_left = 679.0
-offset_top = 55.0
-offset_right = 730.0
-offset_bottom = 86.0
-mouse_filter = 1
-text = "MAIN"
+offset_left = 136.0
+offset_top = 120.0
+offset_right = 446.0
+offset_bottom = 151.0
+
+[node name="HealthBar" parent="." instance=ExtResource("3_x3sc8")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_right = 0.0
+offset_left = 17.0
+offset_top = -68.0
+offset_right = 376.0
+offset_bottom = -38.0
+grow_horizontal = 1
+grow_vertical = 0
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_left = 117.0
+offset_top = 63.0
+offset_right = 376.0
+offset_bottom = -32.0
+grow_vertical = 2
+size_flags_horizontal = 3
+
+[node name="FocusBar" parent="VBoxContainer" instance=ExtResource("3_x3sc8")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MoraleBar" parent="VBoxContainer" instance=ExtResource("3_x3sc8")]
+layout_mode = 2
+
+[node name="HBoxContainer2" type="VBoxContainer" parent="."]
+layout_mode = 1
+offset_left = 120.0
+offset_top = 20.0
+offset_right = 327.0
+offset_bottom = 58.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer2"]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="HBoxContainer2/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("4_gvjmr")
+text = "Unit Name"
+
+[node name="Level" type="Label" parent="HBoxContainer2/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("4_gvjmr")
+text = "Lv. X"
+
+[node name="StatusLabel" type="Label" parent="HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme = ExtResource("4_gvjmr")
+text = "Currently doing something"
+
+[node name="ExperienceBar" parent="." instance=ExtResource("4_oytce")]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+offset_left = 4.0
+offset_top = -30.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_vertical = 0
+
+[node name="BuffDisplay" parent="." instance=ExtResource("7_feweh")]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 1
+offset_left = 16.0
+offset_top = -48.0
+offset_right = -16.0
+offset_bottom = -16.0
+
+[node name="Kill" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -185.0
+offset_top = -63.0
+offset_right = -144.0
+offset_bottom = -32.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "KILL"
 
 [connection signal="toggled" from="CheckBox" to="." method="_on_check_box_toggled"]
-[connection signal="item_selected" from="ClassSelect" to="." method="_on_class_select_item_selected"]
-[connection signal="pressed" from="ClassSave" to="." method="_on_class_save_pressed"]
-[connection signal="toggled" from="HoldPosition" to="." method="_on_hold_position_toggled"]
-[connection signal="pressed" from="OpenMain" to="." method="_on_open_main_pressed"]
+[connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="Kill" to="." method="_on_kill_pressed"]

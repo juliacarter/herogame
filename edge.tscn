@@ -5,7 +5,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vky7q"]
 size = Vector2(45, 45)
 
-[node name="Edge" type="Node2D"]
+[node name="Edge" type="StaticBody2D"]
 script = ExtResource("1_1ioqi")
 
 [node name="WallRenderer" type="Polygon2D" parent="."]

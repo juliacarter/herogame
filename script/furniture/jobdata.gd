@@ -36,11 +36,19 @@ var experience = {}
 
 var certs = {}
 
+var healing = {}
+
+var jobclass = "Job"
+
 func _init(data):
 	if data.has("name"):
 		jobname = data.name
 	else:
 		jobname = "placeholder"
+	if data.has("class"):
+		jobclass = data.class
+	if data.has("healing"):
+		healing = data.healing.duplicate()
 	if data.has("in_place"):
 		in_place = data.in_place
 	if data.has("experience"):

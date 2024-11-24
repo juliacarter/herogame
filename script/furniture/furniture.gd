@@ -510,7 +510,8 @@ func request_haul(base, count):
 func make_task_for_unit(unit):
 	in_use = true
 	var newjob = start_job(primary_job, true)
-	newjob.make_task_for_unit(unit)
+	var task = newjob.make_task_for_unit(unit)
+	return task
 
 func place_ghost():
 	
@@ -786,7 +787,7 @@ func remove_item(base, count, shelf = "storage"):
 func create(basename, count, shelf = "output", needs_store = false):
 	if data.items.has(basename):
 		var base = data.items[basename]
-		var newstack = Stack.new(base, count, map)
+		var newstack = Stack.new(rules, base, count, map)
 		newstack.rules = rules
 		newstack.location = self
 		

@@ -3,10 +3,11 @@
 [ext_resource type="Script" path="res://EquipmentButton.gd" id="1_b7w7o"]
 
 [node name="EquipmentButton" type="Button"]
-custom_minimum_size = Vector2(50, 50)
+custom_minimum_size = Vector2(75, 75)
 offset_right = 8.0
 offset_bottom = 8.0
-text = "H"
+text = "+"
+clip_text = true
 script = ExtResource("1_b7w7o")
 
 [connection signal="pressed" from="." to="." method="_on_pressed"]

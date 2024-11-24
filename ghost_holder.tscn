@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://qq28fjak3roh"]
+
+[ext_resource type="Script" path="res://ghost_holder.gd" id="1_6hc82"]
+[ext_resource type="Texture2D" uid="uid://cetfw6b8av0dq" path="res://art/caution.png" id="2_btkeu"]
+
+[node name="GhostHolder" type="Node2D"]
+script = ExtResource("1_6hc82")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_btkeu")

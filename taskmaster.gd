@@ -242,12 +242,14 @@ func assign_closest_units():
 								hauled = request.count
 							var task = GrabTask.new("hauler", request.stack.location.position, "fetch", request.stack.location, request.stack, hauled)
 							task.shelf = request.shelf
-							task.set_haul(request.destination.position, request.destination, request.stack, request.shelf, request.final)
+							task.set_haul(request.destination.position, request.destination, request.stack, "storage", request.final)
 							closest.future_weight += hauled
 							idle_units.erase(closest.id)
 							closest.queue.push_front(task)
 							request.count -= hauled
 							pass
+							if request.stack.reserved_count > request.stack.count:
+								pass
 					else:
 						request.count = 0
 	for i in range(haul_requests.size() - 1, -1, -1):
@@ -309,11 +311,12 @@ func haul_task(base, count, location, shelf, final, job):
 	#return found
 	
 func store_task(item, count):
-	
 	var container = map.find_container_for(item, item.count)
 	if container != null:
 		item.reserved = true
 		item.reserved_count += count
+		if item.reserved_count > item.count:
+			pass
 		var request = HaulRequest.new(item, count, container, item.shelf.name, true, null)
 		haul_requests.append(request)
 	#for i in count:

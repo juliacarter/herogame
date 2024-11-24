@@ -18,6 +18,8 @@ var tab
 @onready var data = get_node("/root/Data")
 
 
+var floorstacks = []
+
 var dragbox
 
 signal navigate(pos)
@@ -50,6 +52,13 @@ var visualscenes = {
 	"ActionAnimationBeam": preload("res://attack_beam.tscn"),
 	"ActionAnimationProjectile": preload("res://action_animation_projectile.tscn"),
 	"VisualEffectSprite": preload("res://visual_effect_sprite.tscn")
+}
+
+var aoescene = load("res://area_effect.tscn")
+
+var aoescenes = {
+	"AreaEffectCircle": load("res://area_effect_circle.tscn"),
+	"AreaEffectLine": load("res://area_effect_line.tscn")
 }
 
 var unittree: QuadTree
@@ -123,6 +132,8 @@ var zones = {}
 
 var active = true
 var viewed = false
+
+var completed = false
 
 var highlighted = {"x": 1, "y": 1}
 var current: Square
@@ -369,7 +380,39 @@ func get_ring(x, y, radius):
 
 #func _input(event):
 	#pass
+	
+func aoe_at(aoedata, pos, caster = null, origin = null):
+	var aoe
+	if aoedata.has("shape"):
+		aoe = aoescenes[aoedata.shape].instantiate()
+	else:
+		aoe = aoescene.instantiate()
+	add_child(aoe)
+	
+	#aoe.global_position = pos
+	aoe.load_aoe(aoedata, pos, caster, origin)
+	pass
+	#aoe.activate()
+	
+func aoe_on_unit(aoedata, unit):
+	aoe_at(aoedata, unit.global_position, unit)
 		
+func order_spellcast_at_target(spell, unit):
+	var target
+	if rules.hovered != null:
+		if rules.hovered is Unit:
+			unit.order_cast(spell, rules.hovered)
+			
+func order_spellcast_at_self(spell, unit):
+	unit.order_cast(spell, unit)
+	
+func order_spellcast_at_mousepos(spell, unit):
+	var pos = world.get_global_mouse_position()
+	unit.order_square_cast(spell, pos)
+	
+func toggle_spell(spell, unit):
+	spell.toggled = !spell.toggled
+	unit.toggle_spell(spell, spell.toggled)
 
 func insert_waypoint_at_mouse(pointkey, patrol, index):
 	if data.waypoints.has(pointkey):
@@ -627,11 +670,12 @@ func remove_unit(unit):
 		var seeing = unit.in_sight_of[key]
 		seeing.unsee(unit)
 	unittree.remove(unit)
+	unit_leave(unit)
 	units.erase(unit.id)
 	world.remove_child(unit)
-	if encounter != null:
-		if encounter.team_goals.player == "killall":
-			check_encounter_completion()
+	#if encounter != null:
+		#if encounter.team_goals.player == "killall":
+			#check_encounter_completion()
 	
 func unit_leave(unit):
 	taskmaster.idle_units.erase(unit.id)
@@ -742,13 +786,13 @@ func find_edge():
 	
 func load_item(itemdata):
 	if data.items.has(itemdata.base):
-		var newitem = Stack.new(data.items[itemdata.base], 3, self)
+		var newitem = Stack.new(rules, data.items[itemdata.base], 3, self)
 		newitem.rules = rules
 		newitem.id = itemdata.id
 		drop_object(newitem, itemdata.x, itemdata.y)
 	
 func spawn_item(base, x, y):
-	var newitem = Stack.new(base, 10, self)
+	var newitem = Stack.new(rules, base, 10, self)
 	newitem.rules = rules
 	newitem.id = rules.assign_id(newitem)
 	drop_object(newitem, x, y)
@@ -763,13 +807,14 @@ func drop_object(item, x, y):
 	floorholder.map = self
 	floorholder.attach_item(item)
 	floorholder.position = pos
-	stacks.merge({item.base.id: []})
-	stacks.get(item.base.id).append(floorholder.item)
+	place_stack(item)
 	print(stacks)
+	floorstacks.append(floorholder)
 	add_child(floorholder)
 	
 func place_stack(stack):
 	stacks.merge({stack.base.id: []})
+	stack.stack_empty.connect(remove_stack)
 	stacks.get(stack.base.id).append(stack)
 	
 func add_job(job):
@@ -787,20 +832,24 @@ func remove_job(job):
 		jobs.erase(job.jobname)
 	
 func remove_stack(stack):
-	var has = stacks[stack.base.id].find(stack)
-	if stack.location != null:
-		if stack.location.entity() == "FLOORSTACK":
-			remove_child(stack.location)
-	if has != -1:
-		if stack.location is Furniture:
-			pass
-		stacks[stack.base.id].pop_at(has)#.call_deferred("free")
-		pass
-	else:
-		pass
 	if stacks.has(stack.base.id):
-		if stacks[stack.base.id].size() == 0:
-			stacks.erase(stack.base.id)
+		var has = stacks[stack.base.id].find(stack)
+		if stack.location != null:
+			if stack.location.entity() == "FLOORSTACK":
+				var i = floorstacks.find(stack.location)
+				if i != -1:
+					floorstacks.pop_at(i)
+				remove_child(stack.location)
+		if has != -1:
+			if stack.location is Furniture:
+				pass
+			stacks[stack.base.id].pop_at(has)#.call_deferred("free")
+			pass
+		else:
+			pass
+		if stacks.has(stack.base.id):
+			if stacks[stack.base.id].size() == 0:
+				stacks.erase(stack.base.id)
 	pass
 	
 func add_patrol(new):
@@ -826,6 +875,7 @@ func remove_patrol_priority(new):
 #*****
 
 func unpaused_think(delta):
+	
 	if !taskmaster.assigning:
 		await taskmaster.assign_hauls()
 		await taskmaster.assign_closest_units()
@@ -851,6 +901,7 @@ func unpaused_think(delta):
 				done.append(key)
 		for key in done:
 			active_jobs.erase(key)
+		
 		for key in units:
 			var unit = units[key]
 			if unit.is_node_ready():
@@ -881,6 +932,9 @@ func unpaused_think(delta):
 		for key in furniture:
 			var furniture = furniture[key]
 			await furniture.think(delta)
+	if encounter != null:
+		if !completed:
+			check_encounter_completion()
 			
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -927,30 +981,39 @@ func check_encounter_completion():
 		elif playervic && enemyvic:
 			encounter_draw()
 	
+func cleanup_map():
+	completed = true
+	
 func encounter_victory():
+	cleanup_map()
 	await send_all_units_home()
 	await encounter.complete_encounter(true)
 	await rules.remove_map(id)
 	
 func encounter_failure():
+	cleanup_map()
 	await send_all_units_home()
 	await encounter.complete_encounter(false)
 	await rules.remove_map(id)
 	
 func encounter_draw():
+	cleanup_map()
 	await send_all_units_home()
 	await rules.remove_map(id)
 	
 func send_all_units_home():
 	if encounter != null:
-		if encounter.transport != null:
-			var transport = encounter.transport
-			transport.needs_placement = false
-			await transport.set_target(rules.home)
-			for key in units:
-				var unit = units[key]
-				await transport.store_unit(unit)
-			transport.moving = true
+		var transport = Transport.new(rules)
+		transport.id = rules.assign_id(transport)
+		rules.transports.merge({
+			transport.id: transport
+		})
+		transport.needs_placement = false
+		await transport.set_target(encounter.return_map)
+		for key in units:
+			var unit = units[key]
+			await transport.store_unit(unit)
+		transport.moving = true
 	
 #*****
 #Furniture Functions
@@ -1234,9 +1297,25 @@ func flip_tile_to(type, x, y):
 #*****
 
 func remove_floorstack(stack):
-	if stacks.has(stack.id):
-		stacks.erase(stack.id)
-		remove_child(stack)
+	var i = floorstacks.find(stack)
+	if i != -1:
+		floorstacks.pop_at(i)
+	remove_child(stack)
+
+func find_item_count_by_key(key):
+	var result = 0
+	if data.items.has(key):
+		var base = data.items[key]
+		result += find_item_count(base.id)
+	return result
+	
+func find_item_count(base):
+	var result = 0
+	if stacks.has(base):
+		var matching = stacks[base]
+		for stack in matching:
+			result += stack.count
+	return result
 
 func find_items(base):
 	var results
@@ -1248,7 +1327,7 @@ func find_item_amount(base, desire):
 	
 func find_item_amount_for(base, desire, requester = null):
 	if desire > 0:
-		print(base)
+		#print(base)
 		var closest = null
 		var closestdistance = 1000000
 		if stacks.has(base.id):

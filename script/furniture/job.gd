@@ -80,6 +80,10 @@ var jobname
 
 var datakey
 
+var healing = {}
+
+var rnr = false
+
 func save():
 	var saved_tasks = []
 	var saved_assignments = []
@@ -201,6 +205,8 @@ func finish_escort(actor):
 	#assign_actor(actor, "interact")
 	#complete()
 
+func check_completion():
+	return time > 0
 
 
 #Progress the job. Returns true if the job has completed, false otherwise
@@ -208,11 +214,20 @@ func work(delta):
 	if instant:
 		time = 0
 		return true
-	#if task_exists:
+	start_work()
+	var progress = calc_prog(delta)
+	calc_healing(delta, "interact")
+	time -= progress
+	var result = check_completion()
+	return result
+		
+func start_work():
 	if !started:
 		if on_start != null:
 			callv(on_start, args)
 		started = true
+		
+func calc_prog(delta):
 	var progress = delta
 	for key in desiredactors:
 		var slot = desiredactors[key]
@@ -229,18 +244,19 @@ func work(delta):
 			for skill in skilltrains:
 				var amount = skilltrains[skill]
 				worker.train_skill(delta, skill, amount)
-	if(location.entity() == "FURNITURE"):
-		pass
-		#location.in_use = true
-	time = time - progress
-	#print(time)
-	if(time > 0):
-		return false
-	else:
-		#complete()
-		return true
-	#else:
-		#return false
+	return progress
+	
+func calc_healing(delta, slotname):
+	for key in healing:
+		var value = healing[key]
+		if desiredactors.has(slotname):
+			var slot = desiredactors[slotname]
+			var actors = slot.actors
+			for worker in actors:
+				worker.apply_healing(key, value * delta)
+
+func calc_drain(delta):
+	pass
 		
 func reserve(resource, amount):
 	pass
@@ -404,6 +420,17 @@ func make_escort_for_unit(unit):
 			})
 		taskmaster.add_task(task)
 				
+func return_task_for_unit(unit):
+	var newtask = Task.new(desired_role, location.spots.interact[0].get_global_position(), self, type, location)
+	if certs.has("interact"):
+		newtask.certs = certs.interact.duplicate()
+	actorslots = {}
+	#desiredactors.interact.actors.append(unit)
+	waiting_for_resource = false
+	location.task_queue.push_back(newtask)
+	location.assignments.push_back(unit)
+	return newtask
+				
 func make_task_for_unit(unit):
 	var needs = check_needs()
 	print("===")
@@ -424,10 +451,8 @@ func make_task_for_unit(unit):
 		for key in desiredactors:
 			desiredactors[key].actors = []
 		if(needs.is_empty() && !automatic):
-			task_exists = true
-			actorslots = {}
-			#location.unreserve_slots()
-			var request = taskmaster.add_task(self, [unit])
+			var newtask = return_task_for_unit(unit)
+			return newtask
 	else:
 		for need in needs.keys():
 			var difference = needs.get(need)
@@ -437,14 +462,8 @@ func make_task_for_unit(unit):
 			else:
 				has = true
 	if has:
-		var newtask = Task.new(desired_role, location.spots.interact[0].get_global_position(), self, type, location)
-		newtask.certs = certs.interact.duplicate()
-		actorslots = {}
-		#desiredactors.interact.actors.append(unit)
-		waiting_for_resource = false
-		location.task_queue.push_back(newtask)
-		location.assignments.push_back(unit)
-		pass
+		var newtask = return_task_for_unit(unit)
+		return newtask
 			
 		
 func delete_task():
@@ -714,6 +733,7 @@ func _init(data, grid):
 	args = data.args
 	skilltrains = data.skilltrains.duplicate()
 	continues = data.continues
+	healing = data.healing.duplicate()
 	certs = data.certs.duplicate()
 	for key in data.slots:
 		var count = data.slots[key].count

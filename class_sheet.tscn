@@ -1,0 +1,49 @@
+[gd_scene load_steps=4 format=3 uid="uid://cp0qpd5cpax68"]
+
+[ext_resource type="Script" path="res://ClassSheet.gd" id="1_01o3p"]
+[ext_resource type="PackedScene" uid="uid://das6e3mhanx0r" path="res://character_equipment.tscn" id="2_n0obm"]
+[ext_resource type="PackedScene" uid="uid://cyvl8xfvgq7hx" path="res://equipment_picker.tscn" id="3_4euh7"]
+
+[node name="ClassSheet" type="Control"]
+custom_minimum_size = Vector2(500, 800)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_01o3p")
+
+[node name="ReferenceRect" type="ReferenceRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "NAME"
+vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="CharacterEquipment" parent="VBoxContainer/HBoxContainer" instance=ExtResource("2_n0obm")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EquipmentPicker" parent="." instance=ExtResource("3_4euh7")]
+visible = false
+layout_mode = 1

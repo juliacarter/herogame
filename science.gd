@@ -32,7 +32,7 @@ func load_techs():
 	for key in data.techs:
 		var techdata = data.techs[key]
 		var tech = Tech.new(techdata)
-		tech.id = rules.uuid(tech)
+		tech.id = rules.assign_id(tech)
 		if techdata.has("starting"):
 			research_tech(tech)
 		else:

@@ -1,0 +1,52 @@
+[gd_scene load_steps=3 format=3 uid="uid://b0v5r85y7df8x"]
+
+[ext_resource type="Script" path="res://UnitTable.gd" id="1_104dd"]
+[ext_resource type="PackedScene" uid="uid://clwihkhkn1031" path="res://sortable_list.tscn" id="2_s5mgd"]
+
+[node name="UnitTable" type="Control"]
+custom_minimum_size = Vector2(456, 510)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 456.0
+offset_bottom = 510.0
+script = ExtResource("1_104dd")
+
+[node name="SortableList" parent="." instance=ExtResource("2_s5mgd")]
+z_index = 1
+offset_left = 4.0
+offset_top = 52.0
+offset_right = 452.0
+offset_bottom = 467.0
+
+[node name="Disband" type="Button" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 472.0
+offset_right = 89.0
+offset_bottom = 503.0
+text = "DISBAND"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 26.0
+offset_top = 10.0
+offset_right = 368.0
+offset_bottom = 41.0
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = "FILTERS"
+
+[node name="PlayerFilter" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "player"
+
+[node name="EnemyFilter" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "enemy"
+
+[node name="AllFilter" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "allunit"
+
+[connection signal="pressed" from="Disband" to="." method="_on_disband_pressed"]

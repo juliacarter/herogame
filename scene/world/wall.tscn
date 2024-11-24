@@ -3,7 +3,9 @@
 [ext_resource type="Script" path="res://script/world/wall.gd" id="1_8eifm"]
 [ext_resource type="Texture2D" uid="uid://85xsyp87uviq" path="res://art/wall.png" id="2_f211y"]
 
-[node name="Wall" type="Node2D"]
+[node name="Wall" type="StaticBody2D"]
+collision_layer = 0
+collision_mask = 0
 script = ExtResource("1_8eifm")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

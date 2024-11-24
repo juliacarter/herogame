@@ -4,7 +4,8 @@ class_name Defense
 var protections = []
 
 var armor = {
-	
+	"physical": {"min": 0, "variance": 0},
+	"energy": {"min": 0, "variance": 0}
 }
 
 func clear_protection():
@@ -28,10 +29,15 @@ func get_defense(damage, piercing, type, attack = null):
 		#return 0.0
 	if value < 0:
 		value = 0
-	return value
+	var percent = value / 100
+	var amount = damage * percent
+	return amount
 	
 func calculate_armor():
-	armor = {}
+	armor = {
+		"physical": {"min": 0, "variance": 0},
+		"energy": {"min": 0, "variance": 0}
+	}
 	for prot in protections:
 		for key in prot.armor:
 			var val = prot.armor[key]

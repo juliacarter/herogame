@@ -20,6 +20,12 @@ var power
 
 @onready var rect = get_node("SelectedRect")
 
+@onready var autocast = get_node("AutocastRect")
+
+@onready var cooldown = get_node("Sprite2D/ProgressBar")
+
+var hotkey = ""
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -36,6 +42,13 @@ func _process(delta):
 		rect.visible = true
 	else:
 		rect.visible = false
+	if power is ActionPower:
+		autocast.visible = power.action.autocast
+		cooldown.visible = true
+		cooldown.max_value = power.action.cooldown
+		cooldown.value = power.action.time
+	else:
+		autocast.visible = false
 
 func make_button(data):
 	button_name = data.name
@@ -48,8 +61,14 @@ func make_button(data):
 
 func button_pressed():
 	rules.stop_casting()
-	rules.select_power(power)
-	rules.callv(action, args)
+	if !power is Power || !power.instacast:
+		var newargs = args.duplicate()
+		if power is Power:
+			newargs = power.get_prime_args()
+		rules.select_power(power)
+		rules.callv(action, newargs)
+	else:
+		rules.fire_power(power)
 
 
 func _on_button_gui_input(event: InputEvent) -> void:

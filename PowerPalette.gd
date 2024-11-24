@@ -3,7 +3,7 @@ extends Panel
 @onready var rules = get_node("/root/WorldVariables")
 @onready var data = get_node("/root/Data")
 
-@onready var grid = get_node("GridContainer")
+@onready var grid = get_node("Control/GridContainer")
 
 @onready var digbutton = get_node("DigFill")
 
@@ -73,12 +73,7 @@ func load_palette(options):
 		grid.add_child(newbutton)
 
 
-func _on_build_button_pressed():
-	load_build()
 
-
-func _on_power_button_pressed():
-	load_powers()
 
 
 func _on_dig_button_pressed() -> void:

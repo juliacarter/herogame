@@ -21,8 +21,10 @@ func _init(data):
 	filltarget = data.num - 1
 	target = data.newtarget
 	type = "fuel"
+	
 	if data.has("autofill"):
 		autofill = data.autofill
+	
 	
 func copy(stat):
 	title = stat.title

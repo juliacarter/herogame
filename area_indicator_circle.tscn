@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dutqui3mvox7t"]
+
+[ext_resource type="Script" path="res://AreaIndicatorCircle.gd" id="1_y0dbi"]
+
+[node name="AreaIndicatorCircle" type="Node2D"]
+script = ExtResource("1_y0dbi")

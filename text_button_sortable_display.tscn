@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3 uid="uid://h2bjfwll8b8"]
+
+[ext_resource type="Script" path="res://TextButtonSortableDisplay.gd" id="1_oadtx"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7cnyx"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dnwsp"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_itxyt"]
+
+[node name="TextButtonSortableDisplay" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_oadtx")
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_7cnyx")
+theme_override_styles/hover = SubResource("StyleBoxFlat_dnwsp")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_itxyt")
+text_overrun_behavior = 1
+clip_text = true
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

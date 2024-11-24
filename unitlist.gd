@@ -6,8 +6,7 @@ var faction: Faction
 var units = {}
 var weights = {}
 
-#Plans that can be purchased during wave generation
-var plans = {}
+var role = ""
 
 func _init(data):
 	if data.has("weights"):
@@ -15,26 +14,29 @@ func _init(data):
 	if data.has("units"):
 		units = data.units.duplicate()
 		
-func generate_units(value):
+func generate_units(value, max = -1):
 	var remaining = value
 	var genned = []
 	var done = false
 	while !done:
 		var wheel = []
-		for key in units:
-			var weight = weights[key]
-			var wizard = units[key]
-			if remaining - wizard.starting_price >= 0:
-				for i in weight:
-					wheel.append(key)
-		if wheel != []:
-			var rand = randi() % wheel.size()
-			var key = wheel[rand]
-			var wizard = units[key]
-			var result = wizard.generate_unit(remaining)
-			if result != null:
-				remaining -= result.cost
-				genned.append(result.unit)
+		if max == -1 || genned.size() < max:
+			for key in units:
+				var weight = weights[key]
+				var wizard = units[key]
+				if remaining - wizard.starting_price >= 0:
+					for i in weight:
+						wheel.append(key)
+			if wheel != []:
+				var rand = randi() % wheel.size()
+				var key = wheel[rand]
+				var wizard = units[key]
+				var result = wizard.generate_unit(remaining)
+				if result != null:
+					remaining -= result.cost
+					genned.append(result.unit)
+			else:
+				done = true
 		else:
 			done = true
 	return genned

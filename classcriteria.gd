@@ -1,4 +1,4 @@
-extends Criteria
+extends Condition
 class_name ClassCriteria
 
 var classes = []

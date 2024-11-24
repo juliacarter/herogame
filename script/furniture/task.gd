@@ -56,6 +56,8 @@ var next_action: Task
 #The speed at which the unit moves to the task
 var speed = "run"
 
+var rnr = false
+
 func get_certified(units):
 	var result = {}
 	for key in units:
@@ -70,6 +72,9 @@ func get_certified(units):
 			})
 	return result
 
+func task_complete():
+	pass
+
 func start_job():
 	if job != null:
 		job.map.active_jobs.merge({
@@ -79,9 +84,18 @@ func start_job():
 func get_interaction(origin = null, reserving = true, spotname = "interact"):
 	pass
 
+	#return get_square(origin)
+
 func get_square(origin = null, reserving = true, spotname = "interact"):
 	var result = object.get_square(origin, reserving, spotname)
 	return result
+
+func get_movement():
+	if object != null:
+		var square = get_square(actor, reserving)
+		return square.global_position
+	else:
+		return target
 
 func doable():
 	if type == "idle":

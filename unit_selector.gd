@@ -1,9 +1,14 @@
 extends Panel
 
-var unitscene = load("res://unit_holder.tscn")
+@onready var list = get_node("SortableList")
 
-@onready var grid = get_node("GridContainer")
+var sortables = [
+	NameSortable.new(),
+	LevelSortable.new(),
+	CheckboxSortable.new()
+]
 
+var selected = {}
 
 var possible = []
 
@@ -12,12 +17,7 @@ func _ready():
 	pass # Replace with function body.
 
 func load_options(options):
-	visible = true
-	possible = options.duplicate()
-	for unit in possible:
-		var newunit = unitscene.instantiate()
-		newunit.load_unit(unit)
-		grid.add_child(newunit)
+	pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

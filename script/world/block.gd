@@ -1,9 +1,11 @@
-extends Node2D
+extends StaticBody2D
 class_name Block
 
 @onready var sprite = get_node("Sprite2D")
 
 @onready var obstacle = get_node("Obstacle")
+
+@onready var inside = get_node("Interior")
 var obstacle_rid: RID
 
 var solid: bool = false
@@ -21,6 +23,19 @@ func load_data(newdata):
 		
 	spritename = newdata.sprite
 	spritetex = load("res://art/" + spritename + ".png")
+	set_mask()
+
+func set_mask():
+	if solid:
+		set_collision_mask_value(9, true)
+		set_collision_layer_value(9, true)
+		set_collision_mask_value(20, true)
+		set_collision_layer_value(20, true)
+	else:
+		set_collision_mask_value(9, false)
+		set_collision_layer_value(9, false)
+		set_collision_mask_value(20, false)
+		set_collision_layer_value(20, false)
 
 func save():
 	var save_dict = {

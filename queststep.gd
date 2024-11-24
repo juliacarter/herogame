@@ -26,7 +26,7 @@ func _init(newrules, newquest, newobj, newrew = []):
 			"step": self,
 			"rules": rules
 		})
-		var objective = rules.instantiate_class(obj.type, args)
+		var objective = rules.script_map[obj.type].new(args, quest)
 		objs.append(objective)
 	objectives = objs
 	#objectives = [ResourceObjective.new(rules, self, "cash", 200)]

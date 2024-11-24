@@ -1,0 +1,86 @@
+[gd_scene load_steps=6 format=3 uid="uid://ch8832wi2x1m5"]
+
+[ext_resource type="Script" path="res://script/unit/stat_bar.gd" id="1_sd4cv"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_8wpu2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n0wq0"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0ys1i"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5m56j"]
+bg_color = Color(0.780392, 0.239216, 0.321569, 0.4)
+
+[node name="HBoxContainer" type="HBoxContainer"]
+custom_minimum_size = Vector2(0, 15)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_sd4cv")
+
+[node name="StatBar" type="ProgressBar" parent="."]
+z_index = 1
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/background = SubResource("StyleBoxEmpty_8wpu2")
+theme_override_styles/fill = SubResource("StyleBoxFlat_n0wq0")
+show_percentage = false
+
+[node name="DamageBar" type="ProgressBar" parent="StatBar"]
+z_index = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/background = SubResource("StyleBoxEmpty_0ys1i")
+theme_override_styles/fill = SubResource("StyleBoxFlat_5m56j")
+fill_mode = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="StatBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="StatName" type="Label" parent="StatBar/HBoxContainer"]
+layout_mode = 2
+text = "Name"
+
+[node name="NumberVal" type="Label" parent="StatBar/HBoxContainer"]
+layout_mode = 2
+text = "0/0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GainLabel" type="Label" parent="StatBar/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 10
+text = "+X/s"
+
+[node name="StatEditor" type="Control" parent="."]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="StatEditor"]
+layout_mode = 2
+offset_left = -35.0
+offset_right = -4.0
+offset_bottom = 900.0
+mouse_filter = 1
+text = "CH"
+
+[node name="SpinBox" type="SpinBox" parent="StatEditor"]
+layout_mode = 2
+offset_left = -122.0
+offset_right = -38.9375
+offset_bottom = 900.0
+mouse_filter = 1
+
+[connection signal="pressed" from="StatEditor/Button" to="." method="_on_button_pressed"]

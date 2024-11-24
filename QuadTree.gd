@@ -66,6 +66,7 @@ func undivide(remains):
 	divided = false
 	
 func contains(spot):
+	
 	var x = spot.x - center.x
 	if x < 0:
 		x *= -1
@@ -73,10 +74,14 @@ func contains(spot):
 	if y < 0:
 		y *= -1
 	if x > boundary.w/2:
+		
 		return false
 	if y > boundary.h/2:
+		
 		return false
+	
 	return true
+	
 
 func closest_to(potential, needs_los):
 	if parent != null:

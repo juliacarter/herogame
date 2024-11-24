@@ -5,9 +5,13 @@
 [node name="MinimizableList" type="Control"]
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 3
-anchors_preset = 0
-offset_right = 200.0
-offset_bottom = 50.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
 script = ExtResource("1_kcvrj")
 
 [node name="OpenClose" type="Button" parent="."]
@@ -24,10 +28,14 @@ offset_right = 62.0
 offset_bottom = 27.0
 
 [node name="Content" type="VBoxContainer" parent="."]
-layout_mode = 0
-offset_left = 17.0
-offset_top = 34.0
-offset_right = 145.0
-offset_bottom = 63.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 25.0
+offset_top = 38.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
 
 [connection signal="pressed" from="OpenClose" to="." method="_on_open_close_pressed"]

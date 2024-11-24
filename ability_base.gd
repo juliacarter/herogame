@@ -17,7 +17,7 @@ var action = "nothing"
 var attacks = {}
 
 #Toggles on if conditions are met, off if not
-var toggling = true
+var toggling = false
 
 var conditions = []
 
@@ -32,6 +32,7 @@ func _init(gamedata, abilitydata = {}):
 	if abilitydata.has("temporary"):
 		temporary = abilitydata.temporary
 	if abilitydata.has("conditions"):
+		toggling = true
 		for condata in abilitydata.conditions:
 			var condition = gamedata.make_condition(condata)
 			conditions.append(condition)

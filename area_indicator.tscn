@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://yqyro4ghugg0"]
+
+[ext_resource type="Script" path="res://area_indicator.gd" id="1_8r2fn"]
+
+[node name="AreaIndicator" type="Node2D"]
+z_index = 1
+script = ExtResource("1_8r2fn")

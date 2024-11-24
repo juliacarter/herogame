@@ -4,7 +4,29 @@ class_name GameData
 @onready var rules = get_node("/root/WorldVariables")
 
 
-
+var tooltips = {
+	"testtip": {
+		"text": "This is a tooltip. |testtip`Nested.| More words.",
+		"title": "Tooltips",
+		"tips": [
+			{"type": "TextTip",
+			"text": "This is a tooltip. |testtip`Nested.| More words.",},
+			{"type": "TextTip",
+			"text": "This is some more text.",},
+		]
+	},
+	"nesttip": {
+		"text": "This is a nested tooltip.",
+		"title": "Nesting",
+		"tips": [
+			{"type": "TextTip",
+			"text": "This is a nested tooltip.",}
+		]
+	},
+	"poisontip": {
+		"text": "this unit is poisoned!"
+	}
+}
 
 
 var tags = {
@@ -12,6 +34,7 @@ var tags = {
 	"energy": Tag.new("energy", "restoration"),
 	"food": Tag.new("food", "restoration"),
 	"loyalty": Tag.new("loyalty", "restoration"),
+	"attention": Tag.new("attention", "restoration"),
 	
 	"table": Tag.new("table", "accessory"),
 	
@@ -29,12 +52,15 @@ var fuels = {
 		"name": "Strength",
 		"num": 200,
 		"category": "basic",
+		"spend_ratio": 0.25,
+		"tooltip": "testtip",
 		"newtarget": 10
 	},
 	"energy": {
 		"name": "Energy",
 		"num": 50,
 		"category": "basic",
+		"defaultgain": 0.5,
 		"newtarget": 10
 	},
 	"loyalty": {"name": "Loyalty",
@@ -62,21 +88,23 @@ var fuels = {
 		"newtarget": 10
 	},
 	"attention": {"name": "Attention",
-		"num": 2,
+		"num": 20,
 		"category": "basic",
 		"newtarget": 10,
+		"defaultgain": 5.0,
+		"spend_ratio": 0.05,
 		"autofill": true,
 	},
 }
 
 var qualities = {
 	"strength": {"name": "Strength", "num": 10, "category": "basic",
-		"abdata": [
-			{
-				"ability": "strengthbonus",
-				"bracket": 1,
-			}
-		],
+		#"abdata": [
+		#	{
+		#		"ability": "strengthbonus",
+		#		"bracket": 1,
+		#	}
+		#],
 	},
 	"agility": {"name": "Agility", "num": 10, "category": "basic",
 		"influences": {
@@ -138,6 +166,25 @@ var weapons = {
 	#	"firetime": how many seconds to fire each attack,
 	#	"attackcount": number of attacks made per cycle
 	#},
+	"testingraygun": {
+		"range": 10.0,
+		"damage": {
+				"kinetic": [
+					{"stat": "health", "type": "kinetic", "min": 0, "variance": 0}
+					]
+			},
+		"visuals": [{"name": "shoot", "on_fail": false}, {"name": "beam"}],
+		"animation": "kickback",
+		"accuracy": 10,
+		"accmods": ["shooting_accuracy"],
+		"aimtime": 0.0,
+		"readytime": 0.05,
+		"rangepenalty": 25,
+		"firetime": 0.3,
+		"cooldown": 0.05,
+		"focus_cost": 0.2,
+		"attackcount": 1
+	},
 	"pistol": {
 		"range": 10.0,
 		"damage": {
@@ -177,11 +224,13 @@ var weapons = {
 					]
 			},
 		"accuracy": 10,
-		"aimtime": 0.5,
 		"readytime": 1.0,
 		"rangepenalty": 25,
-		"firetime": 0.2,
-		"attackcount": 3
+		"attackcount": 3,
+		"cast_time": 1.0,
+		"focus_cost": 1.0,
+		"shots": 3,
+		"time_per_shot": 0.2,
 	},
 	
 	"claw": {
@@ -217,14 +266,31 @@ var weapons = {
 					{"stat": "health", "type": "energy", "min": 2, "variance": 0}
 					]
 			},
+		"cooldown": 0.05,
 		"accuracy": 30,
-		"aimtime": 0.2,
-		"readytime": 0.2, 
+		"aimtime": 0.1,
+		"readytime": 0.1, 
 		"rangepenalty": 25,
 		"firetime": 0.2,
 		"attackcount": 8
 	},
-	
+	"bolt": {
+		"range": 10.0,
+		"damage": {
+				"kinetic": [
+					{"stat": "health", "type": "energy", "min": 8, "variance": 4}
+					]
+			},
+		"visuals": [{"name": "shoot", "on_fail": false}, {"name": "beam"}],
+		"animation": "kickback",
+		"accuracy": 10,
+		"accmods": ["shooting_accuracy"],
+		"aimtime": 0.0,
+		"readytime": 0.75,
+		"rangepenalty": 25,
+		"firetime": 0.3,
+		"attackcount": 1
+	},
 	"phantomstrike": {
 		"damage": {
 				"bludgeon": [
@@ -303,7 +369,7 @@ var weapons = {
 	
 	"fists": {
 		"damage": {
-				"bludgeon": [
+				"kinetic": [
 					{"stat": "health", "type": "bludgeon", "min": 5, "variance": 10}
 					],
 			},
@@ -318,12 +384,40 @@ var weapons = {
 		"firetime": 0.1,
 		"attackcount": 1
 	},
-	
+	"psiblast": {
+		
+	},
+	"shove": {
+		"damage": {
+				"bludgeon": [
+					{"stat": "health", "type": "bludgeon", "min": 5, "variance": 10}
+					],
+			},
+		"animation": "punch",
+		"visuals": [{"name": "wigglebox", "on_fail": false}],
+		"bubbles": [{"bubbles": ["pow", "wham"], "path": "simple_horizontal_curve"}],
+		"accuracy": 100000,
+		"dammods": ["melee_power", "melee_power", "fistpower"],
+		"aimtime": 0.0,
+		"readytime": 1.0, 
+		"rangepenalty": 25,
+		"firetime": 0.1,
+		"triggers": {
+			"attack_hit": [
+				{
+					"action": "push_away_from_last_attack",
+					"includes": true,
+					"args": [256],
+				}
+			]
+		},
+		"attackcount": 1
+	},
 }
 
 var armors = {
 	"flak": {"armor": {
-		"bludgeon": {"min": 0, "variance": 10}, "kinetic": {"min": 0, "variance": 10}
+		"kinetic": {"min": 50, "variance": 0}
 		}, "durability": 50},
 	"gasmask": {"armor": {
 		"enviro": {"min": 5, "variance": 0}
@@ -676,6 +770,7 @@ var jobs_to_load = {
 		},
 	
 	"heal": {
+		"class": "RestJob",
 		"name": "healthkit",
 		"action": "dummy",
 		"args": ["health", 1],
@@ -683,7 +778,8 @@ var jobs_to_load = {
 		"requirements": {},
 		"type": "restore",
 		"slots": {"interact": {"count": 1, "role": "worker"}},
-		"drains": {"health": -3},
+		"drains": {"health": -30},
+		"healing": {"health": 20},
 		},
 		
 		
@@ -701,6 +797,7 @@ var jobs_to_load = {
 		"drains": {},
 		},
 	"sleep": {
+		"class": "RestJob",
 		"name": "sleeping",
 		"action": "finish_sleeping",
 		"args": [],
@@ -709,7 +806,8 @@ var jobs_to_load = {
 		"requirements": {},
 		"type": "restore",
 		"slots": {"interact": {"count": 1, "role": "worker"}},
-		"drains": {"energy": -3},
+		"drains": {"attention": -3},
+		"healing": {"attention": 2}
 		},
 	"passout": {
 		"name": "sleeping",
@@ -1145,7 +1243,15 @@ var quests_to_load = {
 	},
 	"domission": {
 		"name": "Do an Encounter",
-		"time": 20,
+		"time": 30,
+		"rewards": [
+					{
+						"type": "CashReward",
+						"args": {
+							"amount": 50,
+						},
+					}
+				],
 		"steps": [
 			{
 				"name": "Step One",
@@ -1154,15 +1260,6 @@ var quests_to_load = {
 					"args": {
 						"enc": "skirmish"
 					}}
-				],
-				"rewards": [
-					{
-						"type": "ItemReward",
-						"args": {
-							"item": "metal",
-							"amount": 50,
-						},
-					}
 				],
 			}
 		]
@@ -1361,16 +1458,7 @@ var furniture_to_load = {
 		"tags": ["table"]
 	},
 	
-	"firstaid": {
-		"jobs": ["heal"],
-		"spots": {"interact": [{"pos": 0, "side": 0}]},
-		"size": {"x": 1, "y": 1},
-		"manual": false,
-		"object_name": "Healer",
-		"spritepath":"healthbox",
-		"type": "machine",
-		"category": "healers",
-		"tags": ["health"]},
+	
 	
 	"smelter": {
 		"jobs": ["cashsmelt"],
@@ -1461,17 +1549,7 @@ var furniture_to_load = {
 		"category": "furniture",
 		"tags": ["command"]},
 	
-	"bed": {
-		"jobs": ["sleep"],
-		"spots": {"interact": [{"pos": 0, "side": 0}]},
-		"size": {"x": 1, "y": 1},
-		"manual": false,
-		"object_name": "Bed",
-		"spritepath": "metalmaker",
-		"type": "machine",
-		"category": "healers",
-		"tags": ["energy"]
-		},
+	
 	
 	"bigthing": {
 		"jobs": ["getcash"],
@@ -1567,13 +1645,40 @@ var furniture_to_load = {
 		"category": "furniture",
 		"tags": ["power"]
 		},
+		
+		#RESTO FURNITURE
+	"bed": {
+		"jobs": ["sleep"],
+		"spots": {"interact": [{"pos": 0, "side": 0}]},
+		"size": {"x": 1, "y": 1},
+		"manual": false,
+		"object_name": "Bed",
+		"spritepath": "metalmaker",
+		"type": "machine",
+		"category": "healers",
+		"tags": ["attention"]
+	},
+	"firstaid": {
+		"jobs": ["heal"],
+		"spots": {"interact": [{"pos": 0, "side": 0}]},
+		"size": {"x": 1, "y": 1},
+		"manual": false,
+		"object_name": "Healer",
+		"spritepath":"healthbox",
+		"type": "machine",
+		"category": "healers",
+		"tags": ["health"]
+	},
 	}
 	
 var roles = ["worker", "hauler", "builder", "guard"]
 
 var defaultclass = UnitClass.new({
 		"name": "minion",
-		"roles": {}
+		"roles": {
+			"hauler": 1,
+			"worker": 1
+		}
 	})
 	
 	
@@ -1583,9 +1688,19 @@ var defaultclass = UnitClass.new({
 	
 var spells = {
 	"testcast": {
-		#"type": "active",
+		"type": "SelfSpell",
 		"cooldown": 1,
-		"attention_cost": 2,
+		"focus_cost": 2,
+		#"everyframe": true,
+		"fire_action": "change_target_unit_stat",
+		"target_function": "get_targeter",
+		"fire_args": ["health", 10],
+		"automatic": true,
+	},
+	"selfcast": {
+		"type": "SelfSpell",
+		"cooldown": 1,
+		"focus_cost": 2,
 		#"everyframe": true,
 		"fire_action": "change_target_unit_stat",
 		"target_function": "get_targeter",
@@ -1603,7 +1718,65 @@ var spells = {
 				"desired_flat": 20
 			}
 		]
-	}
+	},
+	"toggleaura": {
+		"type": "ToggleSpell",
+		"cooldown": 1,
+		#cost per second to maintain
+		"focus_cost": 6.0,
+		#"everyframe": true,
+		#abilities to enable when this spell is turned on
+		"toggled_abilities": {
+			"armorbuster": 10
+		},
+		"automatic": true,
+	},
+	"othertoggleaura": {
+		"type": "ToggleSpell",
+		"cooldown": 1,
+		#cost per second to maintain
+		"focus_cost": 6.0,
+		#"everyframe": true,
+		#abilities to enable when this spell is turned on
+		"toggled_abilities": {
+			"armorbuster": 10
+		},
+		"automatic": true,
+	},
+	"aoetest": {
+		"type": "PlacedAreaSpell",
+		"cooldown": 1,
+		
+		#"everyframe": true,
+		"aoedata": {
+			"shape": "AreaEffectCircle",
+			"max_distance": 512,
+			"payloads": [
+				{"attacks": ["shove"]}
+			],
+			"radius": 256,
+		},
+		"automatic": true,
+	},
+	"linetest": {
+		"type": "LinePlacedAreaSpell",
+		"cooldown": 1,
+		"payloads": [
+				{"attacks": ["shove"]}
+			],
+		"radius": 256,
+		"max_distance": 512,
+		#"everyframe": true,
+		#"aoedata": {
+		#	"shape": "AreaEffectLine",
+		#	"max_distance": 512,
+		#	"payloads": [
+		#		{"attacks": ["shove"]}
+		#	],
+		#	"radius": 256,
+		#},
+		"automatic": true,
+	},
 }
 	
 	
@@ -1632,6 +1805,13 @@ var abilities_to_load = {
 		"type": "passive",
 		"effects": {
 			"armorbuster": 1
+		}
+	},
+	
+	"concealment": {
+		"type": "passive",
+		"effects": {
+			"concealment": 1
 		}
 	},
 	
@@ -1677,6 +1857,13 @@ var abilities_to_load = {
 		"type": "passive",
 		"effects": {
 			"fistpower": 10
+		}
+	},
+	
+	"slapfighter": {
+		"type": "passive",
+		"effects": {
+			"slapfighter": 200
 		}
 	},
 	
@@ -1849,6 +2036,12 @@ var effects_to_load = {
 		}
 	},
 	
+	"slapfighter": {
+		"type": "mod",
+		"modifiers": {
+			"fistpower": -200
+		}
+	},
 	
 	
 	#*****CONDITIONAL ABILITIES
@@ -1863,6 +2056,7 @@ var effects_to_load = {
 							"type": "AttackDistanceCondition",
 							"direction": "lesser",
 							#"by_parent": true,
+							"greater": false,
 							"target": "by",
 							"desired": 90,
 						}
@@ -1873,7 +2067,29 @@ var effects_to_load = {
 			]
 		},
 	},
-	
+	"concealment": {
+		"type": "mod",
+		"triggers": {
+			"attack_tried_against": [
+				{
+					"action": "accuracy_for_next_attack",
+					"flip": true,
+					"conditions": [
+						{
+							"type": "AttackDistanceCondition",
+							"direction": "greater",
+							#"by_parent": true,
+							"greater": true,
+							"target": "by",
+							"desired": 256,
+						}
+					],
+					"includes": true,
+					"args": [-100],
+				}
+			]
+		},
+	},
 	
 
 }
@@ -1889,6 +2105,7 @@ var buffs_to_load = {
 	"poison": {
 		"name": "Poison",
 		"duration": 10,
+		"tooltip": "poisontip",
 		"effects": {
 			"poison": 1
 		},
@@ -1912,6 +2129,8 @@ var buffs_to_load = {
 	
 var upgrades_to_load = {
 	
+	
+	
 	"superdodge": {
 		"name": "Super Dodge",
 		"article":
@@ -1922,6 +2141,20 @@ var upgrades_to_load = {
 		"cost": {"ore": 1},
 		"abilities": {
 			"evasionbonus": 100
+		},
+		"taught_by": "physicalbasic"
+	},
+	
+	"superfocus": {
+		"name": "Super Dodge",
+		"article":
+			{"title": "Strength Enhancements", "body": "Increases the unit's Strength Quality by 5."},
+		"time": 1,
+		"type": "upgrade",
+		"limit": "lesson",
+		"cost": {"ore": 1},
+		"abilities": {
+			"attention_percentregen": 100
 		},
 		"taught_by": "physicalbasic"
 	},
@@ -1944,6 +2177,7 @@ var upgrades_to_load = {
 		"name": "Strength Training",
 		"article":
 			{"title": "Strength Enhancements", "body": "Increases the unit's Strength Quality by 5."},
+		"ratings": {"superstrength": 4},
 		"time": 1,
 		"type": "upgrade",
 		"limit": "lesson",
@@ -1982,6 +2216,50 @@ var upgrades_to_load = {
 		"taught_by": "physicalbasic"
 	},
 	
+	"blaster": {
+		"name": "Man Blaster",
+		"article":
+			{"title": "Hand Gun", "body": "Unit has a gun in their hand."},
+		"time": 1,
+		"type": "upgrade",
+		"limit": "lesson",
+		"cost": {"metal": 1},
+		"ratings": {"ranged": 1},
+		"abilities": {
+			"pistolability": 1
+		},
+		"taught_by": "physicalbasic"
+	},
+	
+	"pusher": {
+		"name": "Hand Gun",
+		"article":
+			{"title": "Hand Gun", "body": "Unit has a gun in their hand."},
+		"time": 1,
+		"type": "upgrade",
+		"limit": "lesson",
+		"cost": {"metal": 1},
+		"ratings": {"martialarts": 1},
+		"abilities": {
+			"shoveability": 1
+		},
+		"taught_by": "physicalbasic"
+	},
+	
+	"testray": {
+		"name": "Testing Ray",
+		"article":
+			{"title": "Hand Gun", "body": "Unit has a gun in their hand."},
+		"time": 1,
+		"type": "upgrade",
+		"limit": "lesson",
+		"cost": {"metal": 1},
+		"abilities": {
+			"testingraygunability": 1
+		},
+		"taught_by": "physicalbasic"
+	},
+	
 	"tigerjaw": {
 		"name": "Tiger Jaw",
 		"article":
@@ -1989,13 +2267,14 @@ var upgrades_to_load = {
 		"time": 1,
 		"type": "upgrade",
 		"limit": "lesson",
+		"ratings": {"martialarts": 3},
 		"cost": {"metal": 1},
 		"learnable": true,
 		"prerequisites": [
 			{
-				"type": "UnitPointPrerequisite",
+				"type": "UnitRatingPrerequisite",
 				"count": 1,
-				"tag": "placeholder",
+				"rating": "martialarts",
 			}
 		],
 		"abilities": {
@@ -2045,6 +2324,49 @@ var upgrades_to_load = {
 		},
 		"taught_by": "physicalbasic"
 	},
+	
+	"spelltoggle":{
+		"name": "Casting Test",
+		"article":
+			{"title": "Strength Enhancements", "body": "Increases the unit's Strength Quality by 5."},
+		"time": 1,
+		"type": "upgrade",
+		"limit": "lesson",
+		"cost": {"ore": 1},
+		"abilities": {
+			"toggleauraability": 1,
+			"othertoggleauraability": 1,
+		},
+		"taught_by": "physicalbasic"
+	},
+	
+	"aoetest":{
+		"name": "Casting Test",
+		"article":
+			{"title": "Strength Enhancements", "body": "Increases the unit's Strength Quality by 5."},
+		"time": 1,
+		"type": "upgrade",
+		"limit": "lesson",
+		"cost": {"ore": 1},
+		"abilities": {
+			"aoetestability": 1
+		},
+		"taught_by": "physicalbasic"
+	},
+	"linetest":{
+		"name": "Casting Test",
+		"article":
+			{"title": "Strength Enhancements", "body": "Increases the unit's Strength Quality by 5."},
+		"time": 1,
+		"type": "upgrade",
+		"limit": "lesson",
+		"cost": {"ore": 1},
+		"abilities": {
+			"linetestability": 1
+		},
+		"taught_by": "physicalbasic"
+	},
+	
 	"goonbonus": {
 		"name": "Gunnery Basics",
 		"article":
@@ -2114,6 +2436,18 @@ var upgrades_to_load = {
 		},
 		"taught_by": "physicalbasic"
 	},
+	"slapfighter": {
+		"name": "Slap Fighter",
+		"article":
+			{"title": "Super Punch", "body": "Increases the unit's Strength Quality by 5."},
+		"time": 1,
+		"limit": "lesson",
+		"type": "upgrade",
+		"abilities": {
+			"slapfighter": 5
+		},
+		"taught_by": "physicalbasic"
+	},
 	#POWERS
 	"clawgments": {
 		"name": "Clawgments",
@@ -2166,6 +2500,23 @@ var upgrades_to_load = {
 		},
 		"taught_by": "physicalbasic"
 	},
+	"concealment": {
+		"name": "Armor Buster",
+		"article":
+			{"title": "Armor Buster", "body": "Grants increased AP at close range."},
+		"time": 1,
+		"type": "upgrade",
+		"limit": "lesson",
+		"itemcost": {"metal": 1},
+		#"item_per_scaling": {"ore": 1},
+		"manacost": {"cash": 100},
+		"mana_per_scaling": {"cash": 10},
+		#"time_per_scaling": 50,
+		"abilities": {
+			"concealment": 1
+		},
+		"taught_by": "physicalbasic"
+	},
 	
 }
 
@@ -2177,7 +2528,7 @@ var origins_to_load = {
 		"selectable": true,
 		"roles": {},
 		"lessons": [
-			"goonbonus",
+			#"goonbonus",
 		],
 	},
 	"nightshade": {
@@ -2200,7 +2551,7 @@ var classes_to_load = {
 		"selectable": true,
 		"roles": {"guard": 1},
 		"lessons": [
-			"shootingbasics", "punchingbasics", "armorbuster"
+			#"shootingbasics", "punchingbasics"
 		],
 		"equipment": {
 			"weapon": {"popper": 2, "studder": 3, "rifle": 2, "sword": 2},
@@ -2230,7 +2581,7 @@ var classes_to_load = {
 		"class": "agent",
 		"selectable": true,
 		"roles": {"guard": 1},
-		"lessons": ["armorbuster"],
+		"lessons": [],
 		"equipment": {
 			"weapon": {"popper": 2, "studder": 3, "rifle": 2},
 			"armor": {"flakjacket": 1},
@@ -2352,6 +2703,71 @@ var units_to_load = {
 			"tool3": null
 		},
 	},
+	
+	"punchguard": {
+		"allegiance": "player",
+		"aggressive": true,
+		"sprite": "minion",
+		"roles": ["guard"],
+		"class": "guard",
+		"lessons": [],
+		"starter_equipment": {
+			"weapon": null,
+			"armor": null,
+			"tool1": null,
+			"tool2": null,
+			"tool3": null
+		},
+	},
+	
+	"hideyguy": {
+		"allegiance": "player",
+		"aggressive": true,
+		"sprite": "minion",
+		"roles": ["guard"],
+		"class": "guard",
+		"lessons": ["concealment"],
+		"starter_equipment": {
+			"weapon": "popper",
+			"armor": "flakjacket",
+			"tool1": null,
+			"tool2": null,
+			"tool3": null
+		},
+	},
+	
+	"auraguy": {
+		"allegiance": "player",
+		"aggressive": true,
+		"sprite": "minion",
+		"roles": ["guard"],
+		"class": "guard",
+		"lessons": ["spelltoggle"],
+		"starter_equipment": {
+			"weapon": "popper",
+			"armor": "flakjacket",
+			"tool1": null,
+			"tool2": null,
+			"tool3": null
+		},
+	},
+	
+	"pusher": {
+		"allegiance": "player",
+		"aggressive": true,
+		"sprite": "minion",
+		"roles": ["guard"],
+		"class": "guard",
+		"lessons": ["pusher"],
+		"starter_equipment": {
+			"weapon": null,
+			"armor": "flakjacket",
+			"tool1": null,
+			"tool2": null,
+			"tool3": null
+		},
+	},
+
 	"twogunterry": {
 		"allegiance": "coalition",
 		"aggressive": true,
@@ -2397,7 +2813,80 @@ var units_to_load = {
 			"tool3": null
 		},
 		},
+	"testblaster": {
+		"allegiance": "player",
+		"aggressive": true,
+		"sprite": "minion",
+		"roles": ["guard"],
+		"class": "guard",
+		"lessons": ["testcast", "testray", "slapfighter", "spelltoggle", "aoetest", "linetest"],
+		"starter_equipment": {
+			"weapon": null,
+			"armor": "flakjacket",
+			"tool1": null,
+			"tool2": null,
+			"tool3": null
+		},
+		},
+	"testdummy": {
+		"allegiance": "coalition",
+		"aggressive": true,
+		"sprite": "minion",
+		"class": "agent",
+		"lessons": ["slapfighter"],
+		"roles": ["agent"],
+		"starter_equipment": {
+			"weapon": null,
+			"armor": "justicejacket",
+			"tool1": null,
+			"tool2": null,
+			"tool3": null
+		},
+	},
 	"agent": {
+		"allegiance": "coalition",
+		"aggressive": true,
+		"sprite": "minion",
+		"roles": ["agent"],
+		#"lessons": ["armorbuster"],
+		"class": "agent",
+		"starter_equipment": {
+			"weapon": "popper",
+			"armor": null,
+			"tool1": null,
+			"tool2": null,
+			"tool3": null
+		},
+		
+		#The min stats set when generated by wizard
+		"stat_min": {
+			
+		},
+		#The max stat bonus this unit's wizard can roll
+		"stat_max": {
+			
+		},
+		#Weighting for how stat points are assigned
+		"stat_weights": {
+			
+		},
+		#The minimum & maximum amount of stat points the unit gets when generated
+		"min_bonus": 10,
+		"max_bonus": 20,
+		
+		"equipment_options": {
+			"weapon": ["popper", "studder"]
+		},
+		
+		"upgrade_options": {
+			"slot1": ["punchingbasics", "shootingbasics", "armorbuster"]
+		},
+		"upgrade_max": {
+			"slot1": 3
+		}
+		
+	},
+	"punchagent": {
 		"allegiance": "coalition",
 		"aggressive": true,
 		"sprite": "minion",
@@ -2439,7 +2928,50 @@ var units_to_load = {
 			"slot1": 3
 		}
 		
+	},
+	"busteragent": {
+		"allegiance": "coalition",
+		"aggressive": true,
+		"sprite": "minion",
+		"roles": ["agent"],
+		"lessons": ["armorbuster"],
+		"class": "agent",
+		"starter_equipment": {
+			"weapon": "popper",
+			"armor": null,
+			"tool1": null,
+			"tool2": null,
+			"tool3": null
 		},
+		
+		#The min stats set when generated by wizard
+		"stat_min": {
+			
+		},
+		#The max stat bonus this unit's wizard can roll
+		"stat_max": {
+			
+		},
+		#Weighting for how stat points are assigned
+		"stat_weights": {
+			
+		},
+		#The minimum & maximum amount of stat points the unit gets when generated
+		"min_bonus": 10,
+		"max_bonus": 20,
+		
+		"equipment_options": {
+			"weapon": ["popper", "studder"]
+		},
+		
+		"upgrade_options": {
+			"slot1": ["punchingbasics", "shootingbasics", "armorbuster"]
+		},
+		"upgrade_max": {
+			"slot1": 3
+		}
+		
+	},
 		
 	"dodgent": {
 		"allegiance": "coalition",
@@ -2613,6 +3145,36 @@ var units_to_load = {
 			"tool3": null
 		},
 	},
+	"mrfocus": {
+		"allegiance": "player",
+		"aggressive": true,
+		"sprite": "minion",
+		#"class": "agent",
+		"lessons": ["superfocus"],
+		"roles": ["agent"],
+		"starter_equipment": {
+			"weapon": null,
+			"armor": "justicejacket",
+			"tool1": null,
+			"tool2": null,
+			"tool3": null
+		},
+	},
+	"mrratings": {
+		"allegiance": "player",
+		"aggressive": true,
+		"sprite": "minion",
+		#"class": "agent",
+		"lessons": ["pusher", "blaster", "strengthenhancements"],
+		"roles": ["agent"],
+		"starter_equipment": {
+			"weapon": null,
+			"armor": "justicejacket",
+			"tool1": null,
+			"tool2": null,
+			"tool3": null
+		},
+	},
 	"mrphantom": {
 		"allegiance": "player",
 		"aggressive": true,
@@ -2683,14 +3245,11 @@ var factions_to_load = {
 				"basic": {
 					"scoutwave": 1,
 				}
-				#"soldiers": {
-				#	"name": "Soldier Wave",
-				#	"unitlists": ["soldiers"],
-				#	"heatcost": 50,
-				#	"weight": 8,
-				#	"objectivetype": "destroy",
-				#}
 		},
+		"unitlists": {
+			"basic": {"agents": 1},
+		},
+		"alignment": "villain",
 		"threats": ["pettycrime"],
 		"color": Color.BLUE
 	},
@@ -2782,6 +3341,10 @@ var modifiers = [
 	"shieldmax",
 	"evasion",
 	
+	#STAT REGEN
+	"healthregen",
+	"focusregen",
+	
 	#LOYALTY MODS
 	"breakchance",
 	"lessoncapbonus",
@@ -2828,7 +3391,46 @@ var missions_to_load = {
 	"pettycrime": {
 		"weight": 1,
 		"questname": "domission"
+	},
+	"doomthreat": {
+		"type": "DoomThreat",
+		"weight": 1,
+		"questname": "domission",
+	},
+	"crimebase": {
+		"type": "Investigation",
+		"weight": 1,
+		"questname": "domission"
 	}
+}
+
+
+var arcs = {
+	"criminalcaper": {
+		"phases": [
+			{
+				"region": "testregion",
+				"quests": ["spendcash"],
+				"threats": [
+					"doomthreat",
+				]
+			},
+			{
+				"quests": ["domission"]
+			}
+		]
+	},
+	#"crustycrusher": {
+	#	"phases": [
+	#		{
+	#			"region": "testregion",
+	#			"quests": ["haveinf"]
+	#		},
+	#		{
+	#			"quests": ["domission"]
+	#		}
+	#	]
+	#}
 }
 
 var encounters = {
@@ -2837,7 +3439,7 @@ var encounters = {
 		"mapname": "oneobjective",
 		"team_goals": {
 			"player": "killall",
-			"coalition": "defend",
+			"baddies": "defend",
 		},
 		"rewards": {},
 		"zones": 
@@ -2849,6 +3451,11 @@ var encounters = {
 			{
 				"baddies": ["agents", "flakboys"]
 			},
+		"roles": {
+			"baddies": {
+				"lists": ["basic"]
+			}
+		},
 		"goal": "killall"
 	},
 	"scoutwave": {
@@ -2973,7 +3580,7 @@ var waypoints = {
 }
 
 var prereq_objects = {
-	"UnitPointPrerequisiteu": UnitPointPrerequisite
+	"UnitRatingPrerequisite": UnitRatingPrerequisite
 }
 
 func make_condition(condata):
@@ -2995,16 +3602,20 @@ func _ready():
 	load_furniture()
 	load_buffs()
 	load_powers()
+	
+	load_requisitions()
+	unit_wizards()
+	unit_lists()
 	load_factions()
 	
 	load_stats()
 	
-	load_requisitions()
+	
 	
 	load_missions()
 	
-	unit_wizards()
-	unit_lists()
+	
+	
 	
 	
 	
@@ -3043,7 +3654,7 @@ func load_items():
 		if data.has("protection"):
 			if armors.has(data.protection):
 				newitem.protection = armors[data.protection]
-		newitem.id = rules.uuid(newitem)
+		newitem.id = rules.assign_id(newitem)
 		if newitem != null:
 			items.merge({
 				key: newitem
@@ -3107,6 +3718,10 @@ func load_buffs():
 		})
 		
 func load_modifiers():
+	for fuel in fuels:
+		modifiers.append(fuel + "_flatregen")
+		modifiers.append(fuel + "_percentregen")
+		modifiers.append(fuel + "_bonusregen")
 	var mods_to_load = modifiers.duplicate()
 	for work in worktypes:
 		var workhaste = work + "haste"
@@ -3116,13 +3731,25 @@ func load_modifiers():
 	for mod in modifiers:
 		var data =  {"type": "mod",
 			"modifiers": {
-				mod: 1
+				mod: 1.0
 			}
 		}
 		var effect = BaseEffect.new(data)
 		effect.effname = mod
 		effects.merge({
 			mod: effect
+		})
+		var abdata = {
+			"type": "passive",
+		}
+		var ability = AbilityBase.new(self, abdata)
+		ability.effects.merge({
+			effect: 1
+		})
+		ability.rules = rules
+		ability.key = mod
+		abilities.merge({
+			mod: ability
 		})
 	
 		
@@ -3290,6 +3917,8 @@ func load_abilities():
 					
 func load_upgrades():
 	for key in upgrades_to_load:
+		if key == "superfocus":
+			pass
 		var data = upgrades_to_load[key]
 		var newbase = BaseUpgrade.new(self, data)
 		newbase.key = key
@@ -3515,6 +4144,13 @@ func load_visuals():
 func load_stats():
 	for key in fuels:
 		var statdata = fuels[key]
+		fuels[key].merge({"key": key})
+		fuels[key].merge({"flat_regenmods": []})
+		fuels[key].flat_regenmods.append(key + "_flatregen")
+		fuels[key].merge({"percent_regenmods": []})
+		fuels[key].percent_regenmods.append(key + "_percentregen")
+		fuels[key].merge({"bonus_regenmods": []})
+		fuels[key].bonus_regenmods.append(key + "_bonusregen")
 		if statdata.has("abdata"):
 			fuels[key].merge({
 				"abilities": []

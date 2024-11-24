@@ -74,27 +74,34 @@ func travel(delta):
 	
 func land_transport():
 	rules.transports.erase(id)
+	for key in units:
+		var unit = units[key]
+		if unit.map != null:
+			unit.map.remove_unit(unit)
 	if targetmap != null:
 		if targetmap.tab != null:
 			targetmap.tab.remove_transport(self)
-	if !needs_placement:
-		var entry = targetmap.get_entry()
-		for key in units:
-			var unit = units[key]
-			unit.on_map = true
-			unit.teleport_to_map_entry(targetmap)
-		units = {}
-		moving = false
+	if targetmap is Region:
+		targetmap.land_units(units)
 	else:
-		if targetmap is Grid:
+		if !needs_placement:
+			var entry = targetmap.get_entry()
 			for key in units:
 				var unit = units[key]
 				unit.on_map = true
-			rules.start_placement(units, targetmap, null)
-			if targetmap.encounter != null:
-				targetmap.encounter.started = true
+				unit.teleport_to_map_entry(targetmap)
+			units = {}
+			moving = false
 		else:
-			targetmap.land_units(units)
-		units = {}
-		moving = false
+			if targetmap is Grid:
+				for key in units:
+					var unit = units[key]
+					
+					unit.on_map = true
+				rules.start_placement(units, targetmap, null)
+				if targetmap.encounter != null:
+					targetmap.encounter.started = true
+			
+			units = {}
+			moving = false
 	

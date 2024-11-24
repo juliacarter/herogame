@@ -1,0 +1,80 @@
+[gd_scene load_steps=5 format=3 uid="uid://d1rfqrovx68ib"]
+
+[ext_resource type="Script" path="res://SortableRow.gd" id="1_vcfdr"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nhgqn"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7asi2"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7au1w"]
+
+[node name="SortableRow" type="Control"]
+custom_minimum_size = Vector2(0, 25)
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 25.0
+grow_horizontal = 2
+size_flags_horizontal = 3
+mouse_filter = 1
+script = ExtResource("1_vcfdr")
+
+[node name="Contents" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RowMain" type="Control" parent="Contents"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 1
+
+[node name="ReferenceRect" type="ReferenceRect" parent="Contents/RowMain"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+border_color = Color(0.384314, 0.54902, 0.72549, 1)
+border_width = 2.0
+
+[node name="Highlight" type="ReferenceRect" parent="Contents/RowMain"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+border_width = 4.0
+editor_only = false
+
+[node name="RowBodyButton" type="Button" parent="Contents/RowMain"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme_override_styles/normal = SubResource("StyleBoxEmpty_nhgqn")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_7asi2")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_7au1w")
+
+[node name="Row" type="HBoxContainer" parent="Contents/RowMain"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[connection signal="pressed" from="Contents/RowMain/RowBodyButton" to="." method="_on_row_body_button_pressed"]

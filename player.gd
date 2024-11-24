@@ -53,6 +53,14 @@ var innercircle = {}
 func _init(gamerules):
 	rules = gamerules
 
+func earn_intangible(resource, amount):
+	if intangibles.has(resource):
+		intangibles[resource] += amount
+	else:
+		intangibles.merge({
+			resource: amount
+		})
+
 func earn_notoriety(amount):
 	notoriety += amount
 	if notoriety >= notoriety_to_next:

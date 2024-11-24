@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3 uid="uid://bjvor2p044csj"]
+
+[ext_resource type="Script" path="res://AreaIndicatorLine.gd" id="1_htl4h"]
+
+[node name="AreaIndicatorLine" type="Node2D"]
+script = ExtResource("1_htl4h")
+
+[node name="Line2D" type="Line2D" parent="."]
+points = PackedVector2Array(0, 0, 0, 0)
+
+[node name="Raycasts" type="Node2D" parent="."]
+modulate = Color(0.984314, 0, 0.607843, 1)
+z_index = 4096
+
+[node name="Forward" type="RayCast2D" parent="Raycasts"]
+collision_mask = 524288
+
+[node name="ForLeft" type="RayCast2D" parent="Raycasts"]
+collision_mask = 524288
+
+[node name="ForRight" type="RayCast2D" parent="Raycasts"]
+collision_mask = 524288
+
+[node name="Left" type="RayCast2D" parent="Raycasts"]
+collision_mask = 524288
+
+[node name="Right" type="RayCast2D" parent="Raycasts"]
+collision_mask = 524288

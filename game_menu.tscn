@@ -1,0 +1,43 @@
+[gd_scene load_steps=3 format=3 uid="uid://cc02ej01acish"]
+
+[ext_resource type="Script" path="res://GameMenu.gd" id="1_xp3te"]
+[ext_resource type="PackedScene" uid="uid://bhp206jav1nqd" path="res://inner_window.tscn" id="2_mbedg"]
+
+[node name="GameMenu" type="Control"]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 200.0
+offset_bottom = 200.0
+script = ExtResource("1_xp3te")
+
+[node name="InnerWindow" parent="." instance=ExtResource("2_mbedg")]
+layout_mode = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -39.5
+offset_top = -15.5
+offset_right = 39.5
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Options" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "OPTIONS"
+
+[node name="Button2" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "SAVE MAP"
+
+[node name="Button3" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "SAVE & QUIT"
+
+[connection signal="pressed" from="VBoxContainer/Options" to="." method="_on_options_pressed"]

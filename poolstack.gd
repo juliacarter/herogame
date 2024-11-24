@@ -9,6 +9,6 @@ func _init(newbase, grid):
 
 func split(splitcount):
 	#count -= splitcount
-	var newstack = Stack.new(base, splitcount, map)
+	var newstack = Stack.new(rules, base, splitcount, map)
 	map.place_stack(newstack)
 	return newstack

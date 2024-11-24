@@ -12,6 +12,9 @@ var includes = false
 
 var conditions = []
 
+#
+var flip = false
+
 var time = ""
 var key = ""
 
@@ -22,6 +25,8 @@ func _init(gamedata, trigdata):
 		includes = trigdata.includes
 	if trigdata.has("action"):
 		action = trigdata.action
+	if trigdata.has("flip"):
+		flip = trigdata.flip
 	if trigdata.has("args"):
 		args = trigdata.args.duplicate()
 	if trigdata.has("conditions"):
@@ -34,16 +39,26 @@ func _init(gamedata, trigdata):
 func check_conditions(trigger_for, trigger_by):
 	var result = true
 	for condition in conditions:
-		var triggering = trigger_for
+		var triggering
+		var trying
+		if !flip:
+			triggering = trigger_for
+			trying = trigger_by
+		else:
+			triggering = trigger_by
+			trying = trigger_for
 		if condition.by_parent:
-			triggering = trigger_for.parent
-		if !condition.fits(triggering, trigger_by):
+			triggering = triggering.parent
+		if !condition.fits(triggering, trying):
 			result = false
 	return result
 
 func get_args(trigger_for, trigger_by):
 	var result = args.duplicate()
-	if includes:
+	if !flip:
 		result.push_front(trigger_by)
 		result.push_front(trigger_for)
+	else:
+		result.push_front(trigger_for)
+		result.push_front(trigger_by)
 	return result

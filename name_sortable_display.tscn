@@ -1,0 +1,34 @@
+[gd_scene load_steps=2 format=3 uid="uid://bw4fx4aaaainu"]
+
+[ext_resource type="Script" path="res://NameSortableDisplay.gd" id="1_gxtwe"]
+
+[node name="NameSortableDisplay" type="Control"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 23.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_gxtwe")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+vertical_alignment = 1
+
+[node name="ReferenceRect" type="ReferenceRect" parent="Label"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+border_color = Color(1, 1, 1, 1)
+border_width = 2.0
+editor_only = false

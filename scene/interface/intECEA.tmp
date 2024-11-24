@@ -1,0 +1,362 @@
+[gd_scene load_steps=19 format=3 uid="uid://cj2o28yb6c7cw"]
+
+[ext_resource type="Theme" uid="uid://c2dqbtyc2vdb7" path="res://main_theme.tres" id="1_6ricm"]
+[ext_resource type="Script" path="res://script/interface/interface.gd" id="1_7mop2"]
+[ext_resource type="PackedScene" uid="uid://cd1r6ksv1xucc" path="res://scene/interface/infopanel.tscn" id="2_fn2ul"]
+[ext_resource type="PackedScene" uid="uid://bly28iu4klsvj" path="res://squad_panel.tscn" id="5_kmb43"]
+[ext_resource type="PackedScene" uid="uid://x1043cyrsasj" path="res://map_tabs.tscn" id="6_a8132"]
+[ext_resource type="PackedScene" uid="uid://cspjk0uycaxee" path="res://loader.tscn" id="7_6ikjk"]
+[ext_resource type="StyleBox" uid="uid://c77373dcff4gc" path="res://window_inner.tres" id="7_iosfc"]
+[ext_resource type="PackedScene" uid="uid://gfp5kw53bmsu" path="res://power_palette.tscn" id="7_kkevi"]
+[ext_resource type="PackedScene" uid="uid://c03blm5deeifd" path="res://saver.tscn" id="8_sn082"]
+[ext_resource type="PackedScene" uid="uid://ct0c5o2g03baj" path="res://view_list.tscn" id="9_4h3g8"]
+[ext_resource type="PackedScene" uid="uid://cjfv0kt53e1lq" path="res://console.tscn" id="10_xrtef"]
+[ext_resource type="PackedScene" uid="uid://1qc5ndlimpem" path="res://time_controls.tscn" id="11_5mg0a"]
+[ext_resource type="PackedScene" uid="uid://eextoy0jrsx0" path="res://toastbar.tscn" id="13_plb7d"]
+[ext_resource type="PackedScene" uid="uid://86yydvbrlqlt" path="res://mouse_rig.tscn" id="14_xagke"]
+[ext_resource type="PackedScene" uid="uid://dhpy1sbut4pkj" path="res://outer_window.tscn" id="16_dv8kd"]
+[ext_resource type="PackedScene" uid="uid://bm2qd8u83unuk" path="res://quest_preview.tscn" id="16_enycm"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wqwwd"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_h1m3c"]
+size = Vector2(1400, 278)
+
+[node name="Interface" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme = ExtResource("1_6ricm")
+script = ExtResource("1_7mop2")
+
+[node name="Windows" type="Control" parent="."]
+top_level = true
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="infopanel" parent="." instance=ExtResource("2_fn2ul")]
+layout_mode = 1
+offset_bottom = 23.0
+mouse_filter = 1
+
+[node name="OuterWindow" parent="." instance=ExtResource("16_dv8kd")]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -240.0
+offset_right = 23.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Panel2" type="Panel" parent="OuterWindow"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wqwwd")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="OuterWindow/Panel2"]
+layout_mode = 2
+offset_left = 321.0
+offset_top = 2.0
+offset_right = 1009.0
+offset_bottom = 173.0
+
+[node name="Selection" type="Control" parent="OuterWindow/Panel2/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 1
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -232.0
+offset_bottom = -32.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Panel3" type="Panel" parent="HBoxContainer2"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+
+[node name="InfoHolder" type="Control" parent="HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PowerPalette" parent="HBoxContainer2" instance=ExtResource("7_kkevi")]
+layout_mode = 2
+theme_override_styles/panel = ExtResource("7_iosfc")
+
+[node name="Panel" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 0
+offset_top = 67.0
+offset_right = 1401.0
+offset_bottom = 263.0
+
+[node name="WindowContainer" type="CenterContainer" parent="."]
+layout_mode = 0
+offset_top = -598.0
+offset_right = 1399.0
+offset_bottom = 7.0
+mouse_filter = 2
+
+[node name="SquadPanel" parent="." instance=ExtResource("5_kmb43")]
+visible = false
+layout_mode = 1
+offset_left = -263.0
+offset_top = -680.0
+offset_right = -13.0
+offset_bottom = 20.0
+
+[node name="MapTabs" parent="." instance=ExtResource("6_a8132")]
+layout_mode = 1
+anchors_preset = 5
+anchor_top = 0.0
+anchor_bottom = 0.0
+offset_top = -568.0
+offset_bottom = -568.0
+grow_vertical = 1
+
+[node name="Area2D" type="Area2D" parent="."]
+visible = false
+position = Vector2(0, 683)
+priority = 2190
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(700, 122)
+shape = SubResource("RectangleShape2D_h1m3c")
+
+[node name="QuitButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -47.0
+offset_top = 72.0
+offset_bottom = 103.0
+grow_horizontal = 0
+text = "QUIT"
+
+[node name="SaveMap" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -82.0
+offset_top = 32.0
+offset_bottom = 63.0
+grow_horizontal = 0
+text = "SAVEMAP"
+
+[node name="Loader" parent="." instance=ExtResource("7_6ikjk")]
+visible = false
+top_level = true
+z_index = 10
+layout_mode = 1
+offset_left = -300.0
+offset_top = -400.0
+offset_right = 300.0
+offset_bottom = 400.0
+
+[node name="Saver" parent="." instance=ExtResource("8_sn082")]
+visible = false
+top_level = true
+z_index = 296
+layout_mode = 1
+
+[node name="ViewList" parent="." instance=ExtResource("9_4h3g8")]
+visible = false
+layout_mode = 1
+offset_top = -496.0
+offset_right = -1140.0
+offset_bottom = -496.0
+
+[node name="Console" parent="." instance=ExtResource("10_xrtef")]
+visible = false
+top_level = true
+z_index = 10
+layout_mode = 1
+offset_bottom = -109.0
+
+[node name="PaletteBackground" parent="." instance=ExtResource("16_dv8kd")]
+z_index = -4096
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -406.0
+offset_top = -240.0
+offset_right = 40.0
+offset_bottom = 16.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="MapBackground" parent="." instance=ExtResource("16_dv8kd")]
+z_index = -4096
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -240.0
+offset_right = 406.0
+offset_bottom = 16.0
+grow_vertical = 0
+
+[node name="FinishPlacementButton" type="Button" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 619.0
+offset_top = 622.0
+offset_right = 759.0
+offset_bottom = 653.0
+text = "Finish Placement"
+
+[node name="Toastbar" parent="." instance=ExtResource("13_plb7d")]
+layout_mode = 0
+offset_left = 187.0
+offset_top = -549.0
+offset_right = 1246.0
+offset_bottom = -509.0
+
+[node name="MouseRig" parent="." instance=ExtResource("14_xagke")]
+layout_mode = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -302.0
+offset_top = -280.0
+offset_bottom = -240.0
+grow_horizontal = 0
+grow_vertical = 0
+alignment = 2
+
+[node name="build" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "BUILD"
+
+[node name="power" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "POWERS"
+
+[node name="TimeControls" parent="HBoxContainer" instance=ExtResource("11_5mg0a")]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -35.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="OuterWindow" parent="Control" instance=ExtResource("16_dv8kd")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -14.0
+offset_right = 6.0
+offset_bottom = 13.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="HBoxContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Button" type="Button" parent="Control/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Missions"
+
+[node name="Shop" type="Button" parent="Control/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Shop"
+
+[node name="Production" type="Button" parent="Control/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Jobs"
+
+[node name="Research" type="Button" parent="Control/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Research"
+
+[node name="Units" type="Button" parent="Control/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Army"
+
+[node name="World" type="Button" parent="Control/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Map"
+
+[node name="Debug" type="Button" parent="Control/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Debug"
+
+[node name="QuestPreview" parent="." instance=ExtResource("16_enycm")]
+layout_mode = 1
+anchors_preset = 9
+anchor_right = 0.0
+offset_top = 26.0
+offset_right = 247.0
+offset_bottom = -245.0
+grow_horizontal = 1
+
+[connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
+[connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]
+[connection signal="pressed" from="QuitButton" to="." method="_on_quit_button_pressed"]
+[connection signal="pressed" from="SaveMap" to="." method="_on_save_map_pressed"]
+[connection signal="pressed" from="FinishPlacementButton" to="." method="_on_finish_placement_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/build" to="." method="_on_build_pressed"]
+[connection signal="pressed" from="HBoxContainer/power" to="." method="_on_power_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/Shop" to="." method="_on_shop_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/Production" to="." method="_on_production_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/Research" to="." method="_on_research_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/Units" to="." method="_on_units_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/World" to="." method="_on_world_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/Debug" to="." method="_on_debug_pressed"]

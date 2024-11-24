@@ -4,6 +4,7 @@ class_name PriorityQueue
 var items = []
 var ids = {}
 
+
 func insert(item, cost):
 	var dict = {"item": item, "cost": cost}
 	if items.size() > 0:
@@ -19,6 +20,8 @@ func insert(item, cost):
 	
 func empty():
 	return items.is_empty()
+	
+
 	
 func priority_override_check(item, cost):
 	var found = false

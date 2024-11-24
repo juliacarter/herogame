@@ -1,8 +1,10 @@
 extends Panel
 
-@onready var namebox = get_node("Name")
+@onready var namebox = get_node("HBoxContainer2/HBoxContainer/Name")
 @onready var idbox = get_node("ID")
 @onready var targetid = get_node("TargetID")
+
+@onready var levellabel = get_node("HBoxContainer2/HBoxContainer/Level")
 
 @onready var targetpos = get_node("target")
 @onready var mypos = get_node("pos")
@@ -14,6 +16,21 @@ extends Panel
 @onready var classpicker = get_node("ClassSelect")
 
 @onready var holdposition = get_node("HoldPosition")
+
+@onready var healthbar = get_node("HealthBar")
+
+@onready var focusbar = get_node("VBoxContainer/FocusBar")
+@onready var focusgain = get_node("HBoxContainer/FocusGain")
+
+@onready var statuslabel = get_node("HBoxContainer2/StatusLabel")
+
+@onready var armorlabel = get_node("SurvivabilityInfo/ArmorLabel")
+
+@onready var moralebar = get_node("VBoxContainer/MoraleBar")
+
+@onready var experience = get_node("ExperienceBar")
+
+@onready var buffs = get_node("BuffDisplay")
 
 var interface
 
@@ -29,32 +46,18 @@ var progbars = {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	print("unitpanel made")
-	print(visible)
-	print(position)
-	interface = rules.interface
-	if(interface.selected.entity() == "UNIT"):
-		unit = interface.selected
-		holdposition.button_pressed = unit.holding
-		var items = 0
-		var columns = 1
-		for stat in unit.stats.fuels.keys():
-			var value = unit.stats.fuels.get(stat)
-			var bar = barscene.instantiate()
-			bar.stat = value
-			grid.add_child(bar)
-	load_classes()
+	pass
 			
 func load_classes():
-	classpicker.clear()
-	classpicker.add_item("none")
-	classes.append(null)
-	for key in rules.get_classes():
-		var newclass = rules.classes[key]
-		classpicker.add_item(newclass.classname)
-		if newclass == unit.unit_class:
-			classpicker.selected = classpicker.item_count - 1
-		classes.append(newclass)
+	pass
+	
+func load_unit(new):
+	unit = new
+	healthbar.stat = unit.stats.fuels.health
+	focusbar.stat = unit.stats.fuels.attention
+	moralebar.stat = unit.stats.fuels.loyalty
+	experience.load_unit(unit)
+	buffs.load_unit(unit)
 
 func _exit_tree():
 	for child in get_children():
@@ -62,13 +65,25 @@ func _exit_tree():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	if(interface.selected.entity() == "UNIT"):
-		namebox.text = "Name = " + interface.selected.nickname
-		idbox.text = "ID = " + interface.selected.id
-		if(interface.selected.current_target != null):
-			targetid.text = "Target = " + interface.selected.current_target.id
+	if unit != null:
+		namebox.text = unit.object_name()
+		idbox.text = "ID:" + unit.id
+		statuslabel.text = unit.status()
+		levellabel.text = "Lv." + String.num(unit.level)
+		armorlabel.text = "ARMOR: " + String.num(unit.defense.armor.physical.variance) + " | " + String.num(unit.defense.armor.energy.variance)
+		#get_fuels()
 		
 		
+func get_fuels():
+	var healthmax = unit.stats.fuels.health.max
+	var healthcurrent = unit.stats.fuels.health.value
+	healthbar.max_value = healthmax
+	healthbar.value = healthcurrent
+	
+	var focusmax = unit.stats.fuels.attention.max
+	var focuscurrent = unit.stats.fuels.attention.value
+	focusbar.max_value = focusmax
+	focusbar.value = focuscurrent
 
 
 func _on_check_box_toggled(button_pressed):
@@ -102,3 +117,11 @@ func _on_lessons_pressed() -> void:
 func _on_open_main_pressed() -> void:
 	rules.interface.open_window("singleunit")
 	rules.interface.windows.singleunit.current_tab.load_unit(interface.selected)
+
+
+func _on_button_2_pressed() -> void:
+	rules.interface.open_character_sheet(unit)
+
+
+func _on_kill_pressed() -> void:
+	unit.die()

@@ -29,11 +29,14 @@ var mana_per_scaling = {}
 
 var prerequisites = []
 
-#tags provided to the unit by this upgrade
-var points = {}
+#ratings provided to the unit by this upgrade
+var ratings = {}
 
 #whether or not the upgrade can be acquired via level up
 var learnable = false
+
+func object_name(length = ""):
+	return title
 
 func check_prerequisites(unit):
 	var result = true
@@ -57,8 +60,8 @@ func _init(gamedata, upgradedata):
 		manacost = upgradedata.manacost.duplicate()
 	if upgradedata.has("learnable"):
 		learnable = upgradedata.learnable
-	if upgradedata.has("points"):
-		points = upgradedata.points.duplicate()
+	if upgradedata.has("ratings"):
+		ratings = upgradedata.ratings.duplicate()
 	if upgradedata.has("prerequisites"):
 		var prereqs = upgradedata.prerequisites
 		for prereqdata in prereqs:

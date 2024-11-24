@@ -18,6 +18,9 @@ var transport
 var squads = []
 var map
 
+#send player units here when encounter is complete
+var return_map
+
 var rewards = []
 
 #var goal = "spy"
@@ -31,6 +34,13 @@ var units_to_send = []
 
 var units = {}
 
+#units from outside the encounter that have been sent to it
+var assigned_units = []
+
+var chaos_per_undefeated = 1
+
+var faction
+
 var units_by_team = {}
 
 var team_goals = {}
@@ -43,10 +53,29 @@ var list_data = {}
 #Unit lists keyed by role
 var unit_lists = {}
 
-#The Value provided to each role
+var lists = {}
+
+#The total Point Value when genning units for each role
 #This can be made more complex later if desired
+#add the faction's Research
 var roles = {
-	"baddies": 100
+	"baddies": 50
+}
+
+#Roles filled by each faction
+var role_factions = {
+	"player": null,
+	"baddies": null,
+}
+#points worth of Units to grab from the Faction's persistent units
+var desired_unit_types = {
+	"baddies": {"soldier": 300}
+}
+#points worth of "phantom" units to be generated anew for the encounter, by type
+#phantom units aren't drawn from the persistent unit pool, and disappear when the encounter ends
+#they still come from a faction's Unit List
+var desired_unit_generation = {
+	"baddies": {"soldier": 200}
 }
 
 var orders = []
@@ -58,7 +87,28 @@ var zones = {
 	
 var type = "mission"
 
+var pindata
+var pin
+
+#how many units can be brought into this encounter
+var encounter_space = 5
+
+signal encounter_complete(encounter, player_success)
+
+signal encounter_begin
+
+signal location_removed(location)
+
+
+
+func get_description():
+	return "Lorem ipsum odor amet, consectetuer adipiscing elit. Sem consectetur posuere semper etiam nisi conubia ac iaculis? Orci mus ipsum suspendisse pulvinar potenti lectus. Lacus ut faucibus a ornare vehicula quam metus sed magna. Viverra hac orci in nam vestibulum. Ullamcorper in vestibulum ornare ultrices platea. Augue purus dignissim sem, vestibulum purus aliquam. Adipiscing ipsum odio nisl sapien molestie. Magnis aenean auctor ullamcorper gravida interdum. Porta sodales sagittis enim, lobortis habitasse justo semper."
+
+func object_name(s=""):
+	return key
+
 func _init(gamerules, encounterdata):
+	pindata = EncounterPinData.new(self)
 	var gamedata = gamerules.data
 	for reward in rewards:
 		reward.parent = self
@@ -71,6 +121,12 @@ func _init(gamerules, encounterdata):
 		for listkey in list_list:
 			var list = gamedata.lists.unit[listkey]
 			unit_lists[key].append(list)
+	for key in encounterdata.roles:
+		var role = encounterdata.roles[key]
+		var options = role.lists
+		lists.merge({
+			key: options.duplicate()
+		})
 	for key in encounterdata.zones:
 		var zonedata = encounterdata.zones[key].duplicate()
 		zones.merge({
@@ -110,9 +166,21 @@ func load_save(savedata):
 	id = savedata.id
 	#goal = savedata.goal
 
+func start_encounter():
+	encounter_begin.emit()
+
+func quest_complete(newquest, success):
+	if newquest == quest:
+		complete_encounter(success)
+
 func complete_encounter(success):
 	squads = []
-	fire_rewards()
+	encounter_complete.emit(self, success)
+	location_removed.emit(self)
+	if success:
+		fire_rewards()
+	else:
+		fire_failure()
 
 func fire_rewards():
 	for reward in rewards:
@@ -120,6 +188,13 @@ func fire_rewards():
 		rules.callv(
 			effect.function, effect.args
 		)
+
+func fire_failure():
+	for key in units:
+		var unit = units[key]
+		if unit.allegiance != "player":
+			rules.chaos += chaos_per_undefeated
+			#unit.faction.gain_research(research_per_undefeated)
 
 func get_objective_task(unit = null):
 	var goal = team_goals[unit.allegiance]
@@ -167,29 +242,48 @@ func spawn_units():
 		var list = unit_lists[role]
 		pass
 	#var squares = map.get_zone_squares("enemydeployment")
-	var newunits = get_units()
+	var newunits = get_units("baddies")
 	var placedunits = map.place_units_in_zone("enemydeployment", newunits)
 	for unit in placedunits:
-		add_unit(unit)
+		add_unit(unit, "baddies")
 
 
-func get_units():
-	
-	for role in unit_lists:
-		var lists = unit_lists[role]
-		var rand = randi() % lists.size()
-		var list = lists[rand]
-		var units = list.generate_units(roles[role])
-		return units
+func get_units(key):
+	#for key in role_factions:
+		#if key != "player":
+	var faction = role_factions[key]
+	var options = lists[key]
+	var i = randi() % options.size()
+	var chosen = options[i]
+	var units
+	if faction == null:
+		faction = rules.factions.coalition
+	units = faction.generate_units(chosen, -1, roles[key])
+		
+		
+	for unit in units:
+		unit.encounter_role = key
+	return units
+	#for role in unit_lists:
+	#	var lists = unit_lists[role]
+	#	var rand = randi() % lists.size()
+	#	var list = lists[rand]
+	#	var units = list.generate_units(roles[role])
+	#	return units
 
 func add_squad(squad):
 	squads.append(squad)
 	for key in squad.units:
 		var unit = squad.units[key]
-		add_unit(unit)
+		add_unit(unit, "player")
 
-func add_unit(unit):
+func assign_unit(unit):
+	assigned_units.append(unit)
+	add_unit(unit, "player")
+
+func add_unit(unit, role = ""):
 	unit.encounter = self
+	unit.encounter_role = role
 	units.merge({
 		unit.id: unit
 	})
@@ -201,6 +295,9 @@ func add_unit(unit):
 	})
 	for order in orders:
 		unit.add_order(order)
+
+func send_units():
+	pass
 
 func send_squads():
 	for squad in squads:

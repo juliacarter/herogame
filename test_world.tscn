@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://ciullrok02ou5"]
+[gd_scene load_steps=10 format=3 uid="uid://ciullrok02ou5"]
 
 [ext_resource type="Script" path="res://test_world.gd" id="1_ccgnu"]
 [ext_resource type="PackedScene" uid="uid://cyyurxjrfjfou" path="res://world_map.tscn" id="2_m3eew"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://script/world/camera.gd" id="3_fnpnq"]
 [ext_resource type="PackedScene" uid="uid://7sfrsqefjccc" path="res://main_menu.tscn" id="4_bms20"]
 [ext_resource type="PackedScene" uid="uid://dmlb3xje2gjho" path="res://input_handler.tscn" id="6_arpvo"]
+[ext_resource type="PackedScene" uid="uid://qq28fjak3roh" path="res://ghost_holder.tscn" id="8_n2v8x"]
 
 [sub_resource type="Environment" id="Environment_eorew"]
 
@@ -15,7 +16,10 @@ y_sort_enabled = true
 script = ExtResource("1_ccgnu")
 
 [node name="WorldMap" parent="." instance=ExtResource("2_m3eew")]
-position = Vector2(-1273, -25091)
+offset_left = -1273.0
+offset_top = -25091.0
+offset_right = -1273.0
+offset_bottom = -25091.0
 
 [node name="Interface" type="CanvasLayer" parent="."]
 layer = 2
@@ -45,3 +49,5 @@ script = ExtResource("3_fnpnq")
 environment = SubResource("Environment_eorew")
 
 [node name="InputHandler" parent="." instance=ExtResource("6_arpvo")]
+
+[node name="GhostHolder" parent="." instance=ExtResource("8_n2v8x")]

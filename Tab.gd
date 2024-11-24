@@ -18,3 +18,7 @@ func _process(delta: float) -> void:
 
 func _on_pressed() -> void:
 	parent.open_tab_index(index) # Replace with function body.
+	
+func set_title(new):
+	tabtitle = new
+	text = tabtitle

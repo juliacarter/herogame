@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://2cyamisd5ra7"]
+
+[ext_resource type="Script" path="res://AreaEffectLine.gd" id="1_ft2m6"]
+[ext_resource type="Texture2D" uid="uid://cetfw6b8av0dq" path="res://art/caution.png" id="2_yue4r"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_miy3i"]
+
+[node name="AreaEffectLine" type="Node2D"]
+z_index = 4096
+script = ExtResource("1_ft2m6")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_miy3i")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_yue4r")
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+collision_mask = 524288
+
+[node name="LoSRay" type="RayCast2D" parent="."]
+collision_mask = 524288

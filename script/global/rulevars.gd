@@ -2,6 +2,10 @@
 extends Node2D
 class_name RuleVars
 
+signal encounter_created(encounter)
+signal quest_complete(quest, success)
+signal quest_started(quest)
+
 var map
 
 var unitscene = load("res://scene/unit/unit.tscn")
@@ -44,9 +48,20 @@ signal tool_pushed(tool)
 
 var ids = {}
 
-var debugvars = {"instabuild": false, "unlockall": true, "assignanything": true, "orderanyone": true, "standstill": false}
+var debugvars = {
+	"instabuild": false,
+	"unlockall": true,
+	"assignanything": true,
+	"orderanyone": true,
+	"standstill": true,
+	"editstats": false
+}
+
 var infamy = 000000
 var infamy_to_level = 100000
+
+#point bonus for all encounters
+var chaos = 0
 
 var mapdistance = 10000.0
 
@@ -79,6 +94,15 @@ var waves = {}
 
 var quests = []
 
+var active_arc
+
+
+#the number of days until the next Arc is rolled for
+var arc_days = 1
+
+var arcs = []
+var completed_arcs = []
+
 var sell_orders = []
 
 var squads = {}
@@ -91,6 +115,10 @@ var transports = {}
 
 var available_missions = []
 var active_missions = {}
+
+#missions to show in the quest list (arcs/threats)
+#each Arc gets its own quest list entry, threats are grouped into one entry
+var missions = []
 
 var worksites = {}
 
@@ -184,6 +212,23 @@ var script_map = {
 	#Rewards
 	"CashReward": CashReward,
 	"ItemReward": ItemReward,
+	"DoomReward": DoomReward,
+	
+	"SelfSpell": SelfSpell,
+	"ToggleSpell": ToggleSpell,
+	"SelfAreaSpell": SelfAreaSpell,
+	"PlacedAreaSpell": PlacedAreaSpell,
+	"LinePlacedAreaSpell": LinePlacedAreaSpell,
+	
+	"DoomThreat": DoomThreat,
+	
+	"Job": Job,
+	"RestJob": RestJob,
+}
+
+var indicatorscenes = {
+	"AreaEffectCircle": load("res://area_indicator_circle.tscn"),
+	"AreaEffectLine": load("res://area_indicator_line.tscn")
 }
 
 var colors = {
@@ -193,11 +238,36 @@ var colors = {
 var globals = {}
 var global_vars = {}
 
+func change_resolution(width, height):
+	get_tree().root.size = Vector2(width, height)
+	interface.size = Vector2(width, height)
+
+func aoe_on_unit(aoedata, unit):
+	unit.map.aoe_on_unit(aoedata, unit)
+
+func aoe_at_position(caster, pos, aoedata):
+	caster.map.aoe_at(aoedata, pos, caster, caster.global_position)
+
+func fire_current_power():
+	world.ghostholder.clear_ghosts()
+	if power != null:
+		fire_power(power)
+
+func fire_power(pow):
+	current_map.callv(pow.on_cast, pow.cast_args)
+	if(!Input.is_action_pressed("queue_ghosts") && pow.panel == ""):
+		power = null
+
+func prime_power(new):
+	var args = new.get_prime_args()
+	callv(new.on_prime, args)
 
 func select_power(new):
 	power = new
-	select(null)
-	interface.update_selection()
+	#if new is Power:
+		#prime_power(new)
+	#select(null)
+	#interface.update_selection()
 
 func make_soundbubble(bubbledata, pos):
 	var popup = popupscene.instantiate()
@@ -212,18 +282,59 @@ func make_popup(str, pos, color = "damage"):
 	world.add_child(popup)
 	popup.load_floattext(str, pos, newcolor)
 
-func start_quest(questname):
+func select_arc():
+	var options = []
+	for key in data.arcs:
+		#var arc = data.arcs[key]
+		if completed_arcs.find(key) == -1:
+			options.append(key)
+	if options != []:
+		var i = randi() % options.size()
+		var arcname = options[i]
+		start_arc(arcname)
+
+func start_arc(arcname):
+	if data.arcs.has(arcname):
+		var arcdata = data.arcs[arcname]
+		var arc = Arc.new(self, arcdata)
+		arc.key = arcname
+		arcs.append(arc)
+		arc.begin_arc()
+		active_arc = arc
+		missions.append(arc)
+		interface.arcpreview.load_arc(arc)
+
+func complete_arc(arc, success):
+	var i = arcs.find(arc)
+	if i != -1:
+		arcs.pop_at(i)
+	var j = missions.find(arc)
+	if j != -1:
+		missions.pop_at(j)
+	completed_arcs.append(arc.key)
+	arc_days = randi() % 5
+	active_arc = null
+	#select_arc()
+
+func progress_arc_phase(phase, amount):
+	phase.progress(amount)
+
+func start_quest(questname, faction = null):
 	var questdata = data.quests_to_load[questname]
 	var quest = Quest.new(self, questdata)
+	#quest.pin = world.map.add_pin(quest.pindata)
+	quest.faction = faction
 	quests.append(quest)
 	quest.start_quest()
-	interface.questlist.load_quests()
+	#interface.questlist.load_quests()
 	return quest
 	
 func initial_quests():
 	#for key in data.quests_to_load:
-	start_quest("timedquest")
-	interface.questlist.load_quests()
+	start_quest("domission")
+	#interface.questlist.load_quests()
+	#start_arc("criminalcaper")
+	#select_arc()
 
 func instantiate_class(name_of_class:String, args) -> Object:
 	if script_map.has(name_of_class):
@@ -232,32 +343,94 @@ func instantiate_class(name_of_class:String, args) -> Object:
 			return script.new(args)
 	return null
 
-func roll_threat():
+func get_phase_threat():
+	if active_arc != null:
+		var threat = active_arc.phases[active_arc.current_phase].get_threat()
+		if threat != null:
+			start_plot(threat, null)
+
+func get_research_threat():
 	var potential = []
-	for key in data.missions:
-		var mission = data.missions[key]
-		potential.append(mission)
-	var i = randi() % potential.size()
-	var mission = potential[i]
-	start_plot(mission)
+	for key in factions:
+		var faction = factions[key]
+		if faction.alignment == "villain":
+			potential.append(faction)
+	if potential != []:
+		var i = randi() % potential.size()
+		var selected = potential[i]
+		var threat = selected.get_threat()
+		#threat.faction = selected
+		start_plot(threat, selected)
+
+func roll_chaos_threat():
+	if active_arc != null:
+		var threat = active_arc.roll_threat("ChaosThreat")
 	
-func start_plot(new):
-	start_quest(new.quest)
+func roll_doom_threat():
+	if active_arc != null:
+		var threat = active_arc.roll_threat("DoomThreat")
+	
+func roll_special_threat():
+	pass
+
+func make_ghost(ghostdata, origin = null):
+	var pos = Vector2(0, 0)
+	if origin != null:
+		pos = origin.global_position
+	var ghost = world.ghostholder.make_ghost(ghostdata, origin)
+
+#func roll_threat():
+	#var potential = []
+	#for key in data.missions:
+	#var mission = data.missions[key]
+	#	potential.append(mission)
+	#var i = randi() % potential.size()
+	#var mission = potential[i]
+	#start_plot(mission)
+	
+func start_plot(new, faction):
+	var quest = start_quest(new.quest, faction)
+	missions.append(new)
+	for reward in new.fail_effects:
+		quest.fail_effects.append(reward)
+		
+func finish_plot(plot):
+	var i = missions.find(plot)
+	if i != -1:
+		missions.pop_at(i)
+
+func add_doom_to_phase(phase):
+	phase.increase_doom()
+
+func lose_game():
+	pass
 
 func fail_quest(quest):
 	var i = quests.find(quest)
+	#world.map.remove_pin(quest.pin)
+	for reward in quest.fail_effects:
+		var redata = reward.get_reward()
+		callv(redata.function, redata.args)
 	if i != -1:
 		quests.pop_at(i)
-	interface.questlist.load_quests()
+	quest_complete.emit(self, false)
+	#interface.questlist.load_quests()
+
+func make_selected_tired():
+	for key in selected:
+		var unit = selected[key]
+		if unit is Unit:
+			unit.stats.fuel.add_damage(5)
 
 func complete_quest(quest):
 	var i = quests.find(quest)
+	#world.map.remove_pin(quest.pin)
 	for reward in quest.rewards:
 		var redata = reward.get_reward()
 		callv(redata.function, redata.args)
 	if i != -1:
 		quests.pop_at(i)
-	interface.questlist.load_quests()
+	quest_complete.emit(self, true)
 	
 func complete_step(step):
 	for reward in step.rewards:
@@ -301,11 +474,23 @@ func change_caster_stat_delta(delta, ability, stat, amount):
 func change_caster_stat(ability, stat, amount):
 	ability.unit.change_stat(stat, amount)
 
+func push_away_from_caster(action, victim, amount):
+	victim.push_away_from(action.unit.global_position, amount)
+
+func push_away_from_last_attack(action, victim, amount):
+	victim.push_away_from(action.last_fire_position, amount)
+
 func effect_on(effect, on):
-	await on.defend(Attack.new(data, data.weapons.pistol))
+	await on.defend(Attack.new(self, data.weapons.pistol))
 
 func trigger_dummy():
 	pass
+	
+func kill_selected():
+	for key in selected:
+		var unit = selected[key]
+		if unit is Unit:
+			unit.die()
 	
 #triggered_by: Attack
 #triggered_for unused
@@ -316,6 +501,11 @@ func percent_bonus_to_damage_total(triggered_by, triggered_for, type, stat, perc
 	bonus *= stacks
 	triggered_by.add_bonus(type, stat, bonus)
 	pass
+	
+#triggered_by: Attack
+#triggered_for unused
+func accuracy_for_next_attack(triggered_by, triggered_for, amount):
+	triggered_by.bonus_accuracy += amount
 	
 #triggered_by: Attack
 #triggered_for unused
@@ -357,14 +547,21 @@ func save():
 	}
 	return save_dict
 	
+func initialize_game():
+	free_agent_refresh_timer = 0.0
+	generate_free_agents(max_free_agents)
+	for key in factions:
+		var faction = factions[key]
+		faction.initialize()
+	
+	
 func new_game():
 	var dir = DirAccess.open("user://")
 	dir.make_dir("user://saves")
 	dir.make_dir("user://maps")
 	get_tree().root.add_child(worldscene)
 	world.new_world()
-	free_agent_refresh_timer = 0.0
-	generate_free_agents(max_free_agents)
+	initialize_game()
 	
 func new_game_new_map(x, y):
 	var dir = DirAccess.open("user://")
@@ -373,16 +570,12 @@ func new_game_new_map(x, y):
 	mainmenu.visible = false
 	get_tree().root.add_child(worldscene)
 	home = await make_map(x, y)
-	free_agent_refresh_timer = 0.0
-	generate_free_agents(max_free_agents)
-	open_map(home.id)
+	initialize_game()
 	
 func new_game_load_map(path):
 	get_tree().root.add_child(worldscene)
 	load_map(path)
-	free_agent_refresh_timer = 0.0
-	generate_free_agents(max_free_agents)
-	open_map(home.id)
+	initialize_game()
 	
 func continue_game():
 	load_game_prompt()
@@ -645,6 +838,19 @@ func send_units(units, destination):
 			transport.id: transport
 		})
 		#unit.queue_transit(destination)
+		
+func send_units_grouped(units, destination):
+	var transport = Transport.new(self)
+	var newunits = {}
+	for unit in units:
+		newunits.merge({
+			unit.id: unit
+		})
+	transport.queue_transit(newunits, destination)
+	transport.id = assign_id(transport)
+	transports.merge({
+		transport.id: transport
+	})
 
 func _physics_process(delta):
 	if cursor_aoe != null:
@@ -752,7 +958,11 @@ func scan_units():
 
 func calculate_day():
 	daytimer = 10
-	roll_threat()
+	if arc_days > 0 && active_arc == null:
+		arc_days -= 1
+	#elif active_arc == null:
+		#select_arc()
+	#get_phase_threat()
 	#calculate_wave()
 	
 func calculate_wave():
@@ -796,6 +1006,8 @@ func _ready():
 		classes.merge({
 			newclass.id: newclass
 		})
+		
+
 		
 func apply_self_buff(caster, target, buffname, amount):
 	var buff = data.buffs[buffname]
@@ -896,7 +1108,8 @@ func remove_map(mapid):
 	
 func transfer_unit(unit, map, placed = false):
 	if unit.map != null:
-		unit.map.unit_leave(unit)
+		if unit.map != map:
+			unit.map.remove_unit(unit)
 	unit.map = map
 	unit.stored = false
 	unit.spawned = false
@@ -960,11 +1173,11 @@ func add_select(object):
 	selected.merge({object.id: object})
 	interface.update_selection()
 
-func move_order(square, queued = false):
+func move_order(square, final, queued = false):
 	for key in selected:
 		var object = selected[key]
 		if object.entity() == "UNIT":
-			object.move_order(square, queued)
+			object.move_order(square, final, queued)
 	
 func spawn_unit(unit):
 	godpower = "spawn"
@@ -1007,7 +1220,7 @@ func preview_tile(tiledata):
 	current_map.preview_tile(tiledata)
 	print("preview activated")
 	
-func grab_preview(data):
+func grab_preview(data, caster = null):
 	print(data)
 	godpower = "furniture"
 	print(godpower)
@@ -1015,6 +1228,10 @@ func grab_preview(data):
 	print(previewing)
 	current_map.activate_preview(data)
 	print("preview activated")
+	
+func open_view_for(object):
+	if object is Unit:
+		interface.open_character_sheet(object)
 	
 func uuid(object):
 	unit_id += 1
@@ -1042,7 +1259,7 @@ func draw_encounter():
 		data.units.agent
 	]
 	
-	encounter.id = uuid(encounter)
+	encounter.id = assign_id(encounter)
 	available_missions.append(
 		encounter
 	)
@@ -1074,11 +1291,20 @@ func send_quest_item(base, count, objective):
 	order.order_item(base, count)
 	sell_orders.append(order)
 	
-func start_encounter(encounter):
+func start_encounter(encounter, faction = null):
+	encounter.encounter_complete.connect(end_encounter)
 	encounter.id = assign_id(encounter)
 	#if encounter.quest != null:
 		#encounter.quest.started = true
+	world.map.add_location(encounter)
+	encounter.role_factions.player = factions.player
+	encounter.role_factions.baddies = encounter.faction
 	available_missions.append(encounter)
+
+func end_encounter(encounter, success):
+	var i = available_missions.find(encounter)
+	if i != -1:
+		available_missions.pop_at(i)
 
 func selected_controllable():
 	if debugvars.orderanyone:
@@ -1107,6 +1333,25 @@ func buy_entry(entry, count):
 func sell_entry(entry, count):
 	pass
 
+func start_mission_by_name(missionname):
+	if data.quests_to_load.has(missionname):
+		var mission = data.quests_to_load[missionname]
+		start_mission(mission)
+
+func new_encounter_by_name(encname):
+	var encounterdata = data.encounters[encname]
+	var enc = Encounter.new(self, encounterdata)
+	enc.key = encname
+	enc.enemy_bases = [
+		data.units.agent,
+		data.units.agent,
+		data.units.agent
+	]
+	enc.rules = self
+	enc.return_map = home
+	encounter_created.emit(enc)
+	return enc
+
 func start_mission(mission):
 	active_missions.merge({
 		mission.id: mission
@@ -1120,11 +1365,19 @@ func start_mission(mission):
 	mission.spawn_units()
 	#mission.map.spawn_unit_blob(mission.enemy_bases)
 	var units = []
-	for squad in mission.squads:
-		for key in squad.units:
-			var unit = squad.units[key]
-			units.append(unit)
-	send_units(units, mission_map)
+	for unit in mission.assigned_units:
+		#var unit = mission.units[key]
+		units.append(unit)
+	#for squad in mission.squads:
+		#for key in squad.units:
+			#var unit = squad.units[key]
+			#units.append(unit)
+	if mission is Encounter:
+		mission.start_encounter()
+		send_units_grouped(units, mission_map)
+	else:
+		send_units(units, mission_map)
+	return mission
 		#mission.transport = squad.transport_order(mission_map)
 
 func start_map_job(mission):
@@ -1291,6 +1544,10 @@ func top_down_merge(b, iBegin, iMiddle, iEnd, a):
 			b[k] = a[j]
 			j = j + 1;
 
+func prime_spell(spell):
+	power = spell
+	active_targeter = spell.targeter
+
 func start_casting():
 	pass
 	
@@ -1317,6 +1574,13 @@ func get_picker_equipment_options(slotname):
 		result.append(itemdata)
 	return result
 	
+func get_selected():
+	if selected == {}:
+		return null
+	if selected.size() == 1:
+		return selected.values()[0]
+	else:
+		return selected.values()
 
 func get_picker_options(slot):
 	if slot == "criteria":

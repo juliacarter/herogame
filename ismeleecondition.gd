@@ -1,4 +1,4 @@
-extends Criteria
+extends Condition
 class_name MeleeAttackCondition
 
 func fits(unit, target = null):

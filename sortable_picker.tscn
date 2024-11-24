@@ -1,0 +1,40 @@
+[gd_scene load_steps=3 format=3 uid="uid://b1tcy23vrmx21"]
+
+[ext_resource type="Script" path="res://SortablePicker.gd" id="1_pybly"]
+[ext_resource type="PackedScene" uid="uid://clwihkhkn1031" path="res://sortable_list.tscn" id="2_v7agx"]
+
+[node name="SortablePicker" type="Panel"]
+custom_minimum_size = Vector2(500, 600)
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_pybly")
+
+[node name="SortableList" parent="." instance=ExtResource("2_v7agx")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 22.0
+offset_top = 18.0
+offset_right = -20.0
+offset_bottom = -81.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Close" type="Button" parent="."]
+layout_mode = 0
+offset_left = 346.0
+offset_top = 547.0
+offset_right = 396.0
+offset_bottom = 578.0
+text = "Close"
+
+[node name="Select" type="Button" parent="."]
+layout_mode = 0
+offset_left = 94.0
+offset_top = 547.0
+offset_right = 148.0
+offset_bottom = 578.0
+text = "Select"
+
+[connection signal="pressed" from="Select" to="." method="_on_select_pressed"]

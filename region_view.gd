@@ -10,6 +10,10 @@ extends Control
 
 @onready var picker = get_node("Picker")
 
+@onready var unitlist = get_node("VBoxContainer/RegionUnitDisplay")
+
+@onready var prog = get_node("VBoxContainer/ScanProg")
+
 var region
 
 #units "parked" in the region"
@@ -25,12 +29,17 @@ func load_factions():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	pass
+	prog.text = String.num(region.scan_prog, 1) + "/" + String.num(region.opportunity_scan, 1)
 
 func load_region(new):
 	region = new
 	idlabel.text = region.id
 	influence.load_region(region)
+	unitlist.load_region(region)
+	region.units_landed.connect(display_units)
+	
+func display_units(new = []):
+	unitlist.load_units()
 
 func open_unitpicker():
 	picker.load_options(self, "units", true)

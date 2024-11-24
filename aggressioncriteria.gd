@@ -1,4 +1,4 @@
-extends Criteria
+extends Condition
 class_name AggressionCriteria
 
 var checkbuttonscene = load("res://syntax_check_button.tscn")

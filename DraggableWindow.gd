@@ -1,6 +1,6 @@
 extends Panel
 
-
+@onready var titlelabel = get_node("DragBar/HBoxContainer2/WindowTitle")
 
 @onready var dragbar = get_node("DragBar")
 @onready var tabbar = get_node("Tabs")
@@ -51,7 +51,7 @@ func _ready() -> void:
 	if tabbed:
 		tabbar.visible = true
 		padding = 100
-	content.position = Vector2(0, padding)
+	#content.position = Vector2(16, padding)
 	apply_minimum_size(size)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -66,6 +66,7 @@ func _process(delta: float) -> void:
 		if trysize.y > minsize.y:
 			newsize.y = trysize.y
 		if newsize > minsize:
+			pass
 			apply_size(newsize)
 	if dragging:
 		global_position = get_global_mouse_position() - dragging_from
@@ -77,11 +78,11 @@ func apply_y(y):
 	apply_size(Vector2(size.x, y))
 
 func apply_size(newsize):
-	size = newsize
-	if current_tab != null:
-		current_tab.size = newsize - Vector2(0, padding)
-	dragbar.size.x = size.x
-	tabbar.size.x = size.x
+	size = newsize + Vector2(8, 8)
+	#if current_tab != null:
+		#current_tab.size = newsize - Vector2(0, padding)
+	dragbar.size.x = size.x-8
+	tabbar.size.x = size.x-8
 
 func apply_minimum_size(newsize):
 	minsize = newsize
@@ -90,6 +91,9 @@ func apply_minimum_size(newsize):
 func create_tab(newtab):
 	
 	var tab = tabscene.instantiate()
+	var tabtitle = newtab.get("tabtitle")
+	if tabtitle != null:
+		tab.set_title(tabtitle)
 	tabcontents.append(newtab)
 	tab.parent = self
 	tab.index = tabbuttons.size()
@@ -101,6 +105,9 @@ func create_tab(newtab):
 func open_tab(newtab):
 	content.remove_child(current_tab)
 	content.add_child(newtab)
+	var tabtitle = newtab.callv("get_window_title", [])
+	if tabtitle != null:
+		titlelabel.text = tabtitle
 	current_tab = newtab
 	apply_minimum_size(newtab.size + Vector2(0, padding))
 

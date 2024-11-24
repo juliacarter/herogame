@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3 uid="uid://dolu2yeax6q00"]
+
+[ext_resource type="Script" path="res://organizable_list.gd" id="1_6brsv"]
+
+[node name="OrganizableList" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_6brsv")
+
+[node name="ReferenceRect" type="ReferenceRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+border_color = Color(0.756863, 0.239216, 0.945098, 1)
+
+[node name="Items" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

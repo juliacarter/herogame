@@ -1,5 +1,5 @@
 extends Object
-class_name AbilityCriteria
+class_name AbilityCondition
 
 func met(unit):
 	pass
