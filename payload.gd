@@ -20,8 +20,8 @@ func _init(gamerules, gamedata, payloaddata, caster = null):
 	parent = caster
 	if payloaddata.has("attacks"):
 		for attackname in payloaddata.attacks:
-			if data.weapons.has(attackname):
-				var attdata = data.weapons[attackname]
+			if data.attacks.has(attackname):
+				var attdata = data.attacks[attackname]
 				var attack = Attack.new(rules, attdata, parent)
 				attack.unit = parent
 				attacks.append(attack)

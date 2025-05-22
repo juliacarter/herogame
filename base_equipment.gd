@@ -10,7 +10,7 @@ var equip_abilities = []
 func _init(data):
 	super(data)
 	type = "equipment"
-	slot = data.slot
+	#slot = data.slot
 	wearsprite = data.wearsprite
 
 func name():

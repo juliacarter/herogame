@@ -123,6 +123,7 @@ func assign_closest_units():
 				for unitkey in request.units:
 					request.job.foundactors += 1
 					var unit = request.units[unitkey]
+					slot.actors.append(unit)
 					queued.merge({
 						"interact": []
 					})
@@ -144,6 +145,7 @@ func assign_closest_units():
 								key: []
 							})
 							request.job.foundactors += 1
+							slot.actors.append(closest)
 							queued[key].append(closest)
 							
 						else:

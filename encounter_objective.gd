@@ -40,8 +40,9 @@ func objective_started():
 	
 func start_objective():
 	var enc = make_encounter()
+	#enc.role_factions.baddies = quest.faction
 	rules.quest_complete.connect(encounter.quest_complete)
-	rules.start_encounter(enc)
+	rules.start_encounter(enc, rules.factions.coalition)
 	
 func get_log_text():
 	if !completed:

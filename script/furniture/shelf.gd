@@ -74,6 +74,13 @@ func peek(base):
 	if contents.has(base.id):
 		return contents[base.id].count
 	return 0
+
+func get_item(base):
+	if contents.has(base.id):
+		var item = contents[base.id]
+		return item
+	else:
+		return null
 	
 func has(base, count):
 	var result = 0
@@ -87,11 +94,12 @@ func has(base, count):
 	
 
 func remove(base, count):
-	if contents.has(base):
-		contents[base].count -= count
-		if contents[base].count <= 0:
-			location.map.remove_stack(contents[base])
-			contents.erase(base)
+	if contents.has(base.id):
+		var item = contents[base.id]
+		item.count -= count
+		if item.count <= 0:
+			location.map.remove_stack(item)
+			contents.erase(base.id)
 			return false
 	return true
 

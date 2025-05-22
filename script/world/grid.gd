@@ -2,7 +2,7 @@
 extends Node2D
 class_name Grid
 
-var thread: Thread
+#var thread: Thread
 
 var id
 
@@ -16,7 +16,6 @@ var tab
 
 @onready var rules = get_node("/root/WorldVariables")
 @onready var data = get_node("/root/Data")
-
 
 var floorstacks = []
 
@@ -92,6 +91,8 @@ var loaded_waypoints = []
 
 var jobs = {}
 
+var training_jobs = {}
+
 #jobs waiting to be started
 var waiting_jobs = {}
 
@@ -110,6 +111,9 @@ var patrols = []
 var patrols_by_priority = {}
 
 var teachers = {}
+
+var trainers = {}
+
 var containers = {}
 var restores = {}
 var objectives = {}
@@ -145,6 +149,10 @@ var taskmaster: Taskmaster
 var entry: Square
 
 var encounter: Encounter
+
+var visuals = {
+	
+}
 
 func generate_item(base, count):
 	if active_depot != null:
@@ -346,7 +354,7 @@ func _ready():
 	if blocks.size() == 0:
 		load_squares()
 	place_squares()
-	
+	make_evac_zone()
 	#rules.open_map(id)
 	
 
@@ -354,6 +362,10 @@ func visual_effect(effect, caster = null, target = null):
 	if effect.type != "SELF" && effect.type != "TARGET":
 		var scene = effect.type
 		var beam = visualscenes[scene].instantiate()
+		#beam.map = self
+		#visuals.merge({
+		#	beam: true
+		#})
 		add_child(beam)
 		beam.load_animation(effect)
 		beam.cast(caster, target)
@@ -482,6 +494,13 @@ func buff_hovered(buffkey):
 				rules.hovered.apply_buff(buff)
 	pass
 
+func make_evac_zone():
+	var squares = []
+	for i in range(1,blocks.size()-1,1):
+		var square = blocks[i][1]
+		squares.append(square)
+	make_zone_from_squares("evac", squares)
+
 func get_random_zonesquare(zonename):
 	if zones.has(zonename):
 		var rand = randi() % zones[zonename].size()
@@ -490,7 +509,6 @@ func get_random_zonesquare(zonename):
 		var square = zone.get_random_square()
 		return square
 	return null
-
 
 
 func make_zone_from_dragbox(zonename):
@@ -532,8 +550,7 @@ func drop_furniture():
 		
 func drop_tile():
 	if tilepreview.tilebase != {}:
-		var square = blocks[highlighted.x][highlighted.y]
-		square.set_content(tilepreview.tilebase)
+		place_tile(highlighted.x, highlighted.y, tilepreview.tilebase)
 		
 func flip_tile_at_cursor():
 	if(current != null):
@@ -601,7 +618,7 @@ func place_units_in_zone(zonename, units):
 		for unit in units:
 			var square = zone.get_random_square()
 			if rules.factions.has(unit.allegiance):
-				unit.faction = rules.factions[unit.allegiance]
+				unit.set_faction(rules.factions[unit.allegiance])
 			var newunit = await place_unit(unit, square.global_position)
 			result.append(newunit)
 	return result
@@ -628,7 +645,6 @@ func spawn_unit(unitdata, square):
 	newunit.id = rules.assign_id(newunit)
 	newunit.current_square = square
 	newunit.global_position = square.cells.center.global_position
-	newunit.current_cell = square.cells.center
 	newunit.map = self
 	newunit.rules = rules
 	newunit.data = data
@@ -637,7 +653,7 @@ func spawn_unit(unitdata, square):
 		if rules.player.master == null:
 			rules.player.master = newunit
 	if rules.factions.has(newunit.allegiance):
-		newunit.faction = rules.factions[newunit.allegiance]
+		newunit.set_faction(rules.factions[newunit.allegiance])
 	newunit.process_mode = 1
 	store_unit(newunit)
 	world.add_unit(newunit)
@@ -645,7 +661,7 @@ func spawn_unit(unitdata, square):
 	return newunit
 	
 func place_unit(unit, newposition):
-	await unittree.insert(unit)
+	
 	#unit.drop_task()
 	store_unit(unit)
 	unit.global_position = newposition
@@ -655,6 +671,8 @@ func place_unit(unit, newposition):
 	if unit.master:
 		if rules.player.master == null:
 			rules.player.master = unit
+	await unittree.insert(unit)
+	unit.halt()
 	unit.spawned = false
 	unit.map = self
 	unit.process_mode = 1
@@ -818,6 +836,11 @@ func place_stack(stack):
 	stacks.get(stack.base.id).append(stack)
 	
 func add_job(job):
+	if job.jobdata.type == "train":
+		training_jobs.merge({
+			job.jobname: []
+		})
+		training_jobs[job.jobname].append(job)
 	if jobs.has(job.jobname):
 		jobs[job.jobname].append(job)
 	else:
@@ -870,6 +893,21 @@ func remove_patrol_priority(new):
 		var i = patrols_by_priority[new.priority].find(new)
 		patrols_by_priority[new.priority].pop_at(i)
 	
+#finds a valid exit square for the given unit
+func find_exit(unit):
+	var zone = zones.evac.values()[0]
+	var bestdist = 999999999999
+	var best
+	for key in zone.squares:
+		var square = zone.squares[key]
+		var dist = square.global_position.distance_squared_to(unit.global_position)
+		if dist < bestdist:
+			bestdist = dist
+			best = square
+	if best != null:
+		return best
+	return null
+	
 #*****
 #Processing Functions
 #*****
@@ -891,7 +929,7 @@ func unpaused_think(delta):
 		for key in active_jobs:
 			var job = active_jobs[key]
 			if job.time > 0:
-				if job.workers_ready():
+				if job.can_do():
 					await job.work(delta)
 						
 						#done.append(key)
@@ -922,7 +960,8 @@ func unpaused_think(delta):
 						pass
 				if unit.quadtree == null:
 					pass
-				await fight(unit, delta)
+				if unit.spawned:
+					await fight(unit, delta)
 		
 		for key in active_lessons:
 			var lesson = active_lessons[key]
@@ -1012,7 +1051,10 @@ func send_all_units_home():
 		await transport.set_target(encounter.return_map)
 		for key in units:
 			var unit = units[key]
-			await transport.store_unit(unit)
+			if unit.faction == rules.factions.player:
+				await transport.store_unit(unit)
+			else:
+				unit.faction.return_home(unit)
 		transport.moving = true
 	
 #*****
@@ -1058,6 +1100,18 @@ func load_furniture(furndata, resuming):
 		furn.load_save(furndata)
 		return furn
 			
+func place_tile(x, y, tiledata, built = false):
+	var square = blocks[x][y]
+	if !built:
+		square.make_build_job(tiledata)
+	else:
+		set_tile(x, y, tiledata)
+		
+func set_tile(x, y, tiledata):
+	var square = blocks[x][y]
+	square.set_content(tiledata)
+	NavigationServer2D.map_force_update(navmap)
+	
 func place_furniture(angle, furndata, x, y, fromsave, built):
 	if(valid_furniture(angle, 0, furndata.size, {"x": x, "y": y})):
 		var newfurn = furniturescene.instantiate()
@@ -1116,6 +1170,10 @@ func place_furniture(angle, furndata, x, y, fromsave, built):
 				accessories[tag.title].merge({
 					newfurn.id: newfurn
 				})
+		if newfurn.type == "trainer":
+			trainers.merge({
+				newfurn.id: newfurn
+			})
 		if(newfurn.type == "container"):
 			containers.merge({newfurn.id: newfurn})
 		if newfurn.type == "depot":
@@ -1171,7 +1229,7 @@ func activate_preview(data):
 	#add_child(preview)
 	#preview.add_furniture(newpreview.content)
 	preview.content.map = self
-	preview.content.furniture_from_data(data, false)
+	preview.content.furniture_from_data(data, false, false)
 	preview.active = true
 	preview.visible = true
 	
@@ -1519,6 +1577,16 @@ func a_star(origin: MovementArea, destination: MovementArea, unit, breaking = fa
 				done = true
 		return path
 	else: return null
+	
+func get_trainers(unit):
+	var result = {}
+	for key in training_jobs:
+		var newjobs = training_jobs[key]
+		for job in newjobs:
+			if job.can_perform(unit):
+				result.merge({job.location.id: job})
+	return result
+	pass
 	
 func get_restores(need, unit):
 	var result = {}

@@ -16,4 +16,3 @@ func _process(delta: float) -> void:
 
 func _draw():
 	draw_circle(position, radius, color)
-

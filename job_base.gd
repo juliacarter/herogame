@@ -35,6 +35,7 @@ func _init(newjob, loc):
 	location = loc
 	taskmaster = location.map.taskmaster
 	
+	
 func can_serve():
 	if served:
 		return true
@@ -55,6 +56,10 @@ func can_make():
 	if can_serve():
 		return true
 
+func can_perform(unit, slot = "interact"):
+	var certified = is_certified(unit, slot)
+	return certified
+
 func is_certified(unit, slot):
 	if certs == {}:
 		return true
@@ -67,7 +72,7 @@ func is_certified(unit, slot):
 func make_job():
 	var job
 	if jobdata.jobclass != "":
-		var jobclass = rules.script_map[jobdata.jobclass]
+		var jobclass = rules.job_scripts[jobdata.jobclass]
 		job = jobclass.new(jobdata, location.map)
 	job.jobbase = self
 	#location.in_use = true

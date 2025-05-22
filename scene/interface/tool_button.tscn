@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://bnhww1ufjtu20"]
+[gd_scene load_steps=7 format=3 uid="uid://bnhww1ufjtu20"]
 
-[ext_resource type="Script" path="res://script/interface/tool_button.gd" id="1_p366m"]
+[ext_resource type="Script" uid="uid://0nqop5ewtg58" path="res://script/interface/tool_button.gd" id="1_p366m"]
 [ext_resource type="FontFile" uid="uid://y40uctc8iq01" path="res://fonts/W95FA.otf" id="2_d4osj"]
+[ext_resource type="PackedScene" uid="uid://dx2ec2whaesn" path="res://tooltip_control.tscn" id="3_6b0t4"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_j2cn3"]
 font = ExtResource("2_d4osj")
@@ -75,6 +76,13 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 theme_override_styles/normal = SubResource("StyleBoxEmpty_rs4em")
+
+[node name="TooltipControl" parent="Button" instance=ExtResource("3_6b0t4")]
+layout_mode = 1
+offset_left = -1.0
+offset_top = -1.0
+offset_right = -1.0
+offset_bottom = -1.0
 
 [node name="OnRect" type="ColorRect" parent="."]
 visible = false

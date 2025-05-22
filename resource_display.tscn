@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dli7l6p35nj8l"]
 
-[ext_resource type="Script" path="res://resource_display.gd" id="1_kefk2"]
+[ext_resource type="Script" uid="uid://dldn7pive3ir" path="res://resource_display.gd" id="1_kefk2"]
 
 [node name="ResourceDisplay" type="VBoxContainer"]
 anchors_preset = 15
@@ -10,4 +10,3 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 0
 script = ExtResource("1_kefk2")
-theme_override_constants/separation = 0

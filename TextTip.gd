@@ -6,6 +6,9 @@ var last_tooltip
 
 var tip
 
+var parent
+var origin
+
 func load_tip(new):
 	tip = new
 	text.load_text(tip.text)

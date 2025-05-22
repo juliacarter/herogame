@@ -35,6 +35,8 @@ var ratings = {}
 #whether or not the upgrade can be acquired via level up
 var learnable = false
 
+var points = 10
+
 func object_name(length = ""):
 	return title
 

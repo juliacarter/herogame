@@ -115,15 +115,3 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
-
-
-func _on_area_entered(area: Area2D) -> void:
-	units.merge({
-		area.id: area
-	})
-	area.current_cell = self
-
-
-func _on_area_exited(area: Area2D) -> void:
-	units.erase(area.id)
-	pass # Replace with function body.

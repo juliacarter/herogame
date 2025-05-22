@@ -17,4 +17,6 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if resourcecounter != null:
 		namelabel.text = resourcecounter.resource
-		count.text = String.num(resourcecounter.count())
+		var num = resourcecounter.count()
+		count.text = String.num(num)
+		pass

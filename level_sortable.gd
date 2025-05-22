@@ -11,4 +11,3 @@ func _init(sortdata = {}):
 	super(sortdata)
 	
 	title = "level"
-

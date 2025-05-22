@@ -1,14 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://b5a184nsarnbt"]
+[gd_scene load_steps=2 format=3 uid="uid://b5a184nsarnbt"]
 
-[ext_resource type="Script" path="res://navcell.gd" id="1_ja2a0"]
+[ext_resource type="Script" uid="uid://djg44k3w6tbcq" path="res://navcell.gd" id="1_ja2a0"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_rlfdi"]
-size = Vector2(32, 32)
-
-[node name="Area2D" type="Area2D"]
-collision_layer = 0
-collision_mask = 512
+[node name="Cell" type="Node2D"]
 script = ExtResource("1_ja2a0")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("RectangleShape2D_rlfdi")

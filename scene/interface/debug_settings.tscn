@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://7n2or8mtcfaj"]
 
-[ext_resource type="Script" path="res://script/interface/debug_settings.gd" id="1_132vk"]
+[ext_resource type="Script" uid="uid://csthuoq56ouu5" path="res://script/interface/debug_settings.gd" id="1_132vk"]
 [ext_resource type="PackedScene" uid="uid://dsppfisp8kxm6" path="res://wave_spawner.tscn" id="2_kft0y"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0kijd"]
@@ -84,6 +84,14 @@ offset_top = -90.0
 offset_right = 395.0
 offset_bottom = 410.0
 
+[node name="AddAsset" type="Button" parent="."]
+layout_mode = 0
+offset_left = 381.0
+offset_top = 421.0
+offset_right = 463.0
+offset_bottom = 452.0
+text = "add asset"
+
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="WaveButton" to="." method="_on_button_2_pressed"]
 [connection signal="pressed" from="Button3" to="." method="_on_button_3_pressed"]
@@ -91,3 +99,4 @@ offset_bottom = 410.0
 [connection signal="pressed" from="HBoxContainer/CashButton" to="." method="_on_cash_button_pressed"]
 [connection signal="pressed" from="HBoxContainer/Button" to="." method="_on_inf_button_pressed"]
 [connection signal="pressed" from="Button4" to="." method="_on_button_4_pressed"]
+[connection signal="pressed" from="AddAsset" to="." method="_on_add_asset_pressed"]

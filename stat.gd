@@ -55,9 +55,9 @@ func regenerate(delta):
 
 func visual_gain():
 	var base = total_gain()
-	if title == "Attention":
+	if title == "energy":
 		for spell in unit.toggled_spells:
-			base += spell.focus_cost*-1
+			base += spell.energy_cost*-1
 	var cap = current_max()
 	if value > cap:
 		base /= 2

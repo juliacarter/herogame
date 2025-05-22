@@ -50,8 +50,26 @@ var science: Science
 
 var innercircle = {}
 
+#return FALSE if player cannot spend amount of resource
+func spend_intangible(resource, amount):
+	if intangibles.has(resource):
+		var has = intangibles[resource]
+		if has >= amount:
+			remove_intangible(resource, amount)
+			return true
+		else:
+			return false
+	else:
+		return false
+
 func _init(gamerules):
 	rules = gamerules
+
+func remove_intangible(resource, amount):
+	if intangibles.has(resource):
+		intangibles[resource] -= amount
+		if intangibles[resource] <= 0:
+			intangibles.erase(resource)
 
 func earn_intangible(resource, amount):
 	if intangibles.has(resource):

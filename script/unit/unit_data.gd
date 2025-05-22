@@ -24,6 +24,15 @@ var datakey
 
 var needs_name = true
 
+#{
+#	table = {
+#		{
+#			drop1: weight1, drop2: weight2, [...]
+#		}
+#	}: weight
+#}
+var drops = {}
+
 var firstname = ""
 var nickname = ""
 var lastname = ""
@@ -31,6 +40,8 @@ var lastname = ""
 func _init(data):
 	allegiance = data.allegiance
 	aggressive = data.aggressive
+	if data.has("drops"):
+		drops = data.drops.duplicate()
 	if data.has("lessons"):
 		lessons = data.lessons.duplicate()
 	if data.has("firstname"):

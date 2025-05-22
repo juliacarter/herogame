@@ -68,10 +68,12 @@ func load_buttons(options, multi = false):
 		else:
 			newbutton = buttonscene.instantiate()
 		newbutton.item = option
-		if !(option is Unit):
+		if !(option is Unit) && (option is Asset):
 			newbutton.text = option.name()
-		else:
+		elif option is Unit:
 			newbutton.text = option.object_name()
+		else:
+			newbutton.text = option
 		buttons.append(newbutton)
 		newbutton.picker = self
 		grid.add_child(newbutton)

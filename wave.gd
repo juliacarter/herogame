@@ -53,4 +53,3 @@ func find_objective(map):
 	else:
 		objective = null
 	
-

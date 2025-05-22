@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://pu6tvdbs1in3"]
+[gd_scene load_steps=3 format=3 uid="uid://pu6tvdbs1in3"]
 
-[ext_resource type="Script" path="res://OrganizableActionItem.gd" id="1_jvx7k"]
+[ext_resource type="Script" uid="uid://dqpkqfvfjp4ja" path="res://OrganizableActionItem.gd" id="1_jvx7k"]
+[ext_resource type="PackedScene" uid="uid://dx2ec2whaesn" path="res://tooltip_control.tscn" id="2_1onta"]
 
 [node name="OrganizableActionItem" type="HBoxContainer"]
 custom_minimum_size = Vector2(100, 50)
@@ -66,6 +67,9 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 text = "X Focus"
+
+[node name="TooltipControl" parent="Content" instance=ExtResource("2_1onta")]
+layout_mode = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 2

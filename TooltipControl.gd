@@ -6,9 +6,12 @@ var timer = 1.0
 
 var is_on = false
 
-var tooltip = {
-	"text": "blah blah blah"
-}
+var tooltip
+
+#data object the tooltip represents
+var parent
+#UI element the tooltip is attached to
+var origin
 
 #the currently active tooltip produced by this Area
 var active_tooltip
@@ -25,18 +28,24 @@ func _process(delta: float) -> void:
 func tooltip_cleared():
 	pass
 
+func connect_element(element):
+	element.mouse_entered.connect(_on_mouse_entered)
+	element.mouse_exited.connect(_on_mouse_exited)
+
 func _on_mouse_entered() -> void:
 	#if active_tooltip == null:
-	active_tooltip = rules.interface.make_tooltip(tooltip)
-	active_tooltip.source = self
-	if active_tooltip != null:
-		active_tooltip.hovered = true
-	is_on = true
+	if tooltip != null:
+		active_tooltip = rules.interface.make_tooltip(tooltip)
+		active_tooltip.source = self
+		if active_tooltip != null:
+			active_tooltip.hovered = true
+		is_on = true
 
 
 func _on_mouse_exited() -> void:
+	if tooltip != null:
 	#if active_tooltip != null:
-	active_tooltip.hovered = false
-	if !active_tooltip.locked:
-		active_tooltip.clear_tooltip()
-	is_on = false
+		active_tooltip.hovered = false
+		if !active_tooltip.locked:
+			active_tooltip.clear_tooltip()
+		is_on = false

@@ -81,5 +81,3 @@ func _on_mouse_exited() -> void:
 
 func _on_spin_box_value_changed(value: float) -> void:
 	rules.interface.selected.patrol.desired = value
-
-

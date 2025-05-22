@@ -54,7 +54,8 @@ var debugvars = {
 	"assignanything": true,
 	"orderanyone": true,
 	"standstill": true,
-	"editstats": false
+	"editstats": false,
+	"fake_damage": true,
 }
 
 var infamy = 000000
@@ -208,11 +209,20 @@ var script_map = {
 	"StatCondition": StatCondition,
 	"MeleeAttackCondition": MeleeAttackCondition,
 	"AttackDistanceCondition": AttackDistanceCondition,
+	"RandomChanceCondition": RandomChanceCondition,
+	
+	#Outcomes
+	"ApplyBuffOutcome": ApplyBuffOutcome,
+	"ActionOutcome": ActionOutcome,
 	
 	#Rewards
 	"CashReward": CashReward,
 	"ItemReward": ItemReward,
 	"DoomReward": DoomReward,
+	
+	"Action": Action,
+	"Attack": Attack,
+	"Spell": Spell,
 	
 	"SelfSpell": SelfSpell,
 	"ToggleSpell": ToggleSpell,
@@ -220,10 +230,33 @@ var script_map = {
 	"PlacedAreaSpell": PlacedAreaSpell,
 	"LinePlacedAreaSpell": LinePlacedAreaSpell,
 	
+	#Buffs
+	"DoTBuffBase": DoTBuffBase,
+	
 	"DoomThreat": DoomThreat,
 	
 	"Job": Job,
 	"RestJob": RestJob,
+	
+	"BaseEffect": BaseEffect,
+	"ArmorEffect": ArmorEffect,
+	"AttackEffect": AttackEffect,
+	"DamageOneshot": DamageOneshot,
+	
+	"Asset": Asset,
+	"IntanGenAsset": IntanGenAsset,
+}
+
+var job_scripts = {
+	"Job": Job,
+	"TrainingJob": TrainingJob,
+	"RestJob": RestJob,
+}
+
+var job_base_scripts = {
+	"Job": JobBase,
+	"TrainingJob": TrainingJobBase,
+	"RestJob": RestJobBase,
 }
 
 var indicatorscenes = {
@@ -238,12 +271,23 @@ var colors = {
 var globals = {}
 var global_vars = {}
 
+func debug_asset():
+	make_asset("", world.map.testregion.region)
+
+#make assetname in region
+func make_asset(assetname, region):
+	var asset = IntanGenAsset.new(self, {})
+	asset.faction = factions.player
+	region.add_asset(asset)
+
 func change_resolution(width, height):
 	get_tree().root.size = Vector2(width, height)
 	interface.size = Vector2(width, height)
 
 func aoe_on_unit(aoedata, unit):
 	unit.map.aoe_on_unit(aoedata, unit)
+
+
 
 func aoe_at_position(caster, pos, aoedata):
 	caster.map.aoe_at(aoedata, pos, caster, caster.global_position)
@@ -268,6 +312,9 @@ func select_power(new):
 		#prime_power(new)
 	#select(null)
 	#interface.update_selection()
+
+func log_entry(logdata):
+	pass
 
 func make_soundbubble(bubbledata, pos):
 	var popup = popupscene.instantiate()
@@ -315,6 +362,9 @@ func complete_arc(arc, success):
 	arc_days = randi() % 5
 	active_arc = null
 	#select_arc()
+
+func perform_research(resname, count):
+	pass
 
 func progress_arc_phase(phase, amount):
 	phase.progress(amount)
@@ -481,7 +531,7 @@ func push_away_from_last_attack(action, victim, amount):
 	victim.push_away_from(action.last_fire_position, amount)
 
 func effect_on(effect, on):
-	await on.defend(Attack.new(self, data.weapons.pistol))
+	await on.defend(Attack.new(self, data.attacks.pistol))
 
 func trigger_dummy():
 	pass
@@ -547,6 +597,7 @@ func save():
 	}
 	return save_dict
 	
+	
 func initialize_game():
 	free_agent_refresh_timer = 0.0
 	generate_free_agents(max_free_agents)
@@ -570,6 +621,7 @@ func new_game_new_map(x, y):
 	mainmenu.visible = false
 	get_tree().root.add_child(worldscene)
 	home = await make_map(x, y)
+	open_map(home.id)
 	initialize_game()
 	
 func new_game_load_map(path):
@@ -919,7 +971,7 @@ func hire_prospect(prospect):
 	if data.wizards.unit.has(prospect):
 		var wizard = data.wizards.unit[prospect]
 		var unit = wizard.generate_unit(-1, false, false).unit
-		unit.faction = factions.player
+		unit.set_faction(factions.player)
 		home.place_unit(unit, home.get_entry().global_position)
 		#if allegiance == "player":
 		unit.add_clearance(3)
@@ -930,7 +982,7 @@ func hire_agent(agent):
 	var unit = agent.unit
 	if i != -1:
 		free_agents.pop_at(i)
-		unit.faction = factions.player
+		unit.set_faction(factions.player)
 		home.place_unit(unit, home.get_entry().global_position)
 		pass
 
@@ -956,10 +1008,21 @@ func scan_squares():
 func scan_units():
 	current_map.dragbox.detect_units()
 
+func spend_upkeep():
+	for key in factions.player.units:
+		var unit = factions.player.units[key]
+		for upkey in unit.base_upkeep:
+			var count = unit.base_upkeep[upkey]
+			if player.spend_intangible(upkey, count):
+				pass
+			else:
+				unit.upkeep_failed(upkey)
+
 func calculate_day():
 	daytimer = 10
 	if arc_days > 0 && active_arc == null:
 		arc_days -= 1
+	spend_upkeep()
 	#elif active_arc == null:
 		#select_arc()
 	#get_phase_threat()
@@ -1111,6 +1174,7 @@ func transfer_unit(unit, map, placed = false):
 		if unit.map != map:
 			unit.map.remove_unit(unit)
 	unit.map = map
+	unit.halt()
 	unit.stored = false
 	unit.spawned = false
 	var entry = map.get_entry()#.get_movement(null)
@@ -1298,7 +1362,7 @@ func start_encounter(encounter, faction = null):
 		#encounter.quest.started = true
 	world.map.add_location(encounter)
 	encounter.role_factions.player = factions.player
-	encounter.role_factions.baddies = encounter.faction
+	encounter.role_factions.baddies = faction
 	available_missions.append(encounter)
 
 func end_encounter(encounter, success):
@@ -1362,7 +1426,7 @@ func start_mission(mission):
 	if mission.quest != null:
 		mission.quest.started = true
 	mission.make_zones()
-	mission.spawn_units()
+	#mission.spawn_units()
 	#mission.map.spawn_unit_blob(mission.enemy_bases)
 	var units = []
 	for unit in mission.assigned_units:
@@ -1373,6 +1437,8 @@ func start_mission(mission):
 			#var unit = squad.units[key]
 			#units.append(unit)
 	if mission is Encounter:
+		mission.role_factions.baddies = factions.coalition
+		mission.generate_encounter()
 		mission.start_encounter()
 		send_units_grouped(units, mission_map)
 	else:
@@ -1421,8 +1487,10 @@ func place_selected_formation_unit():
 		var square = current_map.blocks[current_map.highlighted.x][current_map.highlighted.y]
 		if square.zones.has("deployment"):
 			var unit = selected.values()[0]
-			current_map.place_unit(unit, square.global_position)
+			formation_units.erase(formation_units.values().find(unit))
 			transfer_unit(unit, current_map, true)
+			current_map.place_unit(unit, square.global_position)
+			pass
 
 func check_placement_finished():
 	var done = true
@@ -1460,7 +1528,7 @@ func start_wave(wave, factionkey):
 	var list = wave.get_units()
 	var units = []
 	for unit in list:
-		unit.faction = faction
+		unit.set_faction(faction)
 		unit.allegiance = factionkey
 		wave.add_unit(unit)
 		world.add_child(unit)
@@ -1611,6 +1679,11 @@ func get_picker_options(slot):
 			var lesson = data.upgrades[key]
 			if lesson.type == "lesson":
 				result.append(lesson)
+		return result
+	if slot == "assets":
+		var result = []
+		for key in data.assets:
+			result.append(key)
 		return result
 	if slot == "augment":
 		var result = []

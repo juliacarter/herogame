@@ -14,7 +14,17 @@ var targetpos
 
 var lifespan = 0.0
 
-var speed = 100.0
+var speed = 20000.0
+
+var map
+
+var world
+
+func _init():
+	curve = Curve2D.new()
+	var zero = Vector2(0,0)
+	curve.add_point(zero)
+	curve.add_point(zero)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -23,9 +33,11 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	follow.progress += (delta * 100)
-	if follow.progress_ratio >= 1.0:
-		hide_beam()
+	if active:
+		var prog = delta * speed
+		follow.progress += prog
+		if follow.progress_ratio >= 1.0:
+			hide_beam()
 
 func load_animation(anim):
 	speed = anim.speed
@@ -42,11 +54,14 @@ func hide_beam():
 	visible = false
 	active = false
 	lifespan = 0.0
+	get_parent().remove_child(self)
+	#map.visuals.erase(self)
 	queue_free()
 	
 func cast(newcast, newtarg):
 	curve.set_point_position(0, newcast)
 	curve.set_point_position(1, newtarg)
 	visible = true
+	active = true
 	#await get_tree().create_timer(1.0).timeout
 	#visible = false

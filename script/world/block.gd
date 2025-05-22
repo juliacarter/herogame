@@ -31,11 +31,15 @@ func set_mask():
 		set_collision_layer_value(9, true)
 		set_collision_mask_value(20, true)
 		set_collision_layer_value(20, true)
+		if obstacle != null:
+			obstacle.avoidance_enabled = true
 	else:
 		set_collision_mask_value(9, false)
 		set_collision_layer_value(9, false)
 		set_collision_mask_value(20, false)
 		set_collision_layer_value(20, false)
+		if obstacle != null:
+			obstacle.avoidance_enabled = false
 
 func save():
 	var save_dict = {

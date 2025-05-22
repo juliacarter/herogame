@@ -26,6 +26,8 @@ var can_interact = {}
 
 var can_take = {}
 
+var buildjob
+
 @onready var cells = {
 	"center": get_node("Cells/Center"),
 	"north": get_node("Cells/North"),
@@ -82,6 +84,8 @@ var id
 
 var rect
 
+#the stack, if any, sitting on the square
+var item
 
 var door: Door
 
@@ -428,6 +432,15 @@ func get_content():
 func get_print():
 	return footprint
 
+func make_build_job(tiledata):
+	var job = TileBuildJob.new(self, tiledata)
+	job.map = map
+	job.id = rules.assign_id(job)
+	map.taskmaster.add_task(job)
+	
+func get_square(origin = null, reserving = false, spotname = ""):
+	return self
+
 func to_wall():
 	var wall = wallscene.instantiate()
 	remove_child(content)
@@ -439,7 +452,7 @@ func to_wall():
 	inside.set_collision_layer_value(5, true)
 	inside.set_collision_mask_value(6, true)
 	inside.set_collision_layer_value(6, true)
-	bake_navigation_polygon()
+	disable_nav()
 	
 func to_edge():
 	var edge = edgescene.instantiate()
@@ -452,7 +465,7 @@ func to_edge():
 	#selector.set_collision_layer_value(5, true)
 	#selector.set_collision_mask_value(6, true)
 	#selector.set_collision_layer_value(6, true)
-	bake_navigation_polygon()
+	disable_nav()
 
 func to_floor():
 	var floor = floorscene.instantiate()
@@ -460,14 +473,12 @@ func to_floor():
 	content = floor
 	add_child(floor)
 	remove_furniture()
-	if is_node_ready():
-		enabled = true
-		await clear_nav()
+	
 	inside.set_collision_mask_value(5, false)
 	inside.set_collision_layer_value(5, false)
 	inside.set_collision_mask_value(6, false)
 	inside.set_collision_layer_value(6, false)
-	bake_navigation_polygon()
+	enable_nav()
 	
 func to_furniture(furniture, collision):
 	var newfootprint = printscene.instantiate()
@@ -480,10 +491,21 @@ func to_furniture(furniture, collision):
 	if is_node_ready():
 		enabled = false
 		#clear_nav()
-	selector.set_collision_mask_value(5, true)
-	selector.set_collision_layer_value(5, true)
-	selector.set_collision_mask_value(6, false)
-	selector.set_collision_layer_value(6, false)
+	inside.set_collision_mask_value(5, true)
+	inside.set_collision_layer_value(5, true)
+	inside.set_collision_mask_value(6, false)
+	inside.set_collision_layer_value(6, false)
+	disable_nav()
+
+func enable_nav():
+	if is_node_ready():
+		enabled = true
+		await clear_nav()
+	bake_navigation_polygon()
+	
+func disable_nav():
+	if is_node_ready():
+		enabled = false
 	bake_navigation_polygon()
 
 func clear_nav():
@@ -532,6 +554,15 @@ func set_content(block):
 	add_child(content)
 	if is_inside_tree():
 		content.set_mask()
+	if is_node_ready():
+		set_nav()
+	
+func set_nav():
+	if content != null:
+		if content.blocktype == "wall":
+			to_wall()
+		if content.blocktype == "floor":
+			to_floor()
 
 
 	

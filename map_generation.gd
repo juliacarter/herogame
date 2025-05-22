@@ -17,3 +17,7 @@ func _process(delta: float) -> void:
 
 func _on_button_pressed() -> void:
 	rules.new_game_new_map(xfield.value, yfield.value)
+
+
+func _on_button_2_pressed() -> void:
+	visible = false # Replace with function body.

@@ -1,10 +1,10 @@
 extends Panel
 
-@onready var namebox = get_node("HBoxContainer2/HBoxContainer/Name")
+@onready var namebox = get_node("%Name")
 @onready var idbox = get_node("ID")
 @onready var targetid = get_node("TargetID")
 
-@onready var levellabel = get_node("HBoxContainer2/HBoxContainer/Level")
+@onready var levellabel = get_node("%Level")
 
 @onready var targetpos = get_node("target")
 @onready var mypos = get_node("pos")
@@ -22,7 +22,7 @@ extends Panel
 @onready var focusbar = get_node("VBoxContainer/FocusBar")
 @onready var focusgain = get_node("HBoxContainer/FocusGain")
 
-@onready var statuslabel = get_node("HBoxContainer2/StatusLabel")
+@onready var statuslabel = get_node("%StatusLabel")
 
 @onready var armorlabel = get_node("SurvivabilityInfo/ArmorLabel")
 
@@ -31,6 +31,8 @@ extends Panel
 @onready var experience = get_node("ExperienceBar")
 
 @onready var buffs = get_node("BuffDisplay")
+
+@onready var aggro = get_node("AggroTableDisplay")
 
 var interface
 
@@ -54,8 +56,9 @@ func load_classes():
 func load_unit(new):
 	unit = new
 	healthbar.stat = unit.stats.fuels.health
-	focusbar.stat = unit.stats.fuels.attention
-	moralebar.stat = unit.stats.fuels.loyalty
+	focusbar.stat = unit.stats.fuels.energy
+	moralebar.stat = unit.stats.fuels.morale
+	aggro.load_aggro(unit.aggrotable)
 	experience.load_unit(unit)
 	buffs.load_unit(unit)
 
@@ -69,7 +72,7 @@ func _process(delta):
 		namebox.text = unit.object_name()
 		idbox.text = "ID:" + unit.id
 		statuslabel.text = unit.status()
-		levellabel.text = "Lv." + String.num(unit.level)
+		levellabel.text = "Lv." + String.num(unit.level, 0)
 		armorlabel.text = "ARMOR: " + String.num(unit.defense.armor.physical.variance) + " | " + String.num(unit.defense.armor.energy.variance)
 		#get_fuels()
 		
@@ -80,8 +83,8 @@ func get_fuels():
 	healthbar.max_value = healthmax
 	healthbar.value = healthcurrent
 	
-	var focusmax = unit.stats.fuels.attention.max
-	var focuscurrent = unit.stats.fuels.attention.value
+	var focusmax = unit.stats.fuels.energy.max
+	var focuscurrent = unit.stats.fuels.energy.value
 	focusbar.max_value = focusmax
 	focusbar.value = focuscurrent
 

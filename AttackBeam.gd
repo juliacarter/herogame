@@ -10,6 +10,8 @@ var targetpos
 
 var lifespan = 0.0
 
+var world
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.

@@ -3,6 +3,8 @@ extends Control
 @onready var rewards = get_node("HBoxContainer/ScrollContainer/VBoxContainer/QuestRewardDisplay")
 @onready var textbox = get_node("HBoxContainer/ScrollContainer/VBoxContainer/TippableRichText")
 
+@onready var timer = get_node("HBoxContainer/ScrollContainer/VBoxContainer/TimerBar")
+
 var quest
 
 func load_quest(new):
@@ -17,4 +19,6 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	pass
+	if quest != null:
+		timer.max_value = quest.time_cap
+		timer.value = quest.time

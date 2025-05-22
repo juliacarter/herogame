@@ -1,8 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://cyyurxjrfjfou"]
+[gd_scene load_steps=3 format=3 uid="uid://cyyurxjrfjfou"]
 
 [ext_resource type="Texture2D" uid="uid://cvdmcuapq7pa1" path="res://art/worldmap.jpg" id="1_3sa55"]
-[ext_resource type="Script" path="res://world_map.gd" id="1_uvgu7"]
-[ext_resource type="PackedScene" uid="uid://cuqw1nmlm73cx" path="res://map_region.tscn" id="3_6megu"]
+[ext_resource type="Script" uid="uid://4ohqsnoq38ao" path="res://world_map.gd" id="1_uvgu7"]
 
 [node name="WorldMap" type="Control"]
 layout_mode = 3
@@ -10,27 +9,31 @@ anchors_preset = 0
 script = ExtResource("1_uvgu7")
 
 [node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
 offset_right = 1396.0
 offset_bottom = 896.0
 texture = ExtResource("1_3sa55")
 expand_mode = 2
 
 [node name="Button" type="Button" parent="."]
+layout_mode = 0
 offset_left = 1259.0
 offset_top = 35.0
 offset_right = 1317.0
 offset_bottom = 66.0
 text = "CLOSE"
 
-[node name="MapRegion" parent="." instance=ExtResource("3_6megu")]
-offset_left = 30.0
-offset_top = 34.0
-offset_right = 80.0
-offset_bottom = 84.0
-mouse_filter = 1
-
 [node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 0
 offset_left = 830.0
 offset_top = 195.0
 offset_right = 1249.0
 offset_bottom = 691.0
+
+[node name="Regions" type="GridContainer" parent="."]
+layout_mode = 0
+offset_left = 69.0
+offset_top = 49.0
+offset_right = 658.0
+offset_bottom = 831.0
+columns = 5

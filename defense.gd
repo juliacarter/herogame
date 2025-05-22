@@ -16,6 +16,13 @@ func add_protection(new):
 	protections.append(new)
 	calculate_armor()
 	
+func remove_protection(removekey):
+	for i in protections.size():
+		var prot = protections[i]
+		if prot.key == removekey:
+			protections.pop_at(i)
+			return
+	
 #Returns the amount that is subtracted from the final damage value
 func get_defense(damage, piercing, type, attack = null):
 	if !armor.has(type):

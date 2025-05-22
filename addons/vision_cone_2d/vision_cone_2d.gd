@@ -4,7 +4,7 @@ extends Node2D
 class_name VisionCone2D
 
 
-var thread: Thread
+#var thread: Thread
 @export_group("Raycast parameters")
 ## How wide the vision cone is in degrees
 @export_range(0, 360) var angle_deg = 360
@@ -116,8 +116,8 @@ func _update_collision_polygon():
 	if write_collision_polygon == null:
 		return
 	write_collision_polygon.polygon.clear()
-	var polygon = PackedVector2Array()
-	polygon.append_array(_vision_points)
+	var polygon = PackedVector2Array(_vision_points)
+	#polygon.append_array(_vision_points)
 	write_collision_polygon.polygon = polygon
 
 func _update_render_polygon():
@@ -135,9 +135,3 @@ func _ray_to(direction: Vector2) -> Vector2:
 
 	var ray_position = collision["position"] if "position" in collision else destination
 	return to_local(ray_position)
-
-
-
-
-
-

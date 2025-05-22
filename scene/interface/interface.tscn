@@ -1,11 +1,11 @@
 [gd_scene load_steps=20 format=3 uid="uid://cj2o28yb6c7cw"]
 
 [ext_resource type="Theme" uid="uid://c2dqbtyc2vdb7" path="res://main_theme.tres" id="1_6ricm"]
-[ext_resource type="Script" path="res://script/interface/interface.gd" id="1_7mop2"]
+[ext_resource type="Script" uid="uid://dyael3il1ddv3" path="res://script/interface/interface.gd" id="1_7mop2"]
 [ext_resource type="PackedScene" uid="uid://cd1r6ksv1xucc" path="res://scene/interface/infopanel.tscn" id="2_fn2ul"]
 [ext_resource type="PackedScene" uid="uid://bly28iu4klsvj" path="res://squad_panel.tscn" id="5_kmb43"]
 [ext_resource type="PackedScene" uid="uid://x1043cyrsasj" path="res://map_tabs.tscn" id="6_a8132"]
-[ext_resource type="PackedScene" uid="uid://cspjk0uycaxee" path="res://loader.tscn" id="7_6ikjk"]
+[ext_resource type="PackedScene" uid="uid://d2nw1q3jhlaty" path="res://loader.tscn" id="7_6ikjk"]
 [ext_resource type="StyleBox" uid="uid://c77373dcff4gc" path="res://window_inner.tres" id="7_iosfc"]
 [ext_resource type="PackedScene" uid="uid://gfp5kw53bmsu" path="res://power_palette.tscn" id="7_kkevi"]
 [ext_resource type="PackedScene" uid="uid://c03blm5deeifd" path="res://saver.tscn" id="8_sn082"]

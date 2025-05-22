@@ -5,7 +5,9 @@ class_name Threat
 
 var faction
 
-
+func assign_faction(new):
+	faction = new
+	quest.faction = faction
 
 func _init(gamedata, threatdata, newparent = null):
 	super(gamedata, threatdata, newparent)

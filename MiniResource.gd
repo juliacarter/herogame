@@ -17,4 +17,6 @@ func _process(delta: float) -> void:
 
 func assign_count():
 	if rules.player.intangibles.has(resource):
-		count.text = String.num(rules.player.intangibles[resource])
+		count.text = String.num(rules.player.intangibles[resource], 0)
+	else:
+		count.text = "0"

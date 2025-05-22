@@ -16,6 +16,8 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if rules.player.intangibles.has(resource):
 		label.text = String.num(rules.player.intangibles[resource])
+	else:
+		label.text = "0"
 
 func load_resource(new):
 	resource = new

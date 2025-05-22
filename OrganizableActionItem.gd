@@ -7,13 +7,19 @@ extends HBoxContainer
 @onready var cooldown = get_node("Cooldown")
 @onready var cost = get_node("Cost")
 
+@onready var tooltiparea = get_node("Content/TooltipControl")
+
 var parent
 
 var action
 
 func load_action(new):
+	
 	action = new
+	
 	namelabel.text = action.key
+	var tooldata = action.generate_tooltip_data()
+	tooltiparea.tooltip = tooldata
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

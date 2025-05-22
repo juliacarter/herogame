@@ -15,7 +15,8 @@ func get_square(origin = null, reserving = true, spotname = "move"):
 	return square
 
 func doable():
-	return true
+	var result = actor.current_square == square
+	return result
 
 func save():
 	var save_dict = {

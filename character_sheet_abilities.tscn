@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://b3nj14b72r5is"]
 
-[ext_resource type="Script" path="res://character_sheet_abilities.gd" id="1_imf3a"]
+[ext_resource type="Script" uid="uid://5jyikt3a5426" path="res://character_sheet_abilities.gd" id="1_imf3a"]
 [ext_resource type="PackedScene" uid="uid://dolu2yeax6q00" path="res://organizable_list.tscn" id="2_wbklw"]
 [ext_resource type="PackedScene" uid="uid://clwihkhkn1031" path="res://sortable_list.tscn" id="3_bb5fh"]
 [ext_resource type="PackedScene" uid="uid://bh22nsw5l5cn7" path="res://lesson_picker.tscn" id="4_jce3e"]

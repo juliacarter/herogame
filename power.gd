@@ -32,7 +32,8 @@ var prime_include_caster = true
 
 func get_prime_args():
 	var args = prime_args.duplicate()
-	args.append(caster)
+	if include_caster:
+		args.append(caster)
 	return args
 
 func altclick():

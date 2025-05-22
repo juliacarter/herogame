@@ -89,6 +89,8 @@ var evasion = 0
 var can_interact = {}
 var can_build = {}
 
+var build_ordered = false
+
 var selectable = true
 var built = true
 var in_use = false
@@ -263,7 +265,7 @@ func build(val):
 			door.close()
 		
 func construct():
-	buildarea.monitoring = false
+	#buildarea.monitoring = false
 	build(true)
 
 func disable():
@@ -276,6 +278,23 @@ func enable():
 	
 func load_furniture(newjob, newspots, newsize, newobject_name, spritename):
 	pass
+	
+func queue_job(job):
+	task_queue.push_back(job)
+	
+func pop_job_queue():
+	var job = task_queue.pop_front()
+	var unit
+	return job
+	
+#check if this furniture can pop a Job, then do it
+func check_job_queue():
+	if current_job == null:
+		if task_queue != []:
+			var job = pop_job_queue()
+			in_use = true
+			current_job = job
+			job.make_task()
 	
 func start_job(job, personal = false):
 	
@@ -296,7 +315,8 @@ func start_job(job, personal = false):
 	#map.add_job(newjob)
 	if !result:
 		return null
-	in_use = true
+	#in_use = true
+	newjob.start_job()
 	return newjob
 	
 func finish_job(job):
@@ -306,67 +326,74 @@ func cancel_job(job):
 	job_instances.erase(job.id)
 	
 	
-func furniture_from_data(furndata, loaded):
+func furniture_from_data(furndata, loaded, real = true):
 	jobdata = furndata.jobdata
 	datakey = furndata.datakey
 	spyheat = furndata.spyheat
 	prison = furndata.prison
-	if !loaded:
-		for job in jobdata:
-			var newjob = JobBase.new(job, self)
-			#newjob.id = rules.assign_id(newjob)
-			job_options.merge({
-				job.jobname: newjob
+	if real:
+		if !loaded:
+			for job in jobdata:
+				var jobtype
+				if rules.job_base_scripts.has(job.jobclass):
+					jobtype = rules.job_base_scripts[job.jobclass]
+				else:
+					jobtype = rules.job_base_scripts.Job
+				var newjob = jobtype.new(job, self)
+				#newjob.id = rules.assign_id(newjob)
+				job_options.merge({
+					job.jobname: newjob
+				})
+				newjob.taskmaster = map.taskmaster
+				newjob.rules = rules
+				#newjob.attach_furniture(self)
+				if primary_job == null:
+					primary_job = newjob
+				map.add_job(newjob)
+		for teach in furndata.teaches:
+			teaches.merge({
+				teach: true
 			})
-			newjob.taskmaster = map.taskmaster
-			newjob.rules = rules
-			#newjob.attach_furniture(self)
-			if primary_job == null:
-				primary_job = newjob
-			map.add_job(newjob)
-	for teach in furndata.teaches:
-		teaches.merge({
-			teach: true
-		})
-	print(furndata.spots)
-	spotlocs = {}
+		print(furndata.spots)
+		spotlocs = {}
 	resize(furndata.size.x, furndata.size.y)
 	
-	if furndata.trapdata != {}:
-		var newtrap = Trap.new()
-		trap = newtrap
-		if is_node_ready():	
+	if real:
+		if furndata.trapdata != {}:
+			var newtrap = Trap.new()
+			trap = newtrap
+			if is_node_ready():	
+				trap.rules = rules
+		if furndata.camdata != {}:
+			var newcam = SecurityCamera.new()
+			camera = newcam
+			camera.furniture = self
+			if is_node_ready():
+				camera.rules = rules
+				
+		if trap != null:
 			trap.rules = rules
-	if furndata.camdata != {}:
-		var newcam = SecurityCamera.new()
-		camera = newcam
-		camera.furniture = self
-		if is_node_ready():
+		if camera != null:
 			camera.rules = rules
+			camera.id = rules.assign_id(camera)
+			#var newtrap = trapscene.instantiate()
+			#newtrap.furniture = self
+			#newtrap.load_trap(furndata.trapdata.spotters, furndata.trapdata.triggers)
+			#add_child(newtrap)
+			#trap = newtrap
 			
-	if trap != null:
-		trap.rules = rules
-	if camera != null:
-		camera.rules = rules
-		camera.id = rules.assign_id(camera)
-		#var newtrap = trapscene.instantiate()
-		#newtrap.furniture = self
-		#newtrap.load_trap(furndata.trapdata.spotters, furndata.trapdata.triggers)
-		#add_child(newtrap)
-		#trap = newtrap
+		if furndata.spotters != []:
+			load_spotters(furndata.spotters)
+			
+		for key in spotters:
+			var spotter = spotters[key]
+			spotter.area.area_entered.connect(_on_spotter_area_entered)
+			spotter.area.area_exited.connect(_on_spotter_area_exited)
 		
-	if furndata.spotters != []:
-		load_spotters(furndata.spotters)
-		
-	for key in spotters:
-		var spotter = spotters[key]
-		spotter.area.area_entered.connect(_on_spotter_area_entered)
-		spotter.area.area_exited.connect(_on_spotter_area_exited)
-	
-	manual = furndata.manual
-	if !manual:
-		for key in job_options:
-			primary_job = job_options[key]
+		manual = furndata.manual
+		if !manual:
+			for key in job_options:
+				primary_job = job_options[key]
 	
 	for key in furndata.spots:
 		for spot in furndata.spots[key]:
@@ -391,33 +418,34 @@ func furniture_from_data(furndata, loaded):
 	print(spotlocs)
 	tags = furndata.tags
 	
-	needs_build = furndata.needs_build
-	build(!furndata.needs_build)
-	
-	depot = furndata.depot
-	
-	print(size)
-	
-	if primary_job != null:
-		if primary_job.automatic:
-			start_job(primary_job)
-	
-	for shelfdata in furndata.shelves:
-		var shelf = Shelf.new(shelfdata)
-		shelves.merge({
-			shelf.name: shelf
-		})
-	#shelves = furndata.shelves
-	for key in shelves:
-		shelves[key].location = self
-	
-	type = furndata.type
-	if type == "port":
-		transport = Transport.new(rules)
-	if type == "door":
-		door = Door.new()
-		door.furniture = self
-		door.layers = [3]
+	if real:
+		needs_build = furndata.needs_build
+		build(!furndata.needs_build)
+		
+		depot = furndata.depot
+		
+		print(size)
+		
+		if primary_job != null:
+			if primary_job.automatic:
+				start_job(primary_job)
+		
+		for shelfdata in furndata.shelves:
+			var shelf = Shelf.new(shelfdata)
+			shelves.merge({
+				shelf.name: shelf
+			})
+		#shelves = furndata.shelves
+		for key in shelves:
+			shelves[key].location = self
+		
+		type = furndata.type
+		if type == "port":
+			transport = Transport.new(rules)
+		if type == "door":
+			door = Door.new()
+			door.furniture = self
+			door.layers = [3]
 	#if type == "patrol":
 	#	if map.patrols.size() >= 1:
 	#		patrol = map.patrols[0]
@@ -442,8 +470,8 @@ func resize(x, y):
 	size.y = y
 	if(buildbox != null && selectbox != null):
 		var build = RectangleShape2D.new()
-		build.size.x = size.x * rules.squaresize + 72
-		build.size.y = size.y * rules.squaresize + 72
+		build.size.x = size.x * rules.squaresize + 128
+		build.size.y = size.y * rules.squaresize + 128
 		buildbox.shape = build
 		buildshape = build
 		var select = RectangleShape2D.new()
@@ -523,8 +551,8 @@ func place_ghost():
 	
 	#buildjob.make_task()
 	#built = false
-	if !built:
-		await buildjob.make_task()
+	#if !built:
+		#await buildjob.make_task()
 
 func can_use(spottype = "interact"):
 	var result = false
@@ -602,7 +630,8 @@ func _ready():
 	sprite.texture = sprite_texture
 	
 	
-	
+	buildarea.area_entered.connect(_on_build_box_area_entered)
+	buildarea.area_exited.connect(_on_build_box_area_exited)
 	
 	print("Ready")
 	
@@ -659,7 +688,7 @@ func think(delta):
 		set_indicator()
 		if(built):
 			if !dead:
-				
+				check_job_queue()
 				if shelves.has("theft"):
 					if shelves.theft.contents != {}:
 						for key in shelves.theft.contents:
@@ -1109,4 +1138,3 @@ func make_exfil():
 	var job = start_job(primary_job, true)
 	return job
 		
-

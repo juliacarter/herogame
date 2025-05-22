@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://c3y21imnxy16r"]
 
-[ext_resource type="Script" path="res://script/world/block.gd" id="1_jfef3"]
+[ext_resource type="Script" uid="uid://bnn0nujcyjukm" path="res://script/world/block.gd" id="1_jfef3"]
 [ext_resource type="Texture2D" uid="uid://dhmlg6d2f3g3b" path="res://art/floor.png" id="2_wnvhi"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_p7v78"]
@@ -20,6 +20,5 @@ z_index = -1
 texture = ExtResource("2_wnvhi")
 
 [node name="Obstacle" type="NavigationObstacle2D" parent="."]
-avoidance_enabled = false
 radius = 32.0
-vertices = PackedVector2Array(-32, -32)
+avoidance_enabled = false

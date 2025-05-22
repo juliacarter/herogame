@@ -11,7 +11,7 @@ var buff
 func load_buff(new):
 	buff = new
 	if buff.base.tipname != "":
-		var tipdata = data.tooltips[buff.base.tipname]
+		var tipdata = TooltipData.new(data.tooltips[buff.base.tipname])
 		tiparea.tooltip = tipdata
 
 

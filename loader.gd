@@ -58,3 +58,7 @@ func new_game_pick_map():
 			file_name = dir.get_next()
 	else:
 		print("An error occurred when trying to access the path.")
+
+
+func _on_button_pressed() -> void:
+	visible = false

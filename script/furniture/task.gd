@@ -93,7 +93,11 @@ func get_square(origin = null, reserving = true, spotname = "interact"):
 func get_movement():
 	if object != null:
 		var square = get_square(actor, reserving)
+		#if square != null:
 		return square.global_position
+		#return target
+		#else:
+			#return null
 	else:
 		return target
 
@@ -144,6 +148,12 @@ func progress(delta):
 		return true
 	else:
 		return false
+	
+func position_reached():
+	pass
+	
+func complete_for(unit):
+	complete()
 	
 func complete():
 	job.complete()

@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://cspjk0uycaxee"]
+[gd_scene load_steps=2 format=3 uid="uid://d2nw1q3jhlaty"]
 
-[ext_resource type="Script" path="res://loader.gd" id="1_abbaf"]
+[ext_resource type="Script" uid="uid://c1j4jn6k532oe" path="res://loader.gd" id="1_abbaf"]
 
 [node name="Loader" type="Panel"]
 custom_minimum_size = Vector2(600, 800)
@@ -22,3 +22,13 @@ offset_bottom = 640.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
 layout_mode = 2
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 517.0
+offset_top = 745.0
+offset_right = 575.0
+offset_bottom = 776.0
+text = "CLOSE"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

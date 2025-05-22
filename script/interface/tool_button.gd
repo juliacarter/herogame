@@ -24,6 +24,8 @@ var power
 
 @onready var cooldown = get_node("Sprite2D/ProgressBar")
 
+@onready var tooltip = get_node("Button/TooltipControl")
+
 var hotkey = ""
 
 
@@ -34,6 +36,10 @@ func _ready():
 	#print("button ready")
 	if(button_name != null):
 		label.text = button_name
+	if power is ActionPower:
+		var tipdata = power.action.make_tooltip()
+		tooltip.tooltip = tipdata
+		pass
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -58,6 +64,10 @@ func make_button(data):
 	action = data.action
 	args = data.args
 	power = data.power
+	if is_node_ready():
+		if power is ActionPower:
+			var tipdata = power.action.make_tooltip()
+			pass
 
 func button_pressed():
 	rules.stop_casting()

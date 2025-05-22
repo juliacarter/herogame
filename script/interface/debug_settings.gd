@@ -78,3 +78,7 @@ func _on_inf_button_pressed() -> void:
 
 func _on_button_5_pressed() -> void:
 	rules.draw_mapjob()
+
+
+func _on_add_asset_pressed() -> void:
+	rules.debug_asset()

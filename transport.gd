@@ -45,6 +45,7 @@ func queue_transit(newunits, newmap):
 		desired_units.merge({unit.id: unit})
 
 func store_unit(unit):
+	unit.halt()
 	units.merge({
 		unit.id: unit
 	})

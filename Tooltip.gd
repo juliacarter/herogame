@@ -175,6 +175,8 @@ func load_tip(new):
 			tip.load_tip(tipdata)
 			tip.text.tooltip_hovered.connect(_on_tippable_rich_text_tooltip_hovered)
 			tip.text.tooltip_unhovered.connect(_on_tippable_rich_text_tooltip_unhovered)
+			tip.parent = parent
+			tip.origin = origin
 			tips.append(tip)
 	
 func load_text(new):

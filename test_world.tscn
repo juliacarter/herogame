@@ -1,10 +1,10 @@
-[gd_scene load_steps=10 format=3 uid="uid://ciullrok02ou5"]
+[gd_scene load_steps=10 format=3 uid="uid://dp8miakvnhi54"]
 
-[ext_resource type="Script" path="res://test_world.gd" id="1_ccgnu"]
+[ext_resource type="Script" uid="uid://dwnrp3g05yy1p" path="res://test_world.gd" id="1_ccgnu"]
 [ext_resource type="PackedScene" uid="uid://cyyurxjrfjfou" path="res://world_map.tscn" id="2_m3eew"]
 [ext_resource type="PackedScene" uid="uid://cj2o28yb6c7cw" path="res://scene/interface/interface.tscn" id="2_twdny"]
 [ext_resource type="PackedScene" uid="uid://cd1r6ksv1xucc" path="res://scene/interface/infopanel.tscn" id="3_domna"]
-[ext_resource type="Script" path="res://script/world/camera.gd" id="3_fnpnq"]
+[ext_resource type="Script" uid="uid://b464hdk7ygg3f" path="res://script/world/camera.gd" id="3_fnpnq"]
 [ext_resource type="PackedScene" uid="uid://7sfrsqefjccc" path="res://main_menu.tscn" id="4_bms20"]
 [ext_resource type="PackedScene" uid="uid://dmlb3xje2gjho" path="res://input_handler.tscn" id="6_arpvo"]
 [ext_resource type="PackedScene" uid="uid://qq28fjak3roh" path="res://ghost_holder.tscn" id="8_n2v8x"]
@@ -43,6 +43,8 @@ position = Vector2(29.0912, 15.5217)
 rotation = 3.14159
 scale = Vector2(1e-05, 1)
 skew = -1.5708
+position_smoothing_enabled = true
+position_smoothing_speed = 10.0
 script = ExtResource("3_fnpnq")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]

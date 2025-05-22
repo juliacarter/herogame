@@ -10,7 +10,9 @@ extends Control
 
 @onready var picker = get_node("Picker")
 
-@onready var unitlist = get_node("VBoxContainer/RegionUnitDisplay")
+@onready var unitlist = get_node("VBoxContainer/HBoxContainer/ScrollContainer/RegionUnitDisplay")
+
+@onready var assets = get_node("VBoxContainer/ScrollContainer/RegionAssets")
 
 @onready var prog = get_node("VBoxContainer/ScanProg")
 
@@ -36,6 +38,12 @@ func load_region(new):
 	idlabel.text = region.id
 	influence.load_region(region)
 	unitlist.load_region(region)
+	var all_assets = []
+	for faction in region.assets:
+		var options = region.assets[faction]
+		for asset in options:
+			all_assets.append(asset)
+	assets.load_assets(all_assets)
 	region.units_landed.connect(display_units)
 	
 func display_units(new = []):
@@ -44,9 +52,16 @@ func display_units(new = []):
 func open_unitpicker():
 	picker.load_options(self, "units", true)
 	picker.visible = true
+	
+func open_assetpicker():
+	picker.load_options(self, "assets", false)
+	picker.visible = true
 
 func pick_item(item, slot):
-	rules.send_units(item, region)
+	if slot == "units":
+		rules.send_units(item, region)
+	if slot == "assets":
+		region.make_asset(item, rules.factions.player)
 
 func _on_button_pressed() -> void:
 	rules.make_base_in_region(region)
@@ -69,3 +84,7 @@ func _on_button_4_pressed() -> void:
 
 func _on_button_5_pressed() -> void:
 	open_unitpicker()
+
+
+func _on_asset_button_pressed() -> void:
+	open_assetpicker()

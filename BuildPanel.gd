@@ -21,4 +21,3 @@ func load_palette(options):
 		newbutton.make_button(button.tool_data)
 		buttons.append(newbutton)
 		grid.add_child(newbutton)
-

@@ -1,12 +1,13 @@
-[gd_scene load_steps=8 format=3 uid="uid://cd1r6ksv1xucc"]
+[gd_scene load_steps=9 format=3 uid="uid://cd1r6ksv1xucc"]
 
-[ext_resource type="Script" path="res://script/interface/infopanel.gd" id="1_4pdbi"]
+[ext_resource type="Script" uid="uid://dq7ls0pjx6egc" path="res://script/interface/infopanel.gd" id="1_4pdbi"]
 [ext_resource type="Theme" uid="uid://c2dqbtyc2vdb7" path="res://main_theme.tres" id="1_8gkxs"]
 [ext_resource type="PackedScene" uid="uid://cknrdl262vd4" path="res://day_timer.tscn" id="2_q5lso"]
 [ext_resource type="PackedScene" uid="uid://dhpy1sbut4pkj" path="res://outer_window.tscn" id="3_5dlka"]
 [ext_resource type="PackedScene" uid="uid://c3gbo8l1q7pvy" path="res://bevel.tscn" id="4_b3jqw"]
 [ext_resource type="PackedScene" uid="uid://dujvqvsfqi7bk" path="res://doom_meter.tscn" id="4_ppvi2"]
 [ext_resource type="PackedScene" uid="uid://cts10tsnff5gk" path="res://resource_widget.tscn" id="5_r8sj4"]
+[ext_resource type="PackedScene" uid="uid://d1hkhj5h3caol" path="res://tech_info.tscn" id="7_ab1p3"]
 
 [node name="infopanel" type="Control"]
 layout_mode = 3
@@ -92,28 +93,8 @@ size_flags_horizontal = 3
 [node name="Bevel" parent="OuterWindow/HFlowContainer/Control4" instance=ExtResource("4_b3jqw")]
 layout_mode = 1
 
-[node name="Research" type="ProgressBar" parent="OuterWindow/HFlowContainer/Control4"]
-custom_minimum_size = Vector2(200, 0)
-layout_mode = 2
-offset_right = 276.0
-offset_bottom = 20.0
-size_flags_vertical = 1
-
-[node name="VBoxContainer" type="VBoxContainer" parent="OuterWindow/HFlowContainer/Control4"]
-visible = false
+[node name="TechInfo" parent="OuterWindow/HFlowContainer/Control4" instance=ExtResource("7_ab1p3")]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_bottom = 24.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-
-[node name="Label" type="Label" parent="OuterWindow/HFlowContainer/Control4/VBoxContainer"]
-layout_mode = 2
-text = "ResearchName"
-horizontal_alignment = 1
 
 [node name="Control5" type="Control" parent="OuterWindow/HFlowContainer"]
 custom_minimum_size = Vector2(0, 20)

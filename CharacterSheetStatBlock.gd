@@ -13,8 +13,8 @@ func load_unit(new):
 	load_fuel()
 
 func load_fuel():
-	bars.focus.stat = unit.all_stats.attention
-	bars.morale.stat = unit.all_stats.loyalty
+	bars.focus.stat = unit.all_stats.energy
+	bars.morale.stat = unit.all_stats.morale
 	bars.health.stat = unit.all_stats.health
 
 # Called when the node enters the scene tree for the first time.

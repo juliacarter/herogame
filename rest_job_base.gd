@@ -1,0 +1,2 @@
+extends JobBase
+class_name RestJobBase

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://ctsleyxydete"]
 
-[ext_resource type="Script" path="res://ResourceBox.gd" id="1_pm5fy"]
+[ext_resource type="Script" uid="uid://cym8q8de3ross" path="res://ResourceBox.gd" id="1_pm5fy"]
 [ext_resource type="Texture2D" uid="uid://ktpp1k8b3w4n" path="res://art/money.png" id="2_nkvou"]
 
 [node name="Resource" type="HBoxContainer"]

@@ -2,4 +2,7 @@ extends ResourceFinder
 class_name IntangibleResourceFinder
 
 func count():
-	return rules.player.intangibles[resource]
+	if rules.player.intangibles.has(resource):
+		return rules.player.intangibles[resource]
+	else:
+		return 0

@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://cikfdgjer5x4"]
+[gd_scene load_steps=6 format=3 uid="uid://cikfdgjer5x4"]
 
-[ext_resource type="Script" path="res://region_view.gd" id="1_g22md"]
+[ext_resource type="Script" uid="uid://blh338oq2erwa" path="res://region_view.gd" id="1_g22md"]
 [ext_resource type="PackedScene" uid="uid://dowpunojv5shf" path="res://influence_list.tscn" id="2_coxiq"]
 [ext_resource type="PackedScene" uid="uid://cbu2mcsmycgon" path="res://region_unit_display.tscn" id="3_k4ivs"]
 [ext_resource type="PackedScene" uid="uid://b13op42pqpmk5" path="res://picker.tscn" id="3_r3hc2"]
+[ext_resource type="PackedScene" uid="uid://cad3idjf8te6c" path="res://region_assets.tscn" id="4_vyu4a"]
 
 [node name="RegionView" type="Control"]
 custom_minimum_size = Vector2(500, 400)
@@ -18,7 +19,7 @@ layout_mode = 0
 offset_left = 10.0
 offset_top = 10.0
 offset_right = 431.0
-offset_bottom = 193.0
+offset_bottom = 270.0
 
 [node name="IDLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
@@ -31,7 +32,25 @@ text = "ScanProg"
 [node name="InfluenceList" parent="VBoxContainer" instance=ExtResource("2_coxiq")]
 layout_mode = 2
 
-[node name="RegionUnitDisplay" parent="VBoxContainer" instance=ExtResource("3_k4ivs")]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="RegionUnitDisplay" parent="VBoxContainer/HBoxContainer/ScrollContainer" instance=ExtResource("3_k4ivs")]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+layout_mode = 2
+vertical_scroll_mode = 0
+
+[node name="RegionAssets" parent="VBoxContainer/ScrollContainer" instance=ExtResource("4_vyu4a")]
 layout_mode = 2
 
 [node name="GenerateSite" type="Button" parent="."]
@@ -81,6 +100,14 @@ offset_right = 111.0
 offset_bottom = 307.0
 text = "Send Units"
 
+[node name="AssetButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 148.0
+offset_top = 275.0
+offset_right = 206.0
+offset_bottom = 306.0
+text = "Assets"
+
 [node name="Picker" parent="." instance=ExtResource("3_r3hc2")]
 visible = false
 top_level = false
@@ -92,3 +119,4 @@ layout_mode = 1
 [connection signal="pressed" from="RemoveInf" to="." method="_on_button_3_pressed"]
 [connection signal="pressed" from="SchemeBuy" to="." method="_on_button_4_pressed"]
 [connection signal="pressed" from="UnitSend" to="." method="_on_button_5_pressed"]
+[connection signal="pressed" from="AssetButton" to="." method="_on_asset_button_pressed"]

@@ -21,6 +21,8 @@ var on_success = true
 
 var on_fail = true
 
+var world
+
 func _init(animdata):
 	if animdata.has("type"):
 		type = animdata.type
@@ -30,4 +32,6 @@ func _init(animdata):
 		animation = animdata.animation
 	if animdata.has("lifetime"):
 		lifetime = animdata.lifetime
+	if animdata.has("speed"):
+		speed = animdata.speed
 	

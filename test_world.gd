@@ -21,6 +21,8 @@ var global_queue: Multiqueue
 
 var grid
 
+var visuals = []
+
 var units = {}
 
 # Called when the node enters the scene tree for the first time.
@@ -219,6 +221,16 @@ func minibase():
 	rules.current_map.spawn_unit(data.units.agent, rules.current_map.blocks[9][3].position)
 	rules.current_map.spawn_unit(data.units.agent, rules.current_map.blocks[9][2].position)
 	rules.current_map.spawn_unit(data.units.agent, rules.current_map.blocks[9][1].position)
+
+func add_visual(vis):
+	add_child(vis)
+	visuals.append(vis)
+	
+func remove_visual(vis):
+	remove_child(vis)
+	var i = visuals.find(vis)
+	if i != -1:
+		visuals.pop_at(i)
 
 func add_unit(unit):
 	units.merge({

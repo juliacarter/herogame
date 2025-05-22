@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bmiivt013oy0u"]
 
-[ext_resource type="Script" path="res://map_generation.gd" id="1_64jma"]
+[ext_resource type="Script" uid="uid://dgi8s51l5dpk8" path="res://map_generation.gd" id="1_64jma"]
 
 [node name="MapGeneration" type="Panel"]
 custom_minimum_size = Vector2(600, 500)
@@ -51,4 +51,13 @@ offset_right = 282.0
 offset_bottom = 412.0
 text = "Generate"
 
+[node name="Button2" type="Button" parent="."]
+layout_mode = 0
+offset_left = 337.0
+offset_top = 383.0
+offset_right = 387.0
+offset_bottom = 414.0
+text = "Close"
+
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]

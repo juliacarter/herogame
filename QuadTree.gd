@@ -110,6 +110,18 @@ func find(spot):
 		return null
 
 func closest(newpoint, potential, needs_los, from = null):
+	if potential != {}:
+		return {
+			"object": potential.values()[0],
+			"weight": 1000000,
+			"bound": {
+				
+			}
+		}
+	else:
+		return {
+			"object": null
+		}
 	var homequad = find(newpoint)
 	if from != type:
 		if homequad.objects != []:
@@ -135,7 +147,8 @@ func ascend(potential, newpoint, best, from, needs_los):
 			for i in options.size():
 				var can = false
 				if needs_los:
-					can = await options[i].has_los(newpoint)
+					#can = await options[i].has_los(newpoint)
+					can = true
 				else:
 					can = true
 				if can:
@@ -195,7 +208,8 @@ func descend(potential, newpoint, best, needs_los):
 			if possible:
 				var can = false
 				if needs_los:
-					can = await objects[i].has_los(newpoint)
+					#can = await objects[i].has_los(newpoint)
+					can = true
 				else:
 					can = true
 				if can:

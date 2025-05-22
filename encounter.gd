@@ -43,6 +43,9 @@ var faction
 
 var units_by_team = {}
 
+#units assigned to each Role within the encounter
+var units_by_role = {}
+
 var team_goals = {}
 
 var enemy_bases = []
@@ -69,8 +72,14 @@ var role_factions = {
 }
 #points worth of Units to grab from the Faction's persistent units
 var desired_unit_types = {
-	"baddies": {"soldier": 300}
+	
 }
+
+var desired_placement = {
+	"player": "deployment",
+	"baddies": "zonespawn"
+}
+
 #points worth of "phantom" units to be generated anew for the encounter, by type
 #phantom units aren't drawn from the persistent unit pool, and disappear when the encounter ends
 #they still come from a faction's Unit List
@@ -107,9 +116,29 @@ func get_description():
 func object_name(s=""):
 	return key
 
+#pick units from this encounter's assigned factions
+func pick_units():
+	var result = {}
+	for role in desired_unit_types:
+		var types = desired_unit_types[role]
+		var faction = role_factions[role]
+		for type in types:
+			var points = types[type]
+			if faction != null:
+				var newunits = faction.pick_units_for_metarole(type, points)
+				assign_units_to_role(newunits, role)
+
+#assign a set of units to a specific role within the encounter
+func assign_units_to_role(newunits, role = ""):
+	for unit in newunits:
+		#var unit = newunits[key]
+		add_unit(unit, role)
+
 func _init(gamerules, encounterdata):
 	pindata = EncounterPinData.new(self)
 	var gamedata = gamerules.data
+	if encounterdata.has("desired_units"):
+		desired_unit_types = encounterdata.desired_units.duplicate()
 	for reward in rewards:
 		reward.parent = self
 	team_goals = encounterdata.team_goals.duplicate()
@@ -165,6 +194,13 @@ func save():
 func load_save(savedata):
 	id = savedata.id
 	#goal = savedata.goal
+
+#create/pick units for this encounter
+func generate_encounter():
+	var newunits = get_units("baddies")
+	var pickedunits = pick_units()
+	place_units()
+	pass
 
 func start_encounter():
 	encounter_begin.emit()
@@ -246,6 +282,18 @@ func spawn_units():
 	var placedunits = map.place_units_in_zone("enemydeployment", newunits)
 	for unit in placedunits:
 		add_unit(unit, "baddies")
+		
+func place_units():
+	for role in units_by_role:
+		var placement = ""
+		if desired_placement.has(role):
+			placement = desired_placement[role]
+		else:
+			placement = "zonespawn"
+		var newunits = units_by_role[role]
+		if placement == "zonespawn":
+			var placedunits = map.place_units_in_zone("enemydeployment", newunits.values())
+			pass
 
 
 func get_units(key):
@@ -255,15 +303,16 @@ func get_units(key):
 	var options = lists[key]
 	var i = randi() % options.size()
 	var chosen = options[i]
-	var units
+	var newunits
 	if faction == null:
 		faction = rules.factions.coalition
-	units = faction.generate_units(chosen, -1, roles[key])
+	newunits = faction.generate_units(chosen, -1, roles[key])
 		
 		
-	for unit in units:
+	for unitkey in newunits:
+		var unit = newunits[unitkey]
 		unit.encounter_role = key
-	return units
+	return newunits
 	#for role in unit_lists:
 	#	var lists = unit_lists[role]
 	#	var rand = randi() % lists.size()
@@ -291,6 +340,12 @@ func add_unit(unit, role = ""):
 		unit.allegiance: {}
 	})
 	units_by_team[unit.allegiance].merge({
+		unit.id: unit
+	})
+	units_by_role.merge({
+		role: {}
+	})
+	units_by_role[role].merge({
 		unit.id: unit
 	})
 	for order in orders:

@@ -1,9 +1,15 @@
-[gd_scene load_steps=5 format=3 uid="uid://boa4dljmmsfab"]
+[gd_scene load_steps=6 format=3 uid="uid://boa4dljmmsfab"]
 
-[ext_resource type="Script" path="res://TextTip.gd" id="1_fmulu"]
+[ext_resource type="Script" uid="uid://bb4i6tahqet2v" path="res://TextTip.gd" id="1_fmulu"]
 [ext_resource type="PackedScene" uid="uid://5tushfx0oddo" path="res://tippable_rich_text.tscn" id="2_1sytm"]
 [ext_resource type="PackedScene" uid="uid://dhpy1sbut4pkj" path="res://outer_window.tscn" id="3_qi31r"]
 [ext_resource type="PackedScene" uid="uid://bhp206jav1nqd" path="res://inner_window.tscn" id="4_smu15"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_tekd1"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
 
 [node name="TextTip" type="VBoxContainer"]
 z_index = 3261
@@ -22,6 +28,7 @@ clip_contents = false
 custom_minimum_size = Vector2(256, 32)
 layout_mode = 2
 mouse_filter = 1
+theme_override_styles/normal = SubResource("StyleBoxEmpty_tekd1")
 
 [node name="OuterWindow" parent="TextTip" instance=ExtResource("3_qi31r")]
 show_behind_parent = true

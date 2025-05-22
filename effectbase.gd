@@ -12,6 +12,8 @@ var effname = ""
 
 var allows_negative = false
 
+var oneshot = false
+
 func _init(data):
 	if data.has("modifiers"):
 		modifiers = data.modifiers.duplicate()
@@ -20,3 +22,15 @@ func _init(data):
 		
 func get_modifiers():
 	return modifiers
+
+func apply_effect(unit, count):
+	for i in count:
+		unit.add_mods(modifiers)
+		unit.add_triggers(triggers)
+	
+func remove_effect(unit, count):
+	for i in count:
+		unit.remove_mods(modifiers)
+		for key in triggers:
+			var trigger = triggers[key]
+			unit.remove_trigger(trigger)

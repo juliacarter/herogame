@@ -12,6 +12,7 @@ extends Control
 var sortables = [
 	NameSortable.new(),
 	LevelSortable.new(),
+	ClassNameSortable.new(),
 	CheckboxSortable.new()
 ]
 

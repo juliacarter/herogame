@@ -48,6 +48,8 @@ func check_researchable():
 			researchable.merge({tech.id: tech})
 
 func research_tech(tech):
+	if current_tech == tech:
+		current_tech = null
 	unresearched.erase(tech.id)
 	researchable.erase(tech.id)
 	completed.merge({

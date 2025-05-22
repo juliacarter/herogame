@@ -10,6 +10,8 @@ signal faction_threat_created(faction, threat)
 signal faction_buildup(faction, amount)
 signal faction_buildup_full(faction)
 
+var key = ""
+
 var id
 
 var rules
@@ -182,6 +184,8 @@ func set_allegiances():
 		})
 		
 func get_relation(faction):
+	if faction.key != key:
+		return "enemy"
 	if faction == null:
 		return "neutral"
 	if faction.id == id:
@@ -211,6 +215,9 @@ func add_unit(unit):
 	units.merge({
 		unit.id: unit
 	})
+	inactive_units.merge({
+		unit.id: unit
+	})
 	for role in unit.meta_roles:
 		add_unit_by_role(unit, role)
 	
@@ -224,17 +231,85 @@ func add_unit_by_role(unit, role):
 	
 func initialize():
 	var newunits = []
-	for i in 5:
-		var unit = generate_units("basic", 1, 100)
-		newunits.append(unit.values()[0])
+	if key != "player":
+		for i in 5:
+			var unit = generate_units("basic", 1, 100)
+			newunits.append(unit.values()[0])
+	
+#desired = {meta_role1: points1, meta_role2: points2, ...}
+#attach a randomly selected group of units to a given encounter
+#randomly select inactive units that match meta_roles in desired until all points are spent
+func send_units_to_encounter(encounter, desired, role):
+	var result = {}
+	for meta_role in desired:
+		result.merge({
+			meta_role: []
+		})
+		
+		var points = desired[meta_role]
+		var done = false
+		while !done:
+			var options = []
+			for key in inactive_units:
+				var unit = inactive_units[key]
+				if unit.meta_roles.find(meta_role) != -1:
+					if unit.point_value <= points:
+						options.append(unit)
+			if options != []:
+				var rand = randi() % options.size()
+				var unit = options[rand]
+				points -= unit.point_value
+				send_out(unit)
+				result[meta_role].append(unit)
+				options.pop_at(rand)
+			else:
+				done = true
+	
+func pick_units_for_metarole(metarole, points):
+	var done = false
+	var result = []
+	while !done:
+		var options = []
+		for key in inactive_units:
+			var unit = inactive_units[key]
+			if unit.meta_roles.find(metarole) != -1:
+				if unit.point_value <= points:
+					options.append(unit)
+		if options != []:
+			var rand = randi() % options.size()
+			var unit = options[rand]
+			points -= unit.point_value
+			send_out(unit)
+			result.append(unit)
+			options.pop_at(rand)
+		else:
+			done = true
+	return result
 	
 #remove these units from Inactive Units
-func send_on_operation(newunits):
-	pass
+func send_on_operation(newunits, operation):
+	make_active(newunits)
+	operation.assign_units(newunits)
+		
+func make_active(newunits):
+	for unit in newunits:
+		send_out(unit)
+		
+func send_out(unit):
+	inactive_units.erase(unit.id)
 	
 #add these units back to Inactive Units
 func return_from_operation(newunits):
-	pass
+	for unit in newunits:
+		inactive_units.merge({
+			unit.id: unit
+		})
+	
+#return the unit to the inactive unit queue
+func return_home(unit):
+	inactive_units.merge({
+		unit.id: unit
+	})
 	
 func remove_unit(unit):
 	units.erase(unit.id)

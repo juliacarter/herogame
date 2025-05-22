@@ -22,7 +22,6 @@ var conditions = []
 #Must be met for the spell to autocast, but not for the spell to be manually cast. Prevents the ability from being used when its not useful, but lets the player do whatever they want
 var auto_conditions = []
 
-var key = ""
 var parent
 
 var everyframe = false
@@ -57,6 +56,7 @@ func find_target(targeter):
 	return result
 	
 func fire_at(target, delta = 0.0):
+	super(target, delta)
 	time = cooldown
 	var args = fire_args.duplicate()
 	

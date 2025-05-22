@@ -8,6 +8,8 @@ var effects = {}
 
 var stacking = true
 
+var timed = true
+
 var tipname = ""
 
 func _init(data):
@@ -19,3 +21,6 @@ func _init(data):
 		stacking = data.stacking
 	if data.has("tooltip"):
 		tipname = data.tooltip
+		
+func tick(delta, unit):
+	pass

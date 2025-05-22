@@ -25,6 +25,8 @@ var job = null
 
 var storing = false
 
+var equipped = false
+
 var haul_tasks = []
 
 func add_haul_task(task):

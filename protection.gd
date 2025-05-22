@@ -1,6 +1,8 @@
 extends Object
 class_name Protection
 
+var key = ""
+
 var armor = {}
 var durability
 var maxdura
@@ -9,6 +11,8 @@ func _init(data):
 	armor = data.armor.duplicate()
 	maxdura = data.durability
 	durability = maxdura
+	if data.has("key"):
+		key = data.key
 	
 #Returns the new damage
 func get_defense(damage, type):

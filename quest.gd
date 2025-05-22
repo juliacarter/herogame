@@ -37,6 +37,7 @@ var source
 
 #Time the player has to complete the Quest
 var time = -100
+var time_cap = 0
 
 var pindata
 
@@ -61,6 +62,7 @@ func _init(newrules, args):
 	rules = newrules
 	if args.has("time"):
 		time = args.time
+		time_cap = args.time
 	if args.has("name"):
 		title = args.name
 	if args.has("rewards"):

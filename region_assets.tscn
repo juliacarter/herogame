@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://cad3idjf8te6c"]
+
+[ext_resource type="Script" uid="uid://bgaxhc55q83pl" path="res://RegionAssets.gd" id="1_7ur5c"]
+
+[node name="RegionAssets" type="HBoxContainer"]
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+script = ExtResource("1_7ur5c")

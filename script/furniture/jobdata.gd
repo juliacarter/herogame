@@ -40,6 +40,10 @@ var healing = {}
 
 var jobclass = "Job"
 
+var baseclass = "JobBase"
+
+var max_level = 0
+
 func _init(data):
 	if data.has("name"):
 		jobname = data.name
@@ -47,6 +51,8 @@ func _init(data):
 		jobname = "placeholder"
 	if data.has("class"):
 		jobclass = data.class
+	if data.has("max_level"):
+		max_level = data.max_level
 	if data.has("healing"):
 		healing = data.healing.duplicate()
 	if data.has("in_place"):
@@ -67,6 +73,8 @@ func _init(data):
 		service = data.service
 	if data.has("continues"):
 		continues = data.continues
+	if data.has("baseclass"):
+		baseclass = data.baseclass
 	slots = data.slots
 	action = data.action
 	args = data.args

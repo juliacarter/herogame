@@ -15,6 +15,8 @@ var in_place = false
 
 var working = false
 
+var active = false
+
 var repeat = false
 var continues = false
 
@@ -128,7 +130,7 @@ func workers_ready():
 	for slot in desiredactors:
 		var workslot = desiredactors[slot]
 		var actors = workslot.actors
-		if foundactors < workslot.count:
+		if foundactors < actors.size():
 			repush_request()
 			result = false
 			return false
@@ -218,11 +220,15 @@ func work(delta):
 	var progress = calc_prog(delta)
 	calc_healing(delta, "interact")
 	time -= progress
+	if jobname == "Mine Ore":
+		pass
 	var result = check_completion()
 	return result
 		
 func start_work():
 	if !started:
+		active = true
+		
 		if on_start != null:
 			callv(on_start, args)
 		started = true
@@ -268,6 +274,12 @@ func get_task(slotname = "interact"):
 		newtask.certs = certs[slotname].duplicate()
 	return newtask
 	
+		
+func start_job():
+	if location == null:
+		make_task()
+	else:
+		location.queue_job(self)
 		
 func make_task():
 	if !automatic:
@@ -372,7 +384,7 @@ func return_task():
 	print("Make task for")
 	print("====")
 	found_needs = {}
-	foundactors = 1
+	foundactors = 0
 	for key in desiredactors:
 		desiredactors[key].actors = []
 	var has = false
@@ -447,7 +459,7 @@ func make_task_for_unit(unit):
 		if location.entity() == "FURNITURE":
 			location.current_job = self
 			location.in_use = true
-		foundactors = 1
+		foundactors = 0
 		for key in desiredactors:
 			desiredactors[key].actors = []
 		if(needs.is_empty() && !automatic):
@@ -549,10 +561,13 @@ func find_container():
 	pass
 		
 func complete():
+	active = false
 	await callv(action, args)
 	started = false
 	done = true
-	jobbase.waiting = false
+	
+	if jobbase != null:
+		jobbase.waiting = false
 	if action != "continue_fueled_power":
 		pass
 	for key in desiredactors:
@@ -591,9 +606,10 @@ func complete():
 		location.remove_item(item.id, count, "input")
 	
 	location.job_instances.erase(id)
-	
+	location.current_job = null
 	
 	for slot in desiredactors:
+		desiredactors[slot].count = 0
 		desiredactors[slot].actors = []
 	#await map.active_jobs.erase(id)
 	#time = speed
@@ -625,6 +641,9 @@ func research_current(amount):
 		
 func perform_research(type, count):
 	rules.player.science.progress_research(type, count)
+		
+func make_tile(tiledata):
+	pass
 		
 func scan_amount(amount):
 	rules.opportunity_scan(amount)
