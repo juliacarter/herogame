@@ -1,9 +1,6 @@
 extends Action
 class_name Spell
 
-var data
-var rules
-
 
 var automatic = false
 
@@ -45,7 +42,7 @@ func make_power():
 		"prime_args": prime_args,
 		"category": "unit",
 		"action": self
-	})
+	}, rules)
 	power.make_tool()
 	return power
 
@@ -57,7 +54,9 @@ func find_target(targeter):
 	
 func fire_at(target, delta = 0.0):
 	super(target, delta)
-	time = cooldown
+	#time = cooldown
+	for impact in impacts:
+		impact.fire(target, 0)
 	var args = fire_args.duplicate()
 	
 	if targeted:
@@ -107,6 +106,7 @@ func _init(gamedata, spelldata, parent = null):
 		fire_args = spelldata.fire_args.duplicate()
 	if spelldata.has("automatic"):
 		automatic = spelldata.automatic
+		autocast = automatic
 	if spelldata.has("range"):
 		range = spelldata.range
 	if spelldata.has("everyframe"):

@@ -23,7 +23,7 @@ func load_encounters():
 		encounterlist.load_sortables(rules.available_missions, sortables)
 
 func load_encounter(new):
-	encounterview.load_encounter(new)
+	encounterview.load_mission(new)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

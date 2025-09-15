@@ -1,21 +1,16 @@
-extends Mission
+extends Quest
 class_name Threat
 
 
 
-var faction
 
 func assign_faction(new):
 	faction = new
-	quest.faction = faction
 
-func _init(gamedata, threatdata, newparent = null):
-	super(gamedata, threatdata, newparent)
-	parent = newparent
+func _init(gamerules, threatdata):
+	super(gamerules, threatdata)
 	if threatdata.has("weight"):
 		weight = threatdata.weight
-	if threatdata.has("questname"):
-		quest = threatdata.questname
 		#if gamedata.quests_to_load.has(threatdata.questname):
 			#quest = gamedata.quests_to_load[threatdata.questname]
 			

@@ -8,6 +8,8 @@ class_name AreaEffect
 
 @onready var los = get_node("LoSRay")
 
+var started = false
+
 var indicator
 
 var caster
@@ -60,6 +62,8 @@ var endpoint
 #the point to use when determining where the attack comes from
 var attack_pos
 
+var col
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass
@@ -83,16 +87,19 @@ func load_aoe(aoedata, pos, newcaster = null, neworigin = null):
 		for payloaddata in aoedata.payloads:
 			var payload = Payload.new(rules, data, payloaddata, caster)
 			payloads.append(payload)
-	
-	set_origin(neworigin)
+	if origin != null:
+		set_origin(neworigin)
+	else:
+		set_origin(pos)
 	set_pos(pos)
-	indicator.set_origin(to_local(neworigin))
-	indicator.update_position(pos)
+	indicator.set_origin(to_local(origin))
+	#indicator.update_position(pos)
 	make_area()
 	active = true
+	top_level = true
 	
 func set_pos(new):
-	global_position = new
+	position = new
 	attack_pos = new
 	los.global_position = new
 	
@@ -103,11 +110,15 @@ func set_origin(new):
 func make_area():
 	var newarea = Area2D.new()
 	var newcol = CollisionShape2D.new()
+	col = newcol
+	col.debug_color = Color.ROYAL_BLUE
 	shape = make_circle()
 	newcol.shape = shape
 	area = newarea
-	add_child(area)
 	area.add_child(newcol)
+	area.set_collision_mask_value(2, true)
+	area.priority = 100
+	add_child(area)
 	
 func make_circle():
 	var newshape = CircleShape2D.new()
@@ -116,7 +127,10 @@ func make_circle():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta: float) -> void:
-	check_fire(delta)
+	if started:
+		await check_fire(delta)
+	else:
+		started = true
 	
 func check_fire(delta):
 	if active && oneframe:
@@ -128,6 +142,8 @@ func check_fire(delta):
 		#indicator()
 		fadedown -= delta
 		check_fade()
+	else:
+		await fire()
 	if fadedown <= 0:
 		remove()
 	#queue_redraw()
@@ -149,7 +165,10 @@ func check_los(target):
 	return !los.is_colliding()
 
 func fire():
+	top_level = true
+	
 	var targets = area.get_overlapping_bodies()
+	var areas = area.get_overlapping_areas()
 	#indicator()
 	for target in targets:
 		if target != caster || !exclude_caster:

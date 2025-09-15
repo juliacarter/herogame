@@ -12,6 +12,9 @@ var timed = true
 
 var tipname = ""
 
+func apply(unit):
+	pass
+
 func _init(data):
 	if data.has("name"):
 		name = data.name

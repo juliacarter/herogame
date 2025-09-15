@@ -43,6 +43,9 @@ var pindata
 
 var pin
 
+
+var weight = 0
+
 signal quest_complete(quest, success)
 
 func encounter_started():

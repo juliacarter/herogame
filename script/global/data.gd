@@ -54,29 +54,30 @@ var tags = {
 
 var fuels = {
 	"health": {
-		"name": "Strength",
-		"num": 2000,
+		"name": "Health",
+		"num": 10000,
 		"category": "basic",
+		"soft_cap": false,
 		"spend_ratio": 0.25,
 		"tooltip": "testtip",
 		"newtarget": 10
 	},
 
 	"morale": {"name": "Morale",
-		"num": 50,
+		"num": 200,
 		"category": "basic",
 		"abdata": [
-			{
-				"ability": "waveringmorale",
-				"threshold": 20,
-				"threshold_above": false
-			},
-			{
-				"ability": "goodmorale",
-				"threshold": 40,
-				"threshold_above": true,
-				"bracket": 1
-			}
+			#{
+			#	"ability": "waveringmorale",
+			#	"threshold": 20,
+			#	"threshold_above": false
+			#},
+			#{
+			#	"ability": "goodmorale",
+			#	"threshold": 40,
+			#	"threshold_above": true,
+			#	"bracket": 1
+			#}
 		],
 		"newtarget": 10
 	},
@@ -98,12 +99,12 @@ var fuels = {
 
 var qualities = {
 	"strength": {"name": "Strength", "num": 10, "category": "basic",
-		#"abdata": [
-		#	{
-		#		"ability": "strengthbonus",
-		#		"bracket": 1,
-		#	}
-		#],
+		"abdata": [
+			{
+				"ability": "strengthbonus",
+				"bracket": 1,
+			}
+		],
 	},
 	"agility": {"name": "Agility", "num": 10, "category": "basic",
 		"influences": {
@@ -156,19 +157,80 @@ var actions_to_load = {
 
 var attacks = {
 	#"weapon": {
-	#	"range": range in squares
+	#	"range": FLOAT, range in squares
 	#	"damage": {
 	#			"damagetype": [
-	#				{"stat": stat being damaged, "type": what armor it's resisted by, "min": bonus for the attack, "variance": dice size for the attack}
-	#				]
+	#				{"stat": STRING, stat being damaged,
+	#				"type": STRING, what armor it's resisted by,
+	#				"magnitude": INT, baseline magnitude for the attack}
+	#			]
 	#		},
-	#	"accuracy": modifier added to the accuracy value,
-	#	"aimtime": how many seconds to aim,
-	#	"readytime": how many seconds to ready,
-	#	"rangepenalty": modifier removed from accuracy value at maximum range,
-	#	"firetime": how many seconds to fire each attack,
-	#	"attackcount": number of attacks made per cycle
+	#	"accuracy": INT, modifier added to the accuracy value,
+	#	"aimtime": FLOAT, how many seconds to aim,
+	#	"readytime": FLOAT, how many seconds to ready,
+	#	"firetime": FLOAT, how many seconds to fire each attack,
+	#	"attackcount": INT, number of attacks made per cycle,
+	#	"plannable": BOOL, can be used in the Planning phase
 	#},
+	
+	#test actions
+	"firefist": {
+		"impacts": [
+			{
+				"type": "ResistableBuffImpact",
+				"buffname": "poison",
+				#"stat": "health",
+				"magnitude": 20,
+			},
+			{
+				"type": "DamageImpact",
+				"damtype": "kinetic",
+				"stat": "health",
+				"magnitude": 40,
+			}
+		],
+		"basecrit": 300,
+		"energycost": 0.5,
+		"animation": "punch",
+		"visuals": [{"name": "wigglebox", "on_fail": false}],
+		"bubbles": [{"bubbles": ["pow", "wham"], "path": "simple_horizontal_curve"}],
+		"accuracy": 10,
+		"dammods": ["melee_power", "melee_power", "fistpower"],
+		"aimtime": 0.0,
+		"readytime": 1.0, 
+		"rangepenalty": 25,
+		"firetime": 0.1,
+		"attackcount": 1
+	},
+	
+	#generic high-damage planned action
+	"supersnipe": {
+		"plannable": true,
+		"autoable": false,
+		
+		"range": 20.0,
+		"accuracy": 1000,
+		
+		"aimtime": 0.0,
+		"readytime": 0.75,
+		"firetime": 0.3,
+		
+		"attackcount": 1,
+		"impacts": [
+			{
+				"type": "DamageImpact",
+				"damtype": "kinetic",
+				"stat": "health",
+				"magnitude": 20000,
+			}
+		],
+		
+		"accmods": ["shooting_accuracy"],
+		
+		"visuals": [{"name": "shoot", "on_fail": false}, {"name": "beam"}],
+		"animation": "kickback",
+	},
+	
 	"testingraygun": {
 		"range": 10.0,
 		"damage": {
@@ -192,7 +254,8 @@ var attacks = {
 		"range": 10.0,
 		"impacts": [
 			{
-				"type": "kinetic",
+				"type": "DamageImpact",
+				"damtype": "kinetic",
 				"stat": "health",
 				"magnitude": 20,
 			}
@@ -214,7 +277,8 @@ var attacks = {
 		"aggro_percent_penalty_mods": ["generic_aggro_penalty_percent"],
 		"impacts": [
 			{
-				"type": "kinetic",
+				"type": "DamageImpact",
+				"damtype": "kinetic",
 				"stat": "health",
 				"magnitude": 20,
 			}
@@ -411,17 +475,20 @@ var attacks = {
 	"fists": {
 		"impacts": [
 			{
-				"type": "kinetic",
+				"type": "DamageImpact",
+				"damtype": "kinetic",
 				"stat": "health",
 				"magnitude": 20,
 			},
 			{
-				"type": "kinetic",
+				"type": "DamageImpact",
+				"damtype": "kinetic",
 				"stat": "health",
 				"magnitude": 40,
 			}
 		],
 		"basecrit": 300,
+		"energycost": 0.5,
 		"animation": "punch",
 		"visuals": [{"name": "wigglebox", "on_fail": false}],
 		"bubbles": [{"bubbles": ["pow", "wham"], "path": "simple_horizontal_curve"}],
@@ -437,12 +504,14 @@ var attacks = {
 		"range": 10.0,
 		"impacts": [
 			{
-				"type": "kinetic",
+				"type": "DamageImpact",
+				"damtype": "kinetic",
 				"stat": "health",
 				"magnitude": 20,
 			},
 			{
-				"type": "kinetic",
+				"type": "DamageImpact",
+				"damtype": "kinetic",
 				"stat": "health",
 				"magnitude": 40,
 			}
@@ -463,8 +532,9 @@ var attacks = {
 	"psiblast": {
 		"impacts": [
 			{
-				"type": "psychic",
-				"stat": "health",
+				"type": "DamageImpact",
+				"damtype": "psychic",
+				"stat": "morale",
 				"magnitude": 20,
 			}
 		],
@@ -481,11 +551,14 @@ var attacks = {
 		"attackcount": 1,
 	},
 	"shove": {
-		"damage": {
-				"bludgeon": [
-					{"stat": "health", "type": "bludgeon", "min": 5, "variance": 10}
-					],
+		"impacts": [
+			{
+				"type": "DamageImpact",
+				"damtype": "kinetic",
+				"stat": "health",
+				"magnitude": 200000,
 			},
+		],
 		"animation": "punch",
 		"visuals": [{"name": "wigglebox", "on_fail": false}],
 		"bubbles": [{"bubbles": ["pow", "wham"], "path": "simple_horizontal_curve"}],
@@ -510,7 +583,10 @@ var attacks = {
 
 var armors = {
 	"flak": {"armor": {
-		"kinetic": {"min": 50, "variance": 0}
+		"kinetic": {"min": 5, "variance": 0}
+		}, "durability": 50},
+	"superjack": {"armor": {
+		"kinetic": {"min": 90, "variance": 0}
 		}, "durability": 50},
 	"gasmask": {"armor": {
 		"enviro": {"min": 5, "variance": 0}
@@ -644,6 +720,19 @@ var items_to_load = {
 		"wearsprite": "kevlar",
 		"type": "armor"
 	},
+	"superjacket": {
+		"name": "superjacket",
+		"size": 1,
+		"cat": ["debug"],
+		"abilities": [
+			"superjackability"
+		],
+		"price": 5,
+		"slot": "armor",
+		"sprite": "kevlar",
+		"wearsprite": "kevlar",
+		"type": "armor"
+	},
 	"justicejacket": {
 		"name": "justicejacket",
 		"protection": "justicejacket",
@@ -734,7 +823,7 @@ var powers_to_load = {
 	
 	"inspire": {"name": "Inspire", "on_prime": "make_aoe", "prime_args": ["cone", 128], "on_cast": "buff_aoe", "cast_args": ["inspired"], "category": "spells", "targeting": "UNIT"},
 	
-	"blast": {"name": "Hunger Blast", "on_prime": "make_aoe", "prime_args": ["cone", 128], "on_cast": "drain_aoe", "cast_args": ["food", -9], "category": "spells", "targeting": "UNIT"},
+	"blast": {"name": "Hunger Blast", "on_prime": "make_aoe", "prime_args": ["cone", 128], "on_cast": "aoe_by_name", "cast_args": ["aoetest"], "category": "spells", "targeting": "UNIT"},
 	
 }
 
@@ -1037,7 +1126,31 @@ var jobs_to_load = {
 		"skilltrains": {"machines": 1},
 		},
 		
-	
+	"moneymachine": {
+		"name": "Feel So Clean",
+		"action": "roll_cash",
+		"args": [50, 100],
+		"speed": 1,
+		"experience": {"interact": {"work": 0.5}},
+		"requirements": {},
+		"type": "interact",
+		"slots": {"interact": {"count": 1, "role": "worker", 
+			"modifiers": {
+					"haste": {
+						#100% of strengthspeed modifier is applied to both Work and Drains, so 10 strengthspeed means a 10% increase in haste
+						"strengthspeed": 100,
+						"globalworkspeed": 100
+					},
+					"efficiency": {
+						"miningefficiency": 100,
+						"globalworkefficiency": 100
+					}
+				},
+			}
+		},
+		"drains": {"energy": 3},
+		"skilltrains": {"machines": 1},
+		},
 		
 	"makebasicacid": {
 		"name": "Synthesize Natural Acid",
@@ -1432,7 +1545,11 @@ var visuals_to_load = {
 		"animation": "wiggle",
 		"sprite": "gigapain",
 		"lifetime": 1.0
-	}
+	},
+	"onfire": {
+		"type": "VisualEffectPopups",
+		"sprite": "testfire",
+	},
 }
 
 var blocks_to_load = {
@@ -1456,6 +1573,19 @@ var furniture_to_load = {
 		"object_name": "Trainer",
 		"spritepath":"moneymachine",
 		"type": "trainer",
+		"category": "furniture",
+		"tags": [],
+	},
+	
+	"moneymachine": {
+		"jobs": ["moneymachine"],
+		"spots": {"interact": [{"pos": 0, "side": 0}]},
+		"size": {"x": 1, "y": 1},
+		"manual": false,
+		"power": 3,
+		"object_name": "Money Machine",
+		"spritepath":"moneymachine",
+		"type": "machine",
 		"category": "furniture",
 		"tags": [],
 	},
@@ -1845,6 +1975,11 @@ var spells = {
 		"cooldown": 1,
 		"energy_cost": 2,
 		#"everyframe": true,
+		#conditions": [
+		#	{
+		#		"type": 
+		#	}
+		#]
 		"fire_action": "change_target_unit_stat",
 		"target_function": "get_targeter",
 		"fire_args": ["health", 10],
@@ -1864,22 +1999,61 @@ var spells = {
 	},
 	"selfcast": {
 		"type": "SelfSpell",
-		"cooldown": 1,
+		"cooldown": 0.5,
 		"energy_cost": 2,
 		#"everyframe": true,
 		"fire_action": "change_target_unit_stat",
 		"target_function": "get_targeter",
-		"fire_args": ["health", 10],
+		"fire_args": ["health", 20],
+		"automatic": true,
+		"impacts": [
+			{
+				"type": "HealImpact",
+				"stat": "health",
+				"magnitude": 20000,
+			}
+		],
+		"conditions": [
+			{
+				"type": "StatCondition",
+				"statname": "health",
+				"stattype": "fuels",
+				"from_end": true,
+				"direction": "lesser",
+				"by_parent": true,
+				"target": "by",
+				#"desired_percent": 50,
+				"desired_flat": 20
+			}
+		]
+	},
+	"immolate": {
+		"type": "TargetSpell",
+		
+		"cooldown": 0.5,
+		"energy_cost": 2,
+		#"everyframe": true,
+		"fire_action": "change_target_unit_stat",
+		"target_function": "get_targeter",
+		"targeter": {
+			"type": "RandomTarget",
+			"range": "50",
+			"enemy": true,
+		},
+		"impacts":
+			[],
+		"fire_args": ["health", 20],
 		"automatic": true,
 		"conditions": [
 			{
 				"type": "StatCondition",
 				"statname": "health",
 				"stattype": "fuels",
+				"from_end": true,
 				"direction": "lesser",
 				"by_parent": true,
 				"target": "by",
-				"desired_percent": 50,
+				#"desired_percent": 50,
 				"desired_flat": 20
 			}
 		]
@@ -1911,6 +2085,23 @@ var spells = {
 	"aoetest": {
 		"type": "PlacedAreaSpell",
 		"cooldown": 1,
+		
+		#"everyframe": true,
+		"aoedata": {
+			"shape": "AreaEffectCircle",
+			"max_distance": 512,
+			"payloads": [
+				{"attacks": ["shove"]}
+			],
+			"radius": 256,
+		},
+		"automatic": true,
+	},
+	"superdeathbomb": {
+		"type": "PlacedAreaSpell",
+		"cooldown": 1,
+		"range": 1000000,
+		"plannable": true,
 		
 		#"everyframe": true,
 		"aoedata": {
@@ -2029,7 +2220,8 @@ var abilities_to_load = {
 	"strengthbonus": {
 		"type": "passive",
 		"effects": {
-			"melee_power": 10
+			"melee_power": 10,
+			"genericresist": 10,
 		}
 	},
 	
@@ -2290,7 +2482,7 @@ var buffs_to_load = {
 		"effects": {
 			"poison": 1
 		},
-		"stacking": false,
+		#"stacking": false,
 	},
 	"phantom": {
 		"name": "Poison",
@@ -2411,6 +2603,35 @@ var upgrades_to_load = {
 		},
 		"taught_by": "physicalbasic"
 	},
+	"firefister": {
+		"range": 10.0,
+		"name": "TankFists",
+		"article":
+			{"title": "Hand Gun", "body": "Unit has a gun in their hand."},
+		"time": 1,
+		"type": "upgrade",
+		"limit": "lesson",
+		"cost": {"metal": 1},
+		"abilities": {
+			"firefistability": 1
+		},
+		"taught_by": "physicalbasic"
+	},
+	"supersniper":{
+		"range": 10.0,
+		"name": "SuperSniper",
+		"article":
+			{"title": "Hand Gun", "body": "Unit has a gun in their hand."},
+		"time": 1,
+		"type": "upgrade",
+		"limit": "lesson",
+		"cost": {"metal": 1},
+		"abilities": {
+			"supersnipeability": 1,
+			"superdeathbombability": 1,
+		},
+		"taught_by": "physicalbasic"
+	},
 	
 	"tankaggro": {
 		"range": 10.0,
@@ -2422,7 +2643,7 @@ var upgrades_to_load = {
 		"limit": "lesson",
 		"cost": {"metal": 1},
 		"abilities": {
-			"genericaggropct": 50
+			"genericaggropct": 500
 		},
 		"taught_by": "physicalbasic"
 	},
@@ -2531,7 +2752,7 @@ var upgrades_to_load = {
 		"limit": "lesson",
 		"cost": {"ore": 1},
 		"abilities": {
-			"testcastability": 1
+			"selfcastability": 1
 		},
 		"taught_by": "physicalbasic"
 	},
@@ -2921,8 +3142,40 @@ var units_to_load = {
 		"sprite": "minion",
 		"roles": ["guard"],
 		"class": "guard",
+		"lessons": ["tankaggro", "testcast"],
+		#"lessons": [],
+		"starter_equipment": {
+			"weapon": null,
+			"armor": "superjacket",
+			"tool1": null,
+			"tool2": null,
+			"tool3": null
+		},
+	},
+	"fireguard": {
+		"allegiance": "player",
+		"aggressive": true,
+		"sprite": "minion",
+		"roles": ["guard"],
+		"class": "guard",
+		"lessons": ["firefister"],
+		#"lessons": [],
+		"starter_equipment": {
+			"weapon": null,
+			"armor": "superjacket",
+			"tool1": null,
+			"tool2": null,
+			"tool3": null
+		},
+	},
+	"snipeguard": {
+		"allegiance": "player",
+		"aggressive": true,
+		"sprite": "minion",
+		"roles": ["guard"],
+		"class": "guard",
 		#"lessons": ["tankaggro"],
-		"lessons": [],
+		"lessons": ["supersniper"],
 		"starter_equipment": {
 			"weapon": null,
 			"armor": "flakjacket",
@@ -3612,6 +3865,8 @@ var modifiers = [
 	
 	"genericaggropct",
 	
+	"genericresist",
+	
 ]
 
 #each one gets a haste and efficiency mod
@@ -3690,6 +3945,13 @@ var arcs = {
 	#		}
 	#	]
 	#}
+}
+
+var missions = {
+	"sample": {
+		"name": "Sample Mission",
+		"steps": ["skirmish", "skirmish"]
+	}
 }
 
 var encounters = {
@@ -3824,7 +4086,7 @@ var buffs = {}
 
 var actions = {}
 
-var missions = {}
+var quests = {}
 
 var visual_effects = {}
 
@@ -3897,7 +4159,7 @@ func _ready():
 	
 	
 	
-	load_missions()
+	#load_missions()
 	
 	
 	
@@ -3955,7 +4217,8 @@ func load_items():
 func load_powers():
 	for key in powers_to_load:
 		var data = powers_to_load[key]
-		var newpow = Power.new(data)
+		var newpow = Power.new(data, rules)
+		newpow.rules = rules
 		newpow.make_tool()
 		powers.merge({
 			key: newpow
@@ -4484,7 +4747,7 @@ func load_missions():
 	for key in missions_to_load:
 		var missiondata = missions_to_load[key]
 		var mission = Threat.new(self, missiondata)
-		missions.merge({
+		quests.merge({
 			key: mission
 		})
 	
@@ -4534,25 +4797,25 @@ func furniture_palette():
 		var furn = furniture[key]
 		if furn.unlocked || rules.debugvars.unlockall:
 			var tool = Power.new({
-				"name": furn.object_name, "on_prime": "grab_preview", "prime_args": [furn], "category": furn.category, "on_cast": "drop_furniture", "icon": furn.sprite_path})
+				"name": furn.object_name, "on_prime": "grab_preview", "prime_args": [furn], "category": furn.category, "on_cast": "drop_furniture", "icon": furn.sprite_path}, rules)
 			tool.make_tool()
 			pal.append(tool)
 	for key in blocks_to_load:
 		var block = blocks_to_load[key]
 		var tool = Power.new({
-				"name": block.name, "on_prime": "preview_tile", "prime_args": [block], "category": "tiles", "on_cast": "drop_tile"})
+				"name": block.name, "on_prime": "preview_tile", "prime_args": [block], "category": "tiles", "on_cast": "drop_tile"}, rules)
 		tool.make_tool()
 		pal.append(tool)
 	for key in items:
 		var item = items[key]
 		
-		var tool = Power.new({"name": "Spawn " + item.itemname, "on_cast": "place_item_at_cursor", "cast_args": [key], "category": "itemspawn", "icon": item.sprite})
+		var tool = Power.new({"name": "Spawn " + item.itemname, "on_cast": "place_item_at_cursor", "cast_args": [key], "category": "itemspawn", "icon": item.sprite}, rules)
 		tool.make_tool()
 		pal.append(tool)
 	for key in units:
 		var unit = units[key]
 		
-		var tool = Power.new({"name": "Spawn " + key, "on_cast": "place_unit_at_cursor", "cast_args": [key], "category": "minspawn", "icon": "blueguy"})
+		var tool = Power.new({"name": "Spawn " + key, "on_cast": "place_unit_at_cursor", "cast_args": [key], "category": "minspawn", "icon": "blueguy"}, rules)
 		tool.make_tool()
 		pal.append(tool)
 	return pal

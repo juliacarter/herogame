@@ -21,12 +21,13 @@ func deliver_to(units):
 	var sharing = {}
 	for key in units:
 		var unit = units[key]
-		#for sharekey in unit.aggro_share:
-		#	var shared = unit.aggro_share[sharekey]
-		#	if !units.has(sharekey):
-		#		sharing.merge({
-		#			sharekey: shared
-		#		})
+		for sharekey in unit.seen_by:
+			var shared = unit.seen_by[sharekey]
+			if unit.friendly_to(shared):
+				if !units.has(sharekey):
+					sharing.merge({
+						sharekey: shared
+					})
 		unit.apply_aggro_package(self)
 	for key in sharing:
 		var unit = sharing[key]

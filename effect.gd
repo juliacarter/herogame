@@ -17,3 +17,6 @@ func _init(newbase, newunit, newstacks):
 	base = newbase
 	unit = newunit
 	stacks = newstacks
+
+func tick(delta):
+	base.tick(delta, unit, stacks)

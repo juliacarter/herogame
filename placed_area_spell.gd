@@ -41,6 +41,27 @@ func _init(gamedata, spelldata, parent = null):
 	prime_action = "make_ghost"
 	prime_args = [aoedata]
 
+#fire at targeted square
+func fire_at(target, delta = 0.0):
+	rules.aoe_at_position(unit, target, aoedata)
+
+func can_fire(target):
+	var energy = has_energy()
+	var ammo_valid = has_ammo()
+	#var range = in_range(target)
+	return energy && ammo_valid
+
+func make_plan():
+	var power = AreaPlanPower.new({
+		"name": key,
+		"on_cast": "fire_attack_at_target",
+		"cast_args": [],
+		"category": "unit",
+		"action": self
+	}, rules)
+	power.make_tool()
+	return power
+
 func make_power():
 	var power = ActionPower.new({
 		"name": key,
@@ -51,6 +72,6 @@ func make_power():
 		"caster": unit,
 		"category": "unit",
 		"action": self
-	})
+	}, rules)
 	power.make_tool()
 	return power

@@ -22,6 +22,7 @@ var world
 
 var mainmenu
 
+var deploymaster
 var placing_formation = false
 var formation_units = []
 
@@ -49,13 +50,13 @@ signal tool_pushed(tool)
 var ids = {}
 
 var debugvars = {
-	"instabuild": false,
+	"instabuild": true,
 	"unlockall": true,
 	"assignanything": true,
 	"orderanyone": true,
 	"standstill": true,
 	"editstats": false,
-	"fake_damage": true,
+	"fake_damage": false,
 }
 
 var infamy = 000000
@@ -173,6 +174,9 @@ var max_free_agents = 5
 
 var home
 
+#faction to spawn new units into
+var spawn_faction = "player"
+
 var factions = {
 	"coalition": null,
 	"player": null,
@@ -233,7 +237,13 @@ var script_map = {
 	#Buffs
 	"DoTBuffBase": DoTBuffBase,
 	
+	#Impacts
+	"DamageImpact": DamageImpact,
+	"HealImpact": HealImpact,
+	"ResistableBuffImpact": ResistableBuffImpact,
+	
 	"DoomThreat": DoomThreat,
+	
 	
 	"Job": Job,
 	"RestJob": RestJob,
@@ -271,6 +281,15 @@ var colors = {
 var globals = {}
 var global_vars = {}
 
+func make_impact(impdata, parent):
+	if impdata.has("type"):
+		if script_map.has(impdata.type):
+			var type = script_map[impdata.type]
+			var impact = type.new(impdata, parent)
+			return impact
+		else:
+			print("Invalid impact type!")
+
 func debug_asset():
 	make_asset("", world.map.testregion.region)
 
@@ -295,7 +314,8 @@ func aoe_at_position(caster, pos, aoedata):
 func fire_current_power():
 	world.ghostholder.clear_ghosts()
 	if power != null:
-		fire_power(power)
+		power.fire()
+		#fire_power(power)
 
 func fire_power(pow):
 	current_map.callv(pow.on_cast, pow.cast_args)
@@ -1355,6 +1375,11 @@ func send_quest_item(base, count, objective):
 	order.order_item(base, count)
 	sell_orders.append(order)
 	
+func start_missiongroup(mishname):
+	var missiondata = data.missions[mishname]
+	var mission = Mission.new(self, missiondata)
+	available_missions.append(mission)
+	
 func start_encounter(encounter, faction = null):
 	encounter.encounter_complete.connect(end_encounter)
 	encounter.id = assign_id(encounter)
@@ -1441,10 +1466,42 @@ func start_mission(mission):
 		mission.generate_encounter()
 		mission.start_encounter()
 		send_units_grouped(units, mission_map)
+		mission.send_squads()
 	else:
 		send_units(units, mission_map)
 	return mission
 		#mission.transport = squad.transport_order(mission_map)
+
+func start_mission_skip_send(mission):
+	active_missions.merge({
+		mission.id: mission
+	})
+	var mission_map = await load_map("user://maps/" + mission.mapname + ".motemap")
+	mission_map.encounter = mission
+	mission.map = mission_map
+	if mission.quest != null:
+		mission.quest.started = true
+	mission.make_zones()
+	#mission.spawn_units()
+	#mission.map.spawn_unit_blob(mission.enemy_bases)
+	var units = []
+	for unit in mission.assigned_units:
+		#var unit = mission.units[key]
+		units.append(unit)
+	#for squad in mission.squads:
+		#for key in squad.units:
+			#var unit = squad.units[key]
+			#units.append(unit)
+	if mission is Encounter:
+		mission.role_factions.baddies = factions.coalition
+		mission.generate_encounter()
+		mission.start_encounter()
+		#send_units_grouped(units, mission_map)
+		#mission.send_squads()
+	#else:
+		#send_units(units, mission_map)
+	return mission
+		#mission.transport = squad.transport_order(mission_ma
 
 func start_map_job(mission):
 	active_missions.merge({
@@ -1466,6 +1523,8 @@ func start_placement(units, map, mission):
 	formation_units = units.duplicate()
 	interface.placementbutton.visible = true
 	placing_formation = true
+	deploymaster = DeployMaster.new(map, mission)
+	deploymaster.rules = self
 	open_map(map.id)
 	interface.update_selection()
 	get_tree().paused = true
@@ -1487,10 +1546,12 @@ func place_selected_formation_unit():
 		var square = current_map.blocks[current_map.highlighted.x][current_map.highlighted.y]
 		if square.zones.has("deployment"):
 			var unit = selected.values()[0]
-			formation_units.erase(formation_units.values().find(unit))
-			transfer_unit(unit, current_map, true)
-			current_map.place_unit(unit, square.global_position)
-			pass
+			if !unit.deployed:
+				unit.deployed = true
+				formation_units.erase(formation_units.values().find(unit))
+				transfer_unit(unit, current_map, true)
+				current_map.place_unit(unit, square.global_position)
+				pass
 
 func check_placement_finished():
 	var done = true
@@ -1502,6 +1563,7 @@ func check_placement_finished():
 		finish_placement()
 
 func finish_placement():
+	deploymaster.execute_plans()
 	placing_formation = false
 	interface.placementbutton.visible = false
 	get_tree().paused = false

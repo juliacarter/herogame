@@ -276,10 +276,12 @@ func get_task(slotname = "interact"):
 	
 		
 func start_job():
+	started = true
 	if location == null:
 		make_task()
 	else:
 		location.queue_job(self)
+		#make_task()
 		
 func make_task():
 	if !automatic:
@@ -291,6 +293,7 @@ func make_task():
 	for key in desiredactors:
 		desiredactors[key].actors = []
 	if(needs.is_empty() && !automatic):
+		map.waiting_jobs.erase(id)
 		task_exists = true
 		actorslots = {}
 		#location.unreserve_slots()
@@ -317,14 +320,22 @@ func make_task():
 				callv(on_start, args)
 		waiting_for_resource = false
 		task_exists = true
+		map.waiting_jobs.merge({
+			id: self
+		})
 		if automatic:
 			map.active_jobs.merge({
 				id: self
 			})
 		return true
 	else:
-		return await get_stuff(needs)
+		if !waiting_for_resource:
+			return await get_stuff(needs)
 		#return false
+	
+func try_make():
+	if can_make():
+		make_task()
 		
 func can_make():
 	var result = true
@@ -560,12 +571,16 @@ func check_needs():
 func find_container():
 	pass
 		
+func reset():
+	foundactors = 0
+	time = speed
+		
 func complete():
 	active = false
 	await callv(action, args)
 	started = false
-	done = true
-	
+	#done = true
+	reset()
 	if jobbase != null:
 		jobbase.waiting = false
 	if action != "continue_fueled_power":
@@ -603,13 +618,13 @@ func complete():
 	
 	for item in neededitems:
 		var count = neededitems[item]
-		location.remove_item(item.id, count, "input")
+		location.remove_item(item, count, "input")
 	
 	location.job_instances.erase(id)
 	location.current_job = null
 	
 	for slot in desiredactors:
-		desiredactors[slot].count = 0
+		#desiredactors[slot].count = 0
 		desiredactors[slot].actors = []
 	#await map.active_jobs.erase(id)
 	#time = speed
@@ -651,6 +666,12 @@ func scan_amount(amount):
 func make_resource(type, amount):
 	await location.create(type, amount, "output", true)
 	#print("made " + type.itemname + " " + String.num(amount))
+	
+func roll_cash(min, max):
+	var die = max - min
+	var roll = randi() % die
+	var amount = roll + min
+	rules.player.intangibles.cash += amount
 		
 func change_resource(resource, amount):
 	print(resource)

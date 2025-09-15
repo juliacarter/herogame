@@ -18,12 +18,19 @@ var sortables = [
 
 var encounter
 
+var mission
+
 var selected_units = {}
 
 
 func load_encounter(new):
 	encounter = new
 	label.text = encounter.get_description()
+	load_units()
+
+func load_mission(new):
+	mission = new
+	label.text = "mission"
 	load_units()
 
 func load_units():
@@ -46,7 +53,7 @@ func commit_list():
 	var rows = unitlist.selected
 	for row in rows:
 		var unit = row.object
-		encounter.assign_unit(unit)
+		mission.assign_unit(unit, unit.faction)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -55,4 +62,5 @@ func _process(delta: float) -> void:
 
 func _on_button_pressed() -> void:
 	commit_list()
-	rules.start_mission(encounter)
+	mission.start_mission()
+	#rules.start_mission(encounter)

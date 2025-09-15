@@ -22,6 +22,6 @@ func make_power():
 		"category": "unit",
 		"instacast": true,
 		"action": self
-	})
+	}, rules)
 	power.make_tool()
 	return power

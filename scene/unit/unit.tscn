@@ -175,7 +175,7 @@ process_thread_messages = 0
 z_index = 38
 y_sort_enabled = true
 collision_layer = 134218499
-collision_mask = 257
+collision_mask = 0
 mass = 0.01
 physics_material_override = SubResource("PhysicsMaterial_qs3vq")
 gravity_scale = 0.0
@@ -238,6 +238,7 @@ collision_mask = 512
 shape = SubResource("CircleShape2D_tpkor")
 
 [node name="Selection" type="Area2D" parent="."]
+process_mode = 3
 collision_layer = 2048
 collision_mask = 2048
 priority = 10
@@ -295,6 +296,7 @@ enabled = false
 collision_mask = 256
 
 [node name="VisionCone2D" parent="." instance=ExtResource("7_855lp")]
+process_mode = 3
 ray_count = 8
 collision_layer_mask = 524288
 minimum_recalculate_time_msec = 256

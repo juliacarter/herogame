@@ -74,6 +74,14 @@ offset_top = -250.0
 offset_right = 300.0
 offset_bottom = 250.0
 
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 889.0
+offset_top = 763.0
+offset_right = 1034.0
+offset_bottom = 794.0
+text = "TEST ENCOUNTER"
+
 [connection signal="pressed" from="Continue" to="." method="_on_continue_pressed"]
 [connection signal="pressed" from="NewGame" to="." method="_on_new_game_pressed"]
 [connection signal="pressed" from="LoadMap" to="." method="_on_load_map_pressed"]

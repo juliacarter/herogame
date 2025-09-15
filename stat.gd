@@ -100,7 +100,8 @@ func set_value(num):
 func spend(num):
 	modify(num)
 	var dam_amount = num * spend_ratio
-	add_damage(dam_amount * -1)
+	if dam_amount < 0:
+		add_damage(dam_amount * -1)
 
 func get_final(num):
 	pass
@@ -177,6 +178,10 @@ func add_damage(amount):
 		if value > cap:
 			value = cap
 	
+func heal(amount):
+	heal_damage(amount)
+	modify(amount)
+	
 func heal_damage(amount):
 	damage -= amount
 	if damage < 0:
@@ -212,5 +217,7 @@ func _init(data):
 		gainrate = data.defaultgain
 	if data.has("spend_ratio"):
 		spend_ratio = data.spend_ratio
+	if data.has("soft_cap"):
+		soft_cap = data.soft_cap
 	value = float(data.num)
 	category = data.category

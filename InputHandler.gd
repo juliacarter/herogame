@@ -65,7 +65,7 @@ func normal_input(event):
 										object.order_equip(rules.hovered.item)
 							if !did_something:
 								if square.type() == "floor":
-									var pos = rules.current_map.get_local_mouse_position()
+									var pos = rules.current_map.get_global_mouse_position()
 									rules.move_order(map.blocks[map.highlighted.x][map.highlighted.y], pos, Input.is_action_pressed("queue_ghosts"))
 								elif square.type() == "footprint":
 									var furniture = square.footprint.content
@@ -80,7 +80,11 @@ func normal_input(event):
 func formation_input(event):
 	if event.is_released():
 		if(event.button_index == 2):
-			rules.place_selected_formation_unit()
+			if rules.selected != {}:
+				if !rules.selected.values()[0].deployed:
+					rules.place_selected_formation_unit()
+				else:
+					rules.fire_current_power()
 	
 func _unhandled_input(event):
 	if event is InputEventMouseButton && !rules.on_interface:

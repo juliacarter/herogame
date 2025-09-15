@@ -14,6 +14,8 @@ var allows_negative = false
 
 var oneshot = false
 
+var ticking = false
+
 func _init(data):
 	if data.has("modifiers"):
 		modifiers = data.modifiers.duplicate()
@@ -34,3 +36,6 @@ func remove_effect(unit, count):
 		for key in triggers:
 			var trigger = triggers[key]
 			unit.remove_trigger(trigger)
+			
+func tick(delta, on, stacks):
+	pass

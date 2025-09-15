@@ -62,6 +62,8 @@ var lessonbuttonscene = preload("res://lesson_button.tscn")
 
 @onready var placementbutton = get_node("FinishPlacementButton")
 
+@onready var placement = get_node("PlacementPanel")
+
 var panelscenes = {
 	"unit": preload("res://scene/interface/unit_panel.tscn"),
 	"furniture": preload("res://scene/furniture/furniture_panel.tscn"),
@@ -164,13 +166,13 @@ func toggle_console():
 
 func update_selection():
 	if rules.placing_formation:
-		if selectpanel != null:
-			infoholder.remove_child(selectpanel)
-		selectpanel = panelscenes.placement.instantiate()
+		#if selectpanel != null:
+			#infoholder.remove_child(selectpanel)
+		#selectpanel = panelscenes.placement.instantiate()
 		
-		infoholder.add_child(selectpanel)
-		selectpanel.load_units(rules.formation_units)
-		return
+		#infoholder.add_child(selectpanel)
+		placement.load_units(rules.formation_units)
+		#return
 	if rules.selected.size() == 0:
 		bigwindow.visible = false
 		if(selectpanel != null):
@@ -215,12 +217,16 @@ func update_selection():
 			if(selectpanel != null):
 				infoholder.remove_child(selectpanel)
 			selectpanel = panelscenes.unit.instantiate()
-			
-			palette.load_palette(
-				selected.action_palette()
-			)
+			if !rules.placing_formation:
+				palette.load_palette(
+					selected.action_palette()
+				)
+			else:
+				palette.load_palette(
+					selected.plan_palette()
+				)
 			infoholder.add_child(selectpanel)
-			selectpanel.load_unit(selected)
+			selectpanel.load_unit(selected, rules.placing_formation)
 		elif selected.entity() == "CATEGORY":
 			if(selectpanel != null):
 				infoholder.remove_child(selectpanel)

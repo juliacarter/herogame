@@ -29,11 +29,12 @@ func _init(newrole, newtarget, newtype, furniture, newitem, newcount):
 		next_action = GrabTask.new(text, target, "delivery", object, item, count)
 	item.add_haul_task(self)
 		
-func set_haul(newtarget, newobject, newitem, shelf, final):
+func set_haul(newtarget, newobject, newitem, newshelf, final):
 	resource = newitem
 	next_action = GrabTask.new(text, newtarget, "delivery", newobject, item, count)
 	next_action.resource = newitem
-	next_action.haulshelf = shelf
+	next_action.shelf = newshelf
+	next_action.haulshelf = newshelf
 	next_action.haulfinal = final
 	
 func get_movement():

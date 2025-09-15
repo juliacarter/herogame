@@ -14,6 +14,8 @@ var mapname = "oneobjective"
 
 var quest
 
+var mission
+
 var transport
 var squads = []
 var map
@@ -132,7 +134,7 @@ func pick_units():
 func assign_units_to_role(newunits, role = ""):
 	for unit in newunits:
 		#var unit = newunits[key]
-		add_unit(unit, role)
+		assign_unit(unit, role)
 
 func _init(gamerules, encounterdata):
 	pindata = EncounterPinData.new(self)
@@ -199,7 +201,7 @@ func load_save(savedata):
 func generate_encounter():
 	var newunits = get_units("baddies")
 	var pickedunits = pick_units()
-	place_units()
+	spawn_units()
 	pass
 
 func start_encounter():
@@ -279,7 +281,7 @@ func spawn_units():
 		pass
 	#var squares = map.get_zone_squares("enemydeployment")
 	var newunits = get_units("baddies")
-	var placedunits = map.place_units_in_zone("enemydeployment", newunits)
+	var placedunits = map.place_units_in_zone("enemydeployment", newunits.values())
 	for unit in placedunits:
 		add_unit(unit, "baddies")
 		
@@ -326,7 +328,7 @@ func add_squad(squad):
 		var unit = squad.units[key]
 		add_unit(unit, "player")
 
-func assign_unit(unit):
+func assign_unit(unit, role=""):
 	assigned_units.append(unit)
 	add_unit(unit, "player")
 
@@ -357,3 +359,8 @@ func send_units():
 func send_squads():
 	for squad in squads:
 		rules.transport_order(map)
+
+func teleport_units(units):
+	for unit in units:
+		rules.transfer_unit(unit, map)
+	rules.start_placement(units, map, self)

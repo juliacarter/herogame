@@ -22,7 +22,7 @@ func _init(gamerules, gamedata, payloaddata, caster = null):
 		for attackname in payloaddata.attacks:
 			if data.attacks.has(attackname):
 				var attdata = data.attacks[attackname]
-				var attack = Attack.new(rules, attdata, parent)
+				var attack = Attack.new(data, attdata, parent)
 				attack.unit = parent
 				attacks.append(attack)
 

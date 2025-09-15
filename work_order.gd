@@ -39,6 +39,11 @@ func make_tasks():
 			#fires 18 times out of 20 requests
 			var can = job.get_stuff(needs)
 			if can:
+				waiting_jobs.pop_at(i)
+				#waiting_jobs.append(job)
+				job.map.waiting_jobs.merge({
+					job.id: job
+				})
 				job.location.map.jobs_getstuff.merge({
 					job.jobname: 0
 				})

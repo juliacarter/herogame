@@ -9,6 +9,9 @@ var equalto = false
 var statname = ""
 var stattype = ""
 
+#whether the stat is checked from 0 or from its maximum (capped) value
+var from_end = false
+
 var desired_percent = 0.0
 #flat value added to or subtracted from percentage
 var desired_flat = 0.0
@@ -26,6 +29,8 @@ func _init(data):
 	if data.has("equalto"):
 		equalto = data.equalto
 		#Triggers if current stat is DIRECTION than desired
+	if data.has("from_end"):
+		from_end = data.from_end
 	if data.has("desired_percent"):
 		desired_percent = data.desired_percent
 	if data.has("desired_flat"):
@@ -38,8 +43,10 @@ func _init(data):
 func check(unit):
 	var per = (desired_percent / 100.0)
 	var value = per * unit.stats[stattype][statname].max
-	pass
+	var checking = unit.stats[stattype][statname].value
 	value += desired_flat
+	if from_end:
+		value = unit.stats[stattype][statname].current_max() - value
 	if equalto:
 		if unit.stats[stattype][statname].value == value:
 			return true

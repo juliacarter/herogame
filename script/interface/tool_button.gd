@@ -49,10 +49,13 @@ func _process(delta):
 	else:
 		rect.visible = false
 	if power is ActionPower:
+		if power.action.behavior != null:
+			pass
 		autocast.visible = power.action.autocast
 		cooldown.visible = true
 		cooldown.max_value = power.action.cooldown
 		cooldown.value = power.action.time
+		
 	else:
 		autocast.visible = false
 

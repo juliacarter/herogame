@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://cj2o28yb6c7cw"]
+[gd_scene load_steps=22 format=3 uid="uid://cj2o28yb6c7cw"]
 
 [ext_resource type="Theme" uid="uid://c2dqbtyc2vdb7" path="res://main_theme.tres" id="1_6ricm"]
 [ext_resource type="Script" uid="uid://dyael3il1ddv3" path="res://script/interface/interface.gd" id="1_7mop2"]
@@ -17,6 +17,8 @@
 [ext_resource type="PackedScene" uid="uid://dhpy1sbut4pkj" path="res://outer_window.tscn" id="16_dv8kd"]
 [ext_resource type="PackedScene" uid="uid://dli7l6p35nj8l" path="res://resource_display.tscn" id="17_43oo1"]
 [ext_resource type="PackedScene" uid="uid://diof8g5madjrg" path="res://tooltip_stack.tscn" id="17_ce733"]
+[ext_resource type="PackedScene" uid="uid://b7x271s8occgp" path="res://placement_panel.tscn" id="18_mypo3"]
+[ext_resource type="PackedScene" uid="uid://ihru38gongho" path="res://faction_selector.tscn" id="19_ej027"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wqwwd"]
 
@@ -353,6 +355,17 @@ layout_mode = 1
 offset_top = 27.0
 offset_right = -1660.0
 offset_bottom = -254.0
+
+[node name="PlacementPanel" parent="." instance=ExtResource("18_mypo3")]
+offset_top = 656.0
+offset_bottom = 836.0
+
+[node name="FactionSelector" parent="." instance=ExtResource("19_ej027")]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 798.0
+offset_right = 380.0
+offset_bottom = 820.0
 
 [connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
 [connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]

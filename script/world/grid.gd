@@ -12,6 +12,9 @@ var zonescene = load("res://zone.tscn")
 
 var world
 
+#the DeployManager currently deploying on this map
+var deploymaster
+
 var tab
 
 @onready var rules = get_node("/root/WorldVariables")
@@ -390,8 +393,17 @@ func get_square(pos):
 func get_ring(x, y, radius):
 	pass
 
+func plan_action(action, unit):
+	if deploymaster != null:
+		deploymaster.plan_action(action, unit)
+
 #func _input(event):
 	#pass
+	
+func aoe_by_name(aoename):
+	var aoe = data.spells[aoename]
+	var pos = get_global_mouse_position()
+	aoe_at(aoe.aoedata, pos)
 	
 func aoe_at(aoedata, pos, caster = null, origin = null):
 	var aoe
@@ -425,6 +437,9 @@ func order_spellcast_at_mousepos(spell, unit):
 func toggle_spell(spell, unit):
 	spell.toggled = !spell.toggled
 	unit.toggle_spell(spell, spell.toggled)
+
+func get_highlighted():
+	return blocks[highlighted.x][highlighted.y]
 
 func insert_waypoint_at_mouse(pointkey, patrol, index):
 	if data.waypoints.has(pointkey):
@@ -571,13 +586,13 @@ func place_item_at_cursor(itemname):
 		var item = data.items[itemname]
 		spawn_item(item, highlighted.x, highlighted.y)
 	
-func place_unit_at_cursor(unitname):
+func place_unit_at_cursor(unitname, faction = "default"):
 	if data.wizards.unit.has(unitname):
 		pass
 	if data.units.has(unitname):
 		var unit = data.units[unitname]
 		if(current != null):
-			var newunit = await spawn_unit(unit, current)
+			var newunit = await spawn_unit(unit, current, rules.spawn_faction)
 			
 func order_cast_at_hovered(ability):
 	if rules.hovered is Unit:
@@ -639,7 +654,7 @@ func spawn_unit_blob(units):
 		var target = await start.get_movement(null)
 		spawn_unit(unit, target)
 
-func spawn_unit(unitdata, square):
+func spawn_unit(unitdata, square, faction = "default"):
 	var squarepos = square.global_position
 	var newunit = unitscene.instantiate()
 	newunit.id = rules.assign_id(newunit)
@@ -648,12 +663,16 @@ func spawn_unit(unitdata, square):
 	newunit.map = self
 	newunit.rules = rules
 	newunit.data = data
-	newunit.load_data(rules, data, unitdata)
+	newunit.load_data(rules, data, unitdata, faction)
 	if newunit.master:
 		if rules.player.master == null:
 			rules.player.master = newunit
-	if rules.factions.has(newunit.allegiance):
-		newunit.set_faction(rules.factions[newunit.allegiance])
+	if faction == "default":
+		if rules.factions.has(newunit.allegiance):
+			newunit.set_faction(rules.factions[newunit.allegiance])
+	else:
+		var facdata = rules.factions.get(faction)
+		newunit.set_faction(facdata)
 	newunit.process_mode = 1
 	store_unit(newunit)
 	world.add_unit(newunit)
@@ -926,6 +945,10 @@ func unpaused_think(delta):
 			var items = stacks[key]
 			for item in items:
 				item.storage_suitability()
+		for key in waiting_jobs:
+			var job = waiting_jobs[key]
+			if job.can_make():
+				job.make_task()
 		for key in active_jobs:
 			var job = active_jobs[key]
 			if job.time > 0:
@@ -1048,7 +1071,8 @@ func send_all_units_home():
 			transport.id: transport
 		})
 		transport.needs_placement = false
-		await transport.set_target(encounter.return_map)
+		#await transport.set_target(encounter.return_map)
+		await transport.set_target(rules.home)
 		for key in units:
 			var unit = units[key]
 			if unit.faction == rules.factions.player:

@@ -1,6 +1,9 @@
 extends Object
 class_name Action
 
+var data
+var rules
+
 var impacts = []
 
 var tooltipdata
@@ -28,7 +31,10 @@ var spend_on_cast = true
 var range = 0
 
 var cooldown = 1.0
-var time = 0
+var time = 0.0
+
+var controlled = false
+var behavior
 
 var cast_time = 1.0
 
@@ -46,6 +52,7 @@ var move_to = true
 #tags for the action
 var tags = []
 
+
 var key = ""
 
 #the Consumable used as "ammo" for the action
@@ -55,7 +62,14 @@ var ammo_used = 0
 
 var tooltip_description = "This is some sort of action"
 
+var autoable = true
+
+var plannable = true
+var planned = false
+var plan_target
+
 func fire_at(target, delta = 0.0):
+	time = 0
 	spend_ammo()
 	
 func spend_ammo():
@@ -67,7 +81,17 @@ func cast(delta, target):
 	pass
 
 func _init(gamedata, actiondata, parent = null):
+	data = gamedata
+	rules = data.rules
 	unit = parent
+	if actiondata.has("conditions"):
+		behavior = ActionBehavior.new(rules, unit, self, actiondata.conditions)
+		controlled = true
+	if actiondata.has("impacts"):
+		for impdata in actiondata.impacts:
+			var newimp = rules.make_impact(impdata, parent)
+			#var newimp = DamageImpact.new(impdata, parent)
+			impacts.append(newimp)
 	if actiondata.has("visuals"):
 		for visdata in actiondata.visuals:
 			if gamedata.visual_effects.has(visdata.name):
@@ -77,6 +101,10 @@ func _init(gamedata, actiondata, parent = null):
 				})
 				var vis = ActionVisual.new(visdata)
 				visuals.append(vis)
+	if actiondata.has("autoable"):
+		autoable = actiondata.autoable
+	if actiondata.has("plannable"):
+		plannable = actiondata.plannable
 	if actiondata.has("animation"):
 		animation = actiondata.animation
 	if actiondata.has("key"):
@@ -95,11 +123,25 @@ func _init(gamedata, actiondata, parent = null):
 			var bubble = SoundBubbleData.new(bubbledata)
 			bubbles.append(bubble)
 
+func make_plan():
+	var power = PlanPower.new({
+		"name": key,
+		"on_cast": "fire_attack_at_target",
+		"cast_args": [],
+		"category": "unit",
+		"action": self
+	}, rules)
+	power.make_tool()
+	return power
+
 func cool_down(delta):
-	if time > 0:
-		time -= delta
-	if time < 0:
-		time = 0
+	if time < cooldown:
+		time += delta
+		return false
+	if time > cooldown:
+		time = cooldown
+		return true
+	return true
 
 func can_fire(target):
 	var energy = has_energy()
@@ -153,6 +195,24 @@ func make_tooltip():
 	var tooltip = TooltipData.new(tipdata)
 	return tooltip
 
+func plan_for(target):
+	if can_fire(target):
+		plan_target = target
+		planned = true
+		return true
+	return false
+	
+func planned_fire():
+	fire_at(plan_target)
+
+func check_fire(target):
+	if behavior != null:
+		if behavior.satisfied():
+			fire(target)
+			return true
+	return false
 #Extend this
 func fire(target):
 	pass
+	#for impact in impacts:
+		#impact.fire(target, crits)

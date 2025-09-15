@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bpq1gqpoy6d71"]
 
-[ext_resource type="Script" path="res://PlacementButton.gd" id="1_a0wk2"]
+[ext_resource type="Script" uid="uid://43t3kq0itrsb" path="res://PlacementButton.gd" id="1_a0wk2"]
 
 [node name="PlacementButton" type="Button"]
 process_mode = 3

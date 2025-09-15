@@ -1,9 +1,12 @@
 [gd_scene load_steps=3 format=3 uid="uid://bpetncm632x58"]
 
-[ext_resource type="Script" path="res://AreaEffect.gd" id="1_j8cp2"]
+[ext_resource type="Script" uid="uid://cw453bun0sse0" path="res://AreaEffect.gd" id="1_j8cp2"]
 [ext_resource type="Texture2D" uid="uid://cetfw6b8av0dq" path="res://art/caution.png" id="2_mjme6"]
 
 [node name="AreaEffect" type="Node2D"]
+process_mode = 3
+top_level = true
+z_index = 4096
 script = ExtResource("1_j8cp2")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

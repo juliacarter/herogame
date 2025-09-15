@@ -92,7 +92,7 @@ func _on_repeat_box_toggled(button_pressed):
 	if(interface.selected != null):
 		if(interface.selected.entity() == "FURNITURE"):
 			interface.selected.repeating = button_pressed
-			interface.selected.job.repeating = button_pressed
+			interface.selected.primary_job.repeating = button_pressed
 
 
 func _on_haul_button_pressed():

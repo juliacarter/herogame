@@ -123,13 +123,13 @@ func _init(newbase, newrules):
 	id = rules.assign_id(self)
 	var data = rules.data
 	alignment = newbase.alignment
-	for key in newbase.threats:
-		if data.missions_to_load.has(key):
-			var threat = Threat.new(data, data.missions_to_load[key])
-			threat.faction = self
-			threats.merge({
-				key: threat
-			})
+	#for key in newbase.threats:
+	#	if data.missions_to_load.has(key):
+	#		var threat = Threat.new(data, data.missions_to_load[key])
+	#		threat.faction = self
+	#		threats.merge({
+	#			key: threat
+	#		})
 	for role in newbase.lists:
 		var options = newbase.lists[role]
 		for listname in options:

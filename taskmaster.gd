@@ -44,7 +44,7 @@ func load_save(savedata):
 			task.object = rules.ids[savedata.object]
 			tasks.append(task)
 	for requestdata in savedata.haul_requests:
-		var request = HaulRequest.new(null, requestdata.count, null, null, requestdata.final, null)
+		var request = HaulRequest.new(null, requestdata.count, null, null, null, requestdata.final, null)
 		request.stack = rules.ids[requestdata.stack]
 		request.destination = rules.ids[requestdata.destination]
 		request.shelf = rules.ids[requestdata.shelf]
@@ -136,6 +136,7 @@ func assign_closest_units():
 					while !found:
 						var closest = await map.unittree.closest(job.location.global_position, desired, false).object
 						if closest != null:
+							#request.job.foundactors += 1
 							if request.job.foundactors >= slot.count:
 								found = true
 								break
@@ -243,8 +244,9 @@ func assign_closest_units():
 							else:
 								hauled = request.count
 							var task = GrabTask.new("hauler", request.stack.location.position, "fetch", request.stack.location, request.stack, hauled)
-							task.shelf = request.shelf
-							task.set_haul(request.destination.position, request.destination, request.stack, "storage", request.final)
+							task.shelf = request.from_shelf
+							task.set_haul(request.destination.position, request.destination, request.stack, request.to_shelf, request.final)
+							#task.shelf = "input"
 							closest.future_weight += hauled
 							idle_units.erase(closest.id)
 							closest.queue.push_front(task)
@@ -298,7 +300,7 @@ func haul_task(base, count, location, shelf, final, job):
 		return {"needed": 0, "found": 0}
 	if shelf == "output":
 		pass
-	var request = HaulRequest.new(item, hauled, location, shelf, final, job)
+	var request = HaulRequest.new(item, hauled, location, "storage", "input", final, job)
 	haul_requests.append(request)
 	var result = count - hauled
 	return {"needed": result, "found": hauled}
@@ -319,7 +321,7 @@ func store_task(item, count):
 		item.reserved_count += count
 		if item.reserved_count > item.count:
 			pass
-		var request = HaulRequest.new(item, count, container, item.shelf.name, true, null)
+		var request = HaulRequest.new(item, count, container, "output", "storage", true, null)
 		haul_requests.append(request)
 	#for i in count:
 	#	if container != null:
@@ -331,7 +333,7 @@ func store_task(item, count):
 	#		tasks.push_back(storetask)
 			
 func targeted_haul(item, count, container, shelf, final):
-	var request = HaulRequest.new(item, count, container, shelf, final, null)
+	var request = HaulRequest.new(item, count, container, shelf, shelf, final, null)
 	haul_requests.append(request)
 	#item.reserved = true
 	#for i in count:

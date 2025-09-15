@@ -689,6 +689,13 @@ func think(delta):
 		if(built):
 			if !dead:
 				check_job_queue()
+				if current_job != null:
+					if current_job.waiting_for_resource:
+						if !current_job.task_exists:
+							#current_job.try_make()
+							pass
+				if current_job == null:
+					pass
 				if shelves.has("theft"):
 					if shelves.theft.contents != {}:
 						for key in shelves.theft.contents:

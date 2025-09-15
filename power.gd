@@ -1,6 +1,8 @@
 extends Object
 class_name Power
 
+var rules
+
 var powername
 var category
 
@@ -30,6 +32,10 @@ var caster
 var include_caster = false
 var prime_include_caster = true
 
+func fire():
+	
+	rules.fire_power(self)
+
 func get_prime_args():
 	var args = prime_args.duplicate()
 	if include_caster:
@@ -50,7 +56,8 @@ func make_tool():
 	}
 	pass
 	
-func _init(data):
+func _init(data, newrules):
+	rules = newrules
 	if data.has("panel"):
 		panel = data.panel
 	if data.has("instacast"):

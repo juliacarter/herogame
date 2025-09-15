@@ -22,9 +22,10 @@ func clear_units():
 	for i in range(units.keys().size()-1,-1,-1):
 		var key = units.keys()[i]
 		var unit = units[key]
-		var button = units[key]
+		var button = buttons[key]
 		grid.remove_child(button)
 		units.erase(key)
+		buttons.erase(key)
 	
 func load_units(newunits):
 	clear_units()

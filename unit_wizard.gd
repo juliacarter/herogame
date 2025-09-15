@@ -48,7 +48,7 @@ func generate_unit(value = -1, wants_equipment = true, wants_upgrades = true):
 		return null
 	var total = starting_price
 	var unit = unitscene.instantiate()
-	unit.load_data(rules, data, base, false)
+	unit.load_data(rules, data, base, "default", false)
 	unit.generate_name()
 	if wants_equipment:
 		for slot in equipment:

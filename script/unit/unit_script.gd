@@ -19,6 +19,8 @@ signal hit_by(victim, attacker, attack)
 signal task_started(task, unit)
 signal task_complete(task, unit)
 
+var deployed = false
+
 var aggrotable = AggroTable.new()
 
 #aggro tables this unit is part of
@@ -71,7 +73,7 @@ var overtime = {}
 var movement_target_position: Vector2 = Vector2(50, 50)
 var movement_delta: float
 
-var drops
+var drops = {}
 
 @onready var animplayer = get_node("AnimationPlayer")
 @onready var nav = get_node("NavigationAgent2D")
@@ -175,7 +177,7 @@ var triggers = {
 }
 
 var base_upkeep = {
-	"cash": 10
+	"cash": 0
 }
 var upkeep_mods = {}
 
@@ -391,6 +393,9 @@ var toggled_spells = {
 	
 }
 
+var autocast_time = 1.0
+var autocast_timer = 1.0
+
 var cast_time = 0.0
 var casting_action
 var casting_target
@@ -565,6 +570,8 @@ var auras = {
 }
 
 var effects = {}
+
+var ticking_effects = []
 
 var modifiers = {}
 var mods = Modifiers.new()
@@ -962,35 +969,42 @@ func has_ammo(base, count):
 		return true
 	return false
 
-func death_loot(drop_equipment = true):
-	var dropped = roll_loot()
+func drop_loot(type = "death", drop_equipment = true):
+	var dropped = roll_loot(type)
+	var dropsquare = current_square.get_movement()
 	for base in dropped:
-		map.spawn_item(base, current_square.x, current_square.y)
+		map.spawn_item(base, dropsquare.x, dropsquare.y)
 
-func roll_loot():
-	if drops != null:
-		var dropped = drops.roll()
-		return dropped
+func roll_loot(type = "death"):
+	if drops != {}:
+		if drops.has(type):
+			var table = drops[type]
+			var dropped = table.roll()
+			return dropped
 
 func generate_drops(loading):
-	var newdrops = {}
-	for table in loading:
-		var weight = loading[table]
-		var newtable = {}
-		for drop in table:
-			var dropweight = table[drop]
-			if data.items.has(drop):
-				var base = data.items[drop]
-				newtable.merge({
-					base: dropweight
+	
+	for tabname in loading:
+		var newdrops = {}
+		var table = loading[tabname]
+		#var weight = loading[table]
+		for subtab in table:
+			var count = table[subtab]
+			var droptab = {}
+			for drop in subtab:
+				var dropweight = subtab[drop]
+				if data.items.has(drop):
+					var base = data.items[drop]
+					droptab.merge({
+						base: dropweight
+					})
+				newdrops.merge({
+					droptab: count
 				})
-		newdrops.merge({
-			newtable: weight
-		})
-	var newtable = LootMetaTable.new(newdrops)
-	drops = newtable
+			var newtable = LootMetaTable.new(newdrops)
+			drops.merge({tabname: newtable})
 
-func load_data(gamerules, gamedata, unitdata, new = true):
+func load_data(gamerules, gamedata, unitdata, faction = "default", new = true):
 	
 	data = gamedata
 	rules = gamerules
@@ -1000,7 +1014,10 @@ func load_data(gamerules, gamedata, unitdata, new = true):
 	})
 	equipment.location = self
 	aggressive = unitdata.aggressive
-	allegiance = unitdata.allegiance
+	if faction == "default":
+		allegiance = unitdata.allegiance
+	else:
+		allegiance = faction
 	if allegiance == "coalition":
 		breakingandentering = true
 	datakey = unitdata.datakey
@@ -1010,15 +1027,21 @@ func load_data(gamerules, gamedata, unitdata, new = true):
 		generate_drops(unitdata.drops)
 	else:
 		var newdrops = {
-			{
-				"popper": 2, "ore": 3,
+			"death": 
+			{{
+				"popper": 2#, "ore": 3,
 			}: 3,
 			{
 				"metal": 5, "acid": 2
 			}: 2,
 			{
 				"rifle": 2, "bighat": 1
-			}: 1,
+			}: 1,},
+			"flee": {
+				{
+					"ore": 1
+				}: 1
+			}
 		}
 		generate_drops(newdrops)
 	for role in unitdata.roles:
@@ -1117,7 +1140,13 @@ func send_home():
 func leave_map():
 	if map != null:
 		drop_task()
+		queue = []
 		map.remove_unit(self)
+
+func friendly_to(unit):
+	if faction == unit.faction:
+		return true
+	return false
 
 func set_faction(new):
 	if faction != null:
@@ -1131,6 +1160,8 @@ func set_faction(new):
 
 func spawn():
 	on_map = true
+	queue = []
+	movement = []
 	calc_scaling()
 	movement_path = null
 	targetable = true
@@ -1339,7 +1370,20 @@ func break_order(target):
 func break_target(target):
 	target_furniture = target
 
-
+func try_autocast(delta):
+	autocast_timer -= delta
+	if autocast_timer <= 0:
+		for prio in actions:
+			var actionlist = actions[prio]
+			for action in actionlist:
+				if action.behavior != null:
+					if action.autocast:
+						if action.time <= 0:
+							var fired = action.check_fire(self)
+							if fired:
+								pass
+							pass
+		autocast_timer = autocast_time
 
 func fire_action_ground(action, target):
 	#if action.in_range(target):
@@ -1800,6 +1844,8 @@ func move_order(square, final, queued = true):
 
 func exfil_order(square, fleeing = true, queued = false):
 	var order = ExfilTask.new(square, square.global_position)
+	if fleeing:
+		drop_loot("flee")
 	if queued:
 		queue.push_back(order)
 	else:
@@ -2109,6 +2155,9 @@ func apply_drain(drains, delta, mods_used = {}):
 		var total = (amount + bonusamount) * -1
 		change_stat(stat, total)
 
+func heal(stat, amount):
+	all_stats[stat].heal(amount)
+
 func apply_healing(stat, amount):
 	all_stats[stat].heal_damage(amount)
 
@@ -2124,7 +2173,7 @@ func go_train():
 	var found = false
 	var job = await suitable_trainer()
 	if job != null:
-		var task = job.make_task_for_unit(self)
+		var task = job.a_for_unit(self)
 		if task != null:
 			training = true
 			pass
@@ -2501,8 +2550,24 @@ func try_actions(delta):
 	for i in 100:
 		if actions.has(i):
 			for action in actions[i]:
-				action.cool_down(delta)
-				
+				if action.key == "selfcast":
+					pass
+					if faction.key == "player":
+						pass
+				var can = action.cool_down(delta)
+				can = can && queued_actions.find(action) == -1
+				if action.key == "fist":
+					pass
+					if faction.key == "player":
+						pass
+				can = can# && action.behavior == null
+				if action.behavior == null:
+					if can:
+						#queued_actions.append(action)
+						try_action(action, delta)
+				else:
+					if action.behavior.satisfied():
+						try_action(action, delta)
 	var waiting = false
 	
 	if casting_action == null && !forced_movement:
@@ -2517,12 +2582,13 @@ func try_actions(delta):
 			var prioritised_actions = action_priority.actions
 			for action in prioritised_actions:
 				#try_cast(action)
-				try_action(action, delta)
+				if action.autoable:
+					try_action(action, delta)
 	else:
 		cast_sequence(casting_action, casting_target, delta)
 
 func try_action(action, delta, queued = false):
-	if action.time == 0 && (action.autocast || queued):
+	if action.time == action.cooldown && (action.autocast || queued):
 		if action.has_energy():
 			var target
 			if action is Attack:
@@ -2544,10 +2610,11 @@ func calc_range():
 		if actions.has(i):
 			for action in actions[i]:
 				if action is Attack:
-					if action.range < minval:
-						minval = action.range
-						min = action
-						found = true
+					if action.autoable:
+						if action.range < minval:
+							minval = action.range
+							min = action
+							found = true
 			if found:
 				break
 	preferred_range = minval * minval
@@ -2572,6 +2639,11 @@ func remove_overtime(effect, count):
 		overtime[effect] -= count
 		if overtime[effect] <= 0:
 			overtime.erase(effect)
+
+func tick_effects(delta):
+	for key in effects:
+		var effect = effects[key]
+		effect.tick(delta)
 		
 func apply_effect(effectbase, count):
 	effectbase.apply_effect(self, count)
@@ -2585,10 +2657,13 @@ func remove_effect(effectbase, count):
 	
 func add_effect(effectbase, count):
 	if !effectbase.oneshot:
-		var effect = Effect.new(effectbase, self, count)
-		effects.merge({
-			effectbase.effname: effect
-		})
+		if !effects.has(effectbase.effname):
+			var effect = Effect.new(effectbase, self, count)
+			effects.merge({
+				effectbase.effname: effect
+			})
+		else:
+			effects[effectbase.effname].stacks += count
 			
 					#effect.trigger_instances.append(newtrigger)
 		#calc_effects()
@@ -2712,6 +2787,22 @@ func unlearn_lesson(lesson):
 			remove_points(key, amount)
 		upgrades.erase(lesson)
 	
+func resistable_buff(buff, chance = 0, resistance = "", crits = 0):
+	var resist = mods.ret(resistance)
+	var percent = chance - resist
+	if percent > 100:
+		percent = 100
+	var roll = randi() % 100
+	if roll < percent:
+		apply_buff_by_name(buff)
+		make_popup("Debuffed!")
+	else:
+		make_popup("Resisted!")
+	
+func apply_buff_by_name(buffname):
+	if data.buffs.has(buffname):
+		apply_buff(data.buffs[buffname])
+	
 func apply_buff(buffbase):
 	if !buffbase.stacking:
 		for buff in buffs:
@@ -2722,6 +2813,7 @@ func apply_buff(buffbase):
 	for effect in buff.base.effects:
 		var count = buff.base.effects[effect]
 		apply_effect(effect, count)
+	buff.apply(self)
 	buffs.append(buff)
 	buff_update.emit(buff)
 	buff_added.emit(buff)
@@ -2785,7 +2877,21 @@ func action_palette():
 			var options = actions[i]
 			for action in options:
 				#var count = action.count
-				pal.append(action.make_power())
+				if action.autoable:
+					pal.append(action.make_power())
+	return pal
+		
+#plans that can be used while the unit is being deployed
+func plan_palette():
+	var pal = []
+	for i in 100:
+		if actions.has(i):
+			var options = actions[i]
+			for action in options:
+				#if action.plannable:
+				#var count = action.count
+				if action.plannable:
+					pal.append(action.make_plan())
 	return pal
 		
 #****
@@ -2944,7 +3050,9 @@ func update_task(task):
 				current_interactzone.in_use = false
 			#var square = task.get_square(self, reserving, current_task.jobslot)
 			var movetarget = task.get_movement()
-			current_task.start_job()
+			if current_task.job != null:
+				if !current_task.job.started:
+					current_task.start_job()
 			#set_movement_target(current_task.target)
 			#if !task is MoveTask:
 				#if square != null:
@@ -3302,6 +3410,7 @@ func think(delta):
 				
 				overtime_effects(delta)
 				tick_drain(delta)
+				tick_effects(delta)
 				check_buffs(delta)
 				#if verbose:
 				#	print(id)
@@ -3327,6 +3436,8 @@ func think(delta):
 				#try_restore()
 					
 				if !stored:
+					
+					#try_autocast(delta)
 					pass
 					#await check_class()
 					#await consider_squads()
@@ -3554,7 +3665,8 @@ func try_task(delta):
 				var next_task = current_task.next_patrol()
 				if next_task != null:
 					update_task(next_task)
-		current_task.position_reached()
+		if current_task != null:
+			current_task.position_reached()
 	else:
 		if nav.is_navigation_finished() && current_target == null && (target_furniture == null || target_furniture.dead):
 			working = false
@@ -3588,7 +3700,6 @@ func check_abilities(delta):
 					ability.think(delta)
 			else:
 				ability.base.fire(ability, delta)
-	
 				
 func pop_task():
 	if(!working && active && !rallied && current_task == null):
@@ -3884,7 +3995,7 @@ func be_untargeted(by):
 func die(drop_stuff = true, killer = null):
 	drop_storage()
 	if drop_stuff:
-		death_loot()
+		drop_loot()
 	targetable = false
 	for key in targeted_by:
 		var unit = targeted_by[key]

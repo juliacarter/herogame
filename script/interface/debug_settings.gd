@@ -61,7 +61,7 @@ func _on_button_2_pressed() -> void:
 
 
 func _on_button_3_pressed() -> void:
-	rules.draw_encounter()
+	rules.start_missiongroup("sample")
 
 
 func _on_cash_button_pressed() -> void:

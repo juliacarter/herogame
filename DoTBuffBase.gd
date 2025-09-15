@@ -9,4 +9,5 @@ func _init(data):
 		tick_damage = data.tick_damage
 
 func tick(delta, unit):
-	unit.damage("health", tick_damage * delta)
+	#unit.damage("health", tick_damage * delta)
+	pass

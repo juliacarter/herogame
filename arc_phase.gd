@@ -69,7 +69,7 @@ func _init(newrules, phasedata, newarc):
 				var threattype = rules.script_map[threatdata.type]
 				threat = threattype.new(data, threatdata, self)
 			else:
-				threat = Threat.new(data, threatdata, self)
+				threat = Threat.new(rules, threatdata)
 			threats.merge({
 				threatdata.type: []
 			})

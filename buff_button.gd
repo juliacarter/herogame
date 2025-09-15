@@ -11,8 +11,10 @@ var buff
 func load_buff(new):
 	buff = new
 	if buff.base.tipname != "":
-		var tipdata = TooltipData.new(data.tooltips[buff.base.tipname])
-		tiparea.tooltip = tipdata
+		var tipdata = data.tooltips[buff.base.tipname]
+		tipdata.title = buff.get_tiptitle()
+		var tip = TooltipData.new(tipdata)
+		tiparea.tooltip = tip
 
 
 # Called when the node enters the scene tree for the first time.

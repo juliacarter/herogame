@@ -40,6 +40,8 @@ var classes = []
 var current_class
 var selected_class
 
+var deployment = false
+
 var unit
 
 var barscene = preload("res://scene/unit/stat_bar.tscn")
@@ -53,11 +55,12 @@ func _ready():
 func load_classes():
 	pass
 	
-func load_unit(new):
+func load_unit(new, deploy = false):
 	unit = new
 	healthbar.stat = unit.stats.fuels.health
 	focusbar.stat = unit.stats.fuels.energy
 	moralebar.stat = unit.stats.fuels.morale
+	deployment = deploy
 	aggro.load_aggro(unit.aggrotable)
 	experience.load_unit(unit)
 	buffs.load_unit(unit)
@@ -71,7 +74,10 @@ func _process(delta):
 	if unit != null:
 		namebox.text = unit.object_name()
 		idbox.text = "ID:" + unit.id
-		statuslabel.text = unit.status()
+		if !deployment:
+			statuslabel.text = unit.status()
+		else:
+			statuslabel.text = "Being Deployed"
 		levellabel.text = "Lv." + String.num(unit.level, 0)
 		armorlabel.text = "ARMOR: " + String.num(unit.defense.armor.physical.variance) + " | " + String.num(unit.defense.armor.energy.variance)
 		#get_fuels()

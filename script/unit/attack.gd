@@ -11,7 +11,6 @@ var aggro_percent_self_mods = ["genericaggropct"]
 #modifier attached to TARGET that modifies aggro by %
 var aggro_percent_target_mods = []
 
-var data
 
 var id
 var variance
@@ -43,8 +42,6 @@ var accuracy_per_rank = 5
 #Appllied to Every Roll
 var damage_rank_bonuses = {}
 var accuracy_rank_bonus = 0
-
-var attackdown = 0.0
 
 var shots = 1
 #the time between each individual shot. if total time is less than cast time, attack will clip
@@ -82,13 +79,11 @@ var bonus_ap = 0
 
 var bonus_accuracy = 0
 
-var rules
-
 var last_shot_range
 
 func cast(delta, target, pos = null):
 	var finished = shots_in_sequence >= shots
-	if attackdown <= 0 && !finished:
+	if cooldown <= 0 && !finished:
 		fire_at(target, pos)
 		shots_in_sequence += 1
 		if shots_in_sequence == shots:
@@ -96,15 +91,15 @@ func cast(delta, target, pos = null):
 		return true
 	return false
 
-func cool_down(delta):
-	super(delta)
-	attackdown -= delta
+#func cool_down(delta):
+#	super(delta)
+	#time += delta
 
 func fire_at(target, pos = null):
 	super(target, pos)
 	fire_weapon(target, pos)
-	time = cooldown
-	attackdown = time_per_shot
+	#time = cooldown
+	#cooldown = time_per_shot
 
 func damage_bonuses():
 	var percents = get_damage_mods()
@@ -143,7 +138,7 @@ func failure_visuals(pos):
 	if unit != null:
 		for anim in visuals:
 			if anim.on_fail:
-				unit.map.visual_effect(anim.visual, unit.position, pos)
+				unit.map.visual_effect(anim.visual, unit.global_position, pos)
 
 func fire_weapon(target, location = null):
 	if target != null:
@@ -213,7 +208,7 @@ func fire_weapon(target, location = null):
 				ydir -= 1
 			var missx = 32 * ydir + ((randi() % 32) - 16)
 			var missy = 32 * xdir + ((randi() % 32) - 16)
-			var misspos = target.position + Vector2(missx, missy)
+			var misspos = target.global_position + Vector2(missx, missy)
 			failure_visuals(misspos)
 			if unit != null:
 				unit.make_popup("Miss!")
@@ -227,6 +222,8 @@ func damage_roll_sum():
 			result += damagerolls[key][stat]
 	return result
 
+
+
 func make_power():
 	var power = ActionPower.new({
 		"name": key,
@@ -234,7 +231,7 @@ func make_power():
 		"cast_args": [],
 		"category": "unit",
 		"action": self
-	})
+	}, rules)
 	power.make_tool()
 	return power
 
@@ -344,15 +341,15 @@ func trigger(trigger_name, triggered_by):
 				triggerdata.fire(triggered_by)
 				#rules.callv(action, args)
 
-func add_trigger(time, triggerdata):
+func add_trigger(newtime, triggerdata):
 	var newtrigger = Trigger.new(data, triggerdata, unit)
-	newtrigger.time = time
+	newtrigger.time = newtime
 	#trigger.rules = rules
 	#trigger.parent = self
 	triggers.merge({
-		time: []
+		newtime: []
 	})
-	triggers[time].append(newtrigger)
+	triggers[newtime].append(newtrigger)
 	return newtrigger
 	
 func remove_trigger(oldtrigger):
@@ -369,7 +366,7 @@ func _init(gamedata, attackdata, parent = null, count = 1):
 	super(data, attackdata, parent)
 	#data = gamedata
 	rank = count
-	time = cast_time
+	#time = cast_time
 	autocast = true
 	if attackdata.has("basecrit"):
 		basecrit = attackdata.basecrit
@@ -408,15 +405,12 @@ func _init(gamedata, attackdata, parent = null, count = 1):
 	accuracy = attackdata.accuracy
 	#aimtime = attackdata.aimtime
 	#readytime = attackdata.readytime
-	time = cast_time
+	#time = cast_time
 	#firetime = attackdata.firetime
 	#attackcount = attackdata.attackcount
 	#currentcount = attackcount
-	rangepenalty = attackdata.rangepenalty
-	if attackdata.has("impacts"):
-		for impdata in attackdata.impacts:
-			var newimp = DamageImpact.new(impdata, parent)
-			impacts.append(newimp)
+	#rangepenalty = attackdata.rangepenalty
+	
 	calc_ranks()
 	
 	
@@ -459,23 +453,23 @@ func calc_ranks():
 
 func reset():
 	time =  0
-	attackdown = 0
+	cooldown = 0
 	currentcount = attackcount
 	attacking = false
 
 func attack(delta):
-	if attackdown == 0:
-		attackdown = attackdown + delta
+	if time == 0:
+		time = time + delta
 		return 2
 	else:
-		attackdown = attackdown + delta
-	if attackdown >= firetime:
+		time = time + delta
+	if time >= firetime:
 		currentcount -= 1
 		if currentcount <= 0:
 			attacking = false
 			return 0
 		else:
-			attackdown = 0.0
+			time = 0.0
 			return 1
 	else:
 		return 3

@@ -65,7 +65,7 @@ func make_power(instance):
 		"cast_args": [],
 		"category": "unit",
 		"ability": instance
-	})
+	}, rules)
 	power.make_tool()
 	return power
 
